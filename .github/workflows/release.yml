@@ -35,8 +35,8 @@ jobs:
           mkdir -p argus-${{ env.VERSION }}/lib
 
           cp -r includes/* argus-${{ env.VERSION }}/include/
-          cp .build/libargus.a argus-${{ env.VERSION }}/lib/
-          cp .build/libargus.so.${{ env.VERSION }} argus-${{ env.VERSION }}/lib/
+          cp .build/argus.a argus-${{ env.VERSION }}/lib/
+          cp .build/argus.so.${{ env.VERSION }} argus-${{ env.VERSION }}/lib/
 
           cp packaging/installers/install.sh argus-${{ env.VERSION }}/
           chmod +x argus-${{ env.VERSION }}/install.sh

@@ -172,7 +172,7 @@ uninstall_library() {
     log "  Library: $LIBDIR"
     log "  Headers: $INCLUDEDIR"
     
-    rm -f "$LIBDIR/libargus.a" "$LIBDIR/libargus.so"*
+    rm -f "$LIBDIR/argus.a" "$LIBDIR/argus.so"*
     rm -f "$LIBDIR/pkgconfig/argus.pc"
     rm -rf "$INCLUDEDIR/argus"
     rm -f "$INCLUDEDIR/argus.h"

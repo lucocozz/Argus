@@ -6,7 +6,7 @@ Ce guide explique comment installer la bibliothèque argus dans différents envi
 
 | Méthode | Commande | Idéal Pour |
 |--------|---------|----------|
-| **Gestionnaires de Paquets** | `conan install libargus/1.0.1@` | Utilisation en production |
+| **Gestionnaires de Paquets** | `conan install argus/1.0.0@` | Utilisation en production |
 | **Depuis les Sources** | `meson setup .build && meson compile -C .build` | Développement |
 | **Avec Just** | `just build` | Flux de développement |
 
@@ -40,29 +40,29 @@ argus n'a qu'une seule dépendance optionnelle :
 
 ```bash
 # Installation depuis Conan Center
-conan install libargus/1.0.1@
+conan install argus/1.0.0@
 
 # Avec des options spécifiques
-conan install libargus/1.0.1@ -o libargus:disable_regex=true
+conan install argus/1.0.0@ -o argus:disable_regex=true
 ```
 
 Dans votre fichier `conanfile.txt` :
 ```
 [requires]
-libargus/1.0.1
+argus/1.0.0
 
 [options]
-libargus:disable_regex=False
+argus:disable_regex=False
 ```
 
 #### vcpkg
 
 ```bash
 # Installation depuis le registre vcpkg
-vcpkg install libargus
+vcpkg install argus
 
 # Sans support des regex
-vcpkg install libargus[core]
+vcpkg install argus[core]
 ```
 
 Dans votre fichier `vcpkg.json` :
@@ -70,7 +70,7 @@ Dans votre fichier `vcpkg.json` :
 {
   "dependencies": [
     {
-      "name": "libargus",
+      "name": "argus",
       "features": ["regex"]
     }
   ]
@@ -116,12 +116,12 @@ just install
 Si vous préférez ne pas installer au niveau système :
 
 1. Compilez le projet en utilisant n'importe quelle méthode ci-dessus
-2. Copiez `libargus.a` dans votre projet
+2. Copiez `argus.a` dans votre projet
 3. Copiez le répertoire `includes/` dans votre projet
 4. Liez avec la bibliothèque statique :
 
 ```bash
-gcc votre_programme.c -o votre_programme -L/chemin/vers/libargus.a -largus
+gcc votre_programme.c -o votre_programme -L/chemin/vers/argus.a -largus
 ```
 
 ### Comme Dépendance Meson
@@ -155,12 +155,12 @@ Si vous n'avez pas besoin de validation par regex, vous pouvez compiler sans la 
 
 === "Conan"
     ```bash
-    conan install . -o libargus:disable_regex=true
+    conan install . -o argus:disable_regex=true
     ```
 
 === "vcpkg"
     ```bash
-    vcpkg install libargus --features=""
+    vcpkg install argus --features=""
     ```
 
 Quand le support des regex est désactivé :
@@ -188,7 +188,7 @@ Pour les déploiements en production, activez le mode release pour ignorer la va
 === "Vérifier les Fichiers"
     ```bash
     # Vérifier la bibliothèque partagée
-    ls -la /usr/local/lib/libargus.so*
+    ls -la /usr/local/lib/argus.so*
     
     # Vérifier les en-têtes
     ls -la /usr/local/include/argus*

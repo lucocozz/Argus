@@ -12,7 +12,7 @@
   <a href="https://github.com/lucocozz/argus/actions/workflows/ci.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/ci.yml/badge.svg" alt="CI/CD Pipeline"></a>
   <a href="https://github.com/lucocozz/argus/actions/workflows/codeql.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/codeql.yml/badge.svg" alt="CodeQL Analysis"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-  <a href="https://conan.io/center/libargus"><img src="https://img.shields.io/badge/Conan-package-blue" alt="Conan Package"></a>
+  <a href="https://conan.io/center/argus"><img src="https://img.shields.io/badge/Conan-package-blue" alt="Conan Package"></a>
   <a href="https://vcpkg.io/en/packages.html"><img src="https://img.shields.io/badge/vcpkg-package-blue" alt="vcpkg Package"></a>
 </p>
 
@@ -40,8 +40,8 @@ Designed for both simplicity and flexibility, argus enables developers to create
 
 ```bash
 # Using package managers
-conan install libargus/1.0.1@
-vcpkg install libargus
+conan install argus/1.0.0@
+vcpkg install argus
 
 # From source with Meson
 git clone https://github.com/lucocozz/argus.git
@@ -113,20 +113,20 @@ int main(int argc, char **argv)
 
 ```bash
 # Basic installation
-conan install libargus/1.0.1@
+conan install argus/1.0.0@
 
 # Without regex support
-conan install libargus/1.0.1@ -o libargus:disable_regex=true
+conan install argus/1.0.0@ -o argus:disable_regex=true
 ```
 
 #### vcpkg
 
 ```bash
 # Full installation
-vcpkg install libargus
+vcpkg install argus
 
 # Core functionality only (no regex)
-vcpkg install libargus[core]
+vcpkg install argus[core]
 ```
 
 ### Build From Source
@@ -156,9 +156,9 @@ just install        # Install system-wide
 
 ```bash
 # Download and run installer
-curl -LO https://github.com/lucocozz/argus/releases/download/v1.0.1/argus-1.0.1.tar.gz
-tar -xzf argus-1.0.1.tar.gz
-cd argus-1.0.1
+curl -LO https://github.com/lucocozz/argus/releases/download/v1.0.0/argus-1.0.0.tar.gz
+tar -xzf argus-1.0.0.tar.gz
+cd argus-1.0.0
 ./install.sh        # System-wide installation
 # or
 ./install.sh --local # Local installation in ~/.local

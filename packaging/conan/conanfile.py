@@ -4,11 +4,11 @@ from conan.tools.files import get, copy
 from conan.tools.layout import basic_layout
 import os
 
-class LibargusConan(ConanFile):
-    name = "libargus"
-    version = "1.0.1"
+class ArgusConan(ConanFile):
+    name = "argus"
+    version = "1.0.0"
     description = "Modern C library for command-line argument parsing with an elegant, macro-based API"
-    topics = ("conan", "argus", "libargus", "command-line", "arguments", "parser", "cli", "argparse")
+    topics = ("conan", "argus", "argus", "command-line", "arguments", "parser", "cli", "argparse")
     url = "https://github.com/lucocozz/argus"
     homepage = "https://github.com/lucocozz/argus"
     license = "MIT"
@@ -70,8 +70,8 @@ class LibargusConan(ConanFile):
         meson.install()
 
     def package_info(self):
-        self.cpp_info.set_property("cmake_file_name", "libargus")
-        self.cpp_info.set_property("cmake_target_name", "libargus::libargus")
+        self.cpp_info.set_property("cmake_file_name", "argus")
+        self.cpp_info.set_property("cmake_target_name", "argus::argus")
         self.cpp_info.libs = ["argus"]
         if self.options.disable_regex:
             self.cpp_info.defines.append("ARGUS_NO_REGEX")
