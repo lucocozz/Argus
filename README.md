@@ -2,14 +2,14 @@
   <img src="docs/assets/argus-logo.webp" alt="argus logo" width="200">
 </p>
 
-<h1 align="center">argus</h1>
+<h1 align="center">Argus</h1>
 
 <p align="center">
   <strong>Modern C library for command-line argument parsing with an elegant, macro-based API</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/lucocozz/argus/actions/workflows/ci.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/ci.yml/badge.svg" alt="CI/CD Pipeline"></a>
+  <a href="https://github.com/lucocozz/argus/actions/workflows/ci-complete.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/ci-complete.yml/badge.svg" alt="CI/CD Pipeline"></a>
   <a href="https://github.com/lucocozz/argus/actions/workflows/codeql.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/codeql.yml/badge.svg" alt="CodeQL Analysis"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://conan.io/center/argus"><img src="https://img.shields.io/badge/Conan-package-blue" alt="Conan Package"></a>
@@ -248,7 +248,6 @@ The documentation covers:
 | Collections (Arrays/Maps) | ✅ | ❌ | ❌ | ❌ |
 | Command Abbreviations | ✅ | ❌ | ❌ | ❌ |
 | Regex Validation | ✅ | ❌ | ❌ | ❌ |
-| Dependencies | PCRE2 (optional) | libc | GNU | None |
 | Learning Curve | Low | Medium | High | Medium |
 
 ## 🚀 Roadmap

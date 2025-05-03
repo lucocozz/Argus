@@ -1,29 +1,70 @@
-# argus
+# Bienvenue sur argus
 
-![CI/CD Pipeline](https://github.com/lucocozz/argus/actions/workflows/ci.yml/badge.svg)
-![CodeQL Analysis](https://github.com/lucocozz/argus/actions/workflows/codeql.yml/badge.svg)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+<div align="center">
+  <img src="assets/argus-logo.webp" alt="argus" width="180px">
+  <br><br>
+  <em>Parser d'arguments en ligne de commande moderne pour C</em>
+  <br><br>
+</div>
 
-> Bibliothèque C moderne pour l'analyse des arguments de ligne de commande avec une API élégante basée sur des macros.
+## Explorer argus
 
-**argus** est une bibliothèque C puissante pour gérer les arguments de ligne de commande, conçue pour être à la fois simple à utiliser et suffisamment flexible pour les scénarios d'utilisation avancés.
+<div class="grid cards" markdown>
 
-## ✨ Fonctionnalités
+-   :material-rocket-launch:{ .lg .middle } **Commencer avec argus**
 
-- 📋 **Génération d'aide** : affichage automatique et formaté de l'aide et de l'utilisation
-- 🔄 **Options typées** : booléens, entiers, chaînes de caractères, flottants, tableaux, mappages
-- 🎨 **Analyse de format flexible** : prend en charge plusieurs formats d'options (--option=valeur, --option valeur, -ovaleur, etc.)
-- 🌳 **Sous-commandes** : prise en charge des commandes imbriquées de style Git/Docker
-- ⚠️ **Rapports d'erreurs clairs** : messages d'erreur détaillés et conviviaux pour les options ou valeurs invalides
-- ✨ **Design élégant** : définition des options avec des macros concises et expressives
-- 🔍 **Validateurs intégrés** : validateurs de plage, de choix et d'expressions régulières avec des ensembles prédéfinis complets
-- 📦 **Regroupement organisé des options** : regroupement visuel des options associées dans l'affichage d'aide
-- 🔗 **Relations entre options** : définition de dépendances et de conflits entre options
-- 🚦 **Validation intelligente** : vérification complète de la structure des options pendant le développement pour prévenir les erreurs d'exécution, avec un mode release pour des performances optimales en production
-- 🌐 **Variables d'environnement** : configuration ENV automatique
-- 🚀 **Efficacité mémoire** : minimise les allocations sur le tas pour de meilleures performances et fiabilité
-- 🧰 **Personnalisation facile des options** : créez vos propres types d'options et gestionnaires
-- 🛡️ **Pipeline de validation personnalisé** : concevez vos propres validateurs avec un pré/post-traitement flexible
+    ---
+
+    Démarrez avec argus en quelques minutes :
+
+    [:octicons-arrow-right-24: Installation](guide/installation.md)
+    [:octicons-arrow-right-24: Démarrage rapide](guide/quickstart.md)
+    [:octicons-arrow-right-24: Exemples](examples/basic.md)
+
+-   :material-book-open-variant:{ .lg .middle } **Concepts fondamentaux**
+
+    ---
+
+    Maîtrisez les concepts de base :
+
+    [:octicons-arrow-right-24: Options de base](guide/basic-options.md)
+    [:octicons-arrow-right-24: Formats d'options](guide/option-formats.md)
+    [:octicons-arrow-right-24: Validation](guide/validation.md)
+
+-   :material-tools:{ .lg .middle } **Fonctionnalités avancées**
+
+    ---
+
+    Exploitez toute la puissance d'argus :
+
+    [:octicons-arrow-right-24: Sous-commandes](guide/subcommands.md)
+    [:octicons-arrow-right-24: Multi-valeurs](guide/multi-values.md)
+    [:octicons-arrow-right-24: Variables d'environnement](guide/environment.md)
+
+-   :material-api:{ .lg .middle } **Référence API**
+
+    ---
+
+    Documentation complète pour les développeurs :
+
+    [:octicons-arrow-right-24: Fonctions](api/functions.md)
+    [:octicons-arrow-right-24: Macros](api/macros.md)
+    [:octicons-arrow-right-24: Types](api/types.md)
+
+</div>
+
+## Caractéristiques en bref
+
+argus offre une combinaison unique de puissance et de simplicité pour l'analyse d'arguments en ligne de commande en C :
+
+- **API élégante** - Macros concises et expressives pour définir les options
+- **Sécurité des types** - Support intégré pour les chaînes, entiers, flottants, booléens
+- **Collections multi-valeurs** - Tableaux et mappages pour les données complexes
+- **Sous-commandes imbriquées** - Hiérarchies de commandes de style Git/Docker
+- **Validation des entrées** - Validateurs de plage, regex et personnalisés
+- **Gestion des erreurs** - Messages d'erreur clairs et informatifs
+- **Variables d'environnement** - Chargement automatique des options depuis l'environnement
+- **Génération d'aide** - Affichage d'aide formaté et élégant
 
 ## Exemple rapide
 
@@ -36,24 +77,24 @@ ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
-    OPTION_FLAG('v', "verbose", "Activer la sortie verbeuse"),
-    OPTION_STRING('o', "output", "Fichier de sortie", DEFAULT("output.txt")),
-    OPTION_INT('p', "port", "Numéro de port", RANGE(1, 65535), DEFAULT(8080)),
-    POSITIONAL_STRING("input", "Fichier d'entrée")
+    OPTION_FLAG('v', "verbose", HELP("Activer le mode verbeux")),
+    OPTION_STRING('o', "output", HELP("Fichier de sortie"), DEFAULT("output.txt")),
+    OPTION_INT('p', "port", HELP("Numéro de port"), RANGE(1, 65535), DEFAULT(8080)),
+    POSITIONAL_STRING("input", HELP("Fichier d'entrée"))
 )
 
 int main(int argc, char **argv)
 {
-    // Initialiser argus
-    argus_t argus = argus_init(options, "my_program", "1.0.0");
-    argus.description = "Démonstrateur de argus";
+    // Initialisation d'argus
+    argus_t argus = argus_init(options, "mon_programme", "1.0.0");
+    argus.description = "Démonstrateur d'argus";
 
-    // Analyser les arguments
+    // Analyse des arguments
     if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS) {
         return 1;
     }
 
-    // Accéder aux valeurs analysées
+    // Accès aux valeurs analysées
     const char *input = argus_get(argus, "input").as_string;
     const char *output = argus_get(argus, "output").as_string;
     int port = argus_get(argus, "port").as_int;
@@ -63,25 +104,45 @@ int main(int argc, char **argv)
     printf("  Entrée : %s\n", input);
     printf("  Sortie : %s\n", output);
     printf("  Port : %d\n", port);
-    printf("  Verbose : %s\n", verbose ? "oui" : "non");
+    printf("  Verbeux : %s\n", verbose ? "oui" : "non");
 
-    // Libérer les ressources
+    // Libération des ressources
     argus_free(&argus);
     return 0;
 }
 ```
 
-## 🚀 Démarrage rapide
+## Affichage d'aide automatique
 
-- [Installation](guide/installation.md) - Comment installer la bibliothèque argus
-- [Démarrage rapide](guide/quickstart.md) - Créez votre première application avec argus
-- [Exemples](examples/basic.md) - Explorez des exemples d'utilisation
+Lorsque les utilisateurs invoquent votre programme avec `--help`, argus génère automatiquement un message d'aide formaté comme celui-ci :
 
-## 📚 Documentation
+```
+mon_programme v1.0.0
 
-La documentation est organisée comme suit :
+Démonstrateur d'argus
 
-- **[Guide de l'utilisateur](guide/installation.md)** - Instructions détaillées pour utiliser argus
-- **[Référence API](api/overview.md)** - Référence complète de l'API argus
-- **[Exemples](examples/basic.md)** - Exemples de code pratiques
-- **[Fonctionnalités avancées](advanced/custom-handlers.md)** - Utilisation des fonctionnalités avancées
+Usage: mon_programme [OPTIONS] <input>
+
+Arguments:
+  <input>                - Fichier d'entrée
+
+Options:
+  -h, --help             - Afficher ce message d'aide (quitter)
+  -V, --version          - Afficher les informations de version (quitter)
+  -v, --verbose          - Activer le mode verbeux
+  -o, --output <STR>     - Fichier de sortie (défaut : "output.txt")
+  -p, --port <NUM>       - Numéro de port [1-65535] (défaut : 8080)
+```
+
+## Obtenir de l'aide
+
+- **[:material-help-circle: Guide utilisateur](guide/installation.md)** - Apprenez à utiliser argus étape par étape
+- **[:material-code-tags: Référence API](api/overview.md)** - Explorez la documentation complète de l'API
+- **[:material-github: GitHub](https://github.com/lucocozz/argus)** - Signalez des problèmes ou contribuez au développement
+
+## Communauté
+
+Nous accueillons les contributions et les retours de la communauté :
+
+- **[:octicons-git-pull-request-24: Contribuer](contributing.md)** - Aidez à améliorer argus
+- **[:octicons-law-24: Licence](license.md)** - Licence MIT
