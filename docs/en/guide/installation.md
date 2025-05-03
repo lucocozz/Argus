@@ -1,18 +1,18 @@
 # Installation Guide
 
-This guide explains how to install the cargs library in different environments.
+This guide explains how to install the argus library in different environments.
 
 ## Quick Reference
 
 | Method | Command | Best For |
 |--------|---------|----------|
-| **Package Managers** | `conan install libcargs/1.0.1@` | Production use |
+| **Package Managers** | `conan install libargus/1.0.1@` | Production use |
 | **From Source** | `meson setup .build && meson compile -C .build` | Development |
 | **With Just** | `just build` | Development workflow |
 
 ## Prerequisites
 
-cargs has only one optional dependency:
+argus has only one optional dependency:
 
 !!! info "PCRE2 Dependency"
     **PCRE2**: Required only for regex validation support.
@@ -40,29 +40,29 @@ cargs has only one optional dependency:
 
 ```bash
 # Install from Conan Center
-conan install libcargs/1.0.1@
+conan install libargus/1.0.1@
 
 # With specific options
-conan install libcargs/1.0.1@ -o libcargs:disable_regex=true
+conan install libargus/1.0.1@ -o libargus:disable_regex=true
 ```
 
 In your project's `conanfile.txt`:
 ```
 [requires]
-libcargs/1.0.1
+libargus/1.0.1
 
 [options]
-libcargs:disable_regex=False
+libargus:disable_regex=False
 ```
 
 #### vcpkg
 
 ```bash
 # Install from vcpkg registry
-vcpkg install libcargs
+vcpkg install libargus
 
 # Without regex support
-vcpkg install libcargs[core]
+vcpkg install libargus[core]
 ```
 
 In your project's `vcpkg.json`:
@@ -70,7 +70,7 @@ In your project's `vcpkg.json`:
 {
   "dependencies": [
     {
-      "name": "libcargs",
+      "name": "libargus",
       "features": ["regex"]
     }
   ]
@@ -83,8 +83,8 @@ In your project's `vcpkg.json`:
 
 ```bash
 # Clone the repository
-git clone https://github.com/lucocozz/cargs.git
-cd cargs
+git clone https://github.com/lucocozz/argus.git
+cd argus
 
 # Build
 meson setup .build
@@ -101,8 +101,8 @@ meson install -C .build
 
 ```bash
 # Clone the repository
-git clone https://github.com/lucocozz/cargs.git
-cd cargs
+git clone https://github.com/lucocozz/argus.git
+cd argus
 
 # Build static and shared libraries
 just build
@@ -116,24 +116,24 @@ just install
 If you prefer not to install system-wide:
 
 1. Build the project using any method above
-2. Copy `libcargs.a` to your project
+2. Copy `libargus.a` to your project
 3. Copy the `includes/` directory to your project
 4. Link with the static library:
 
 ```bash
-gcc your_program.c -o your_program -L/path/to/libcargs.a -lcargs
+gcc your_program.c -o your_program -L/path/to/libargus.a -largus
 ```
 
 ### As a Meson Dependency
 
 ```meson
 # In your meson.build
-cargs_dep = dependency('cargs', version: '>=1.0.1', required: false)
+argus_dep = dependency('argus', version: '>=1.0.1', required: false)
 
 # Fallback to subproject if not found system-wide
-if not cargs_dep.found()
-  cargs_proj = subproject('cargs')
-  cargs_dep = cargs_proj.get_variable('cargs_dep')
+if not argus_dep.found()
+  argus_proj = subproject('argus')
+  argus_dep = argus_proj.get_variable('argus_dep')
 endif
 ```
 
@@ -155,19 +155,19 @@ If you don't need regex validation, you can build without the PCRE2 dependency:
 
 === "Conan"
     ```bash
-    conan install . -o libcargs:disable_regex=true
+    conan install . -o libargus:disable_regex=true
     ```
 
 === "vcpkg"
     ```bash
-    vcpkg install libcargs --features=""
+    vcpkg install libargus --features=""
     ```
 
 When regex support is disabled:
 - No PCRE2 dependency is required
 - The `REGEX()` validator becomes a non-functional stub
-- All predefined patterns in `cargs/regex.h` are defined but won't work
-- The `CARGS_NO_REGEX` macro is defined for conditional compilation
+- All predefined patterns in `argus/regex.h` are defined but won't work
+- The `ARGUS_NO_REGEX` macro is defined for conditional compilation
 
 ### Performance Optimization
 
@@ -175,12 +175,12 @@ For production deployments, enable release mode to skip validation during initia
 
 === "Manual Compilation"
     ```bash
-    gcc your_program.c -o your_program -DCARGS_RELEASE -lcargs
+    gcc your_program.c -o your_program -DARGUS_RELEASE -largus
     ```
 
 === "Meson"
     ```meson
-    add_project_arguments('-DCARGS_RELEASE', language: 'c')
+    add_project_arguments('-DARGUS_RELEASE', language: 'c')
     ```
 
 ## Verifying Installation
@@ -188,17 +188,17 @@ For production deployments, enable release mode to skip validation during initia
 === "Check Files"
     ```bash
     # Check shared library
-    ls -la /usr/local/lib/libcargs.so*
+    ls -la /usr/local/lib/libargus.so*
     
     # Check headers
-    ls -la /usr/local/include/cargs*
+    ls -la /usr/local/include/argus*
     ```
 
 === "Test Compilation"
     ```bash
     # Compile an example program
-    gcc -o test_cargs test.c -lcargs
+    gcc -o test_argus test.c -largus
     
     # Run the program
-    ./test_cargs --help
+    ./test_argus --help
     ```

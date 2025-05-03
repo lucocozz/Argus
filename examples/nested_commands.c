@@ -1,23 +1,23 @@
 /**
- * Nested commands example for cargs
+ * Nested commands example for argus
  * 
  * Demonstrates:
  * - Nested subcommands similar to complex CLI tools
  * - Path formats for accessing values (relative, absolute, root-level)
  */
 
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 // Action handlers
-int service_create_action(cargs_t *cargs, void *data);
-int service_list_action(cargs_t *cargs, void *data);
-int config_set_action(cargs_t *cargs, void *data);
-int config_get_action(cargs_t *cargs, void *data);
+int service_create_action(argus_t *argus, void *data);
+int service_list_action(argus_t *argus, void *data);
+int config_set_action(argus_t *argus, void *data);
+int config_get_action(argus_t *argus, void *data);
 
 // Define options for "service create" command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
@@ -25,14 +25,14 @@ CARGS_OPTIONS(
 )
 
 // Define options for "service list" command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_list_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('a', "all", HELP("Show all services, including stopped ones"))
 )
 
 // Define options for the "service" parent command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -45,7 +45,7 @@ CARGS_OPTIONS(
 )
 
 // Define options for "config set" command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     config_set_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     POSITIONAL_STRING("key", HELP("Configuration key")),
@@ -53,14 +53,14 @@ CARGS_OPTIONS(
 )
 
 // Define options for "config get" command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     config_get_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     POSITIONAL_STRING("key", HELP("Configuration key"))
 )
 
 // Define options for the "config" parent command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     config_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -73,7 +73,7 @@ CARGS_OPTIONS(
 )
 
 // Define main options with top-level subcommands
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -89,134 +89,134 @@ CARGS_OPTIONS(
 )
 
 // Command action implementations
-int service_create_action(cargs_t *cargs, void *data) {
+int service_create_action(argus_t *argus, void *data) {
     (void)data;
     
     // Different ways to access option values
     
     // 1. Relative path (relative to current subcommand)
     // - When inside "service create" handler, "name" refers to "service.create.name"
-    const char* name = cargs_get(*cargs, "name").as_string;
-    const char* image = cargs_get(*cargs, "image").as_string;
+    const char* name = argus_get(*argus, "name").as_string;
+    const char* image = argus_get(*argus, "image").as_string;
     
     // 2. Absolute path (full path from root)
     // - Explicitly specifies the full path
-    const char* name_abs = cargs_get(*cargs, "service.create.name").as_string;
+    const char* name_abs = argus_get(*argus, "service.create.name").as_string;
     (void)name_abs;
     
     // 3. Root-level path (access options at root level)
     // - Starts with "." to force root level
-    const char* output = cargs_get(*cargs, ".output").as_string;
-    bool debug = cargs_get(*cargs, ".debug").as_bool;
+    const char* output = argus_get(*argus, ".output").as_string;
+    bool debug = argus_get(*argus, ".debug").as_bool;
     
     printf("Creating service '%s' using image '%s'\n", name, image);
     printf("Output file: %s\n", output);
     if (debug) printf("Debug mode enabled\n");
     
-    // Check if commands or options are set using cargs_is_set()
+    // Check if commands or options are set using argus_is_set()
     printf("\nCommand check:\n");
     printf("- 'service' command is set: %s\n", 
-           cargs_is_set(*cargs, "service") ? "yes" : "no");
+           argus_is_set(*argus, "service") ? "yes" : "no");
     printf("- 'service.create' command is set: %s\n", 
-           cargs_is_set(*cargs, "service.create") ? "yes" : "no");
+           argus_is_set(*argus, "service.create") ? "yes" : "no");
     
     return 0;
 }
 
-int service_list_action(cargs_t *cargs, void *data) {
+int service_list_action(argus_t *argus, void *data) {
     (void)data;
     
     // Relative path (within current subcommand context)
-    bool all = cargs_get(*cargs, "all").as_bool;
+    bool all = argus_get(*argus, "all").as_bool;
     
     // Root-level option
-    bool debug = cargs_get(*cargs, ".debug").as_bool;
+    bool debug = argus_get(*argus, ".debug").as_bool;
     
     printf("Listing services (all=%s)\n", all ? "true" : "false");
     if (debug) printf("Debug mode enabled\n");
     
-    // Demonstrating cargs_is_set with options
+    // Demonstrating argus_is_set with options
     printf("\nOption check:\n");
     printf("- 'all' option is set: %s\n", 
-           cargs_is_set(*cargs, "all") ? "yes" : "no");
+           argus_is_set(*argus, "all") ? "yes" : "no");
     printf("- Root-level 'debug' option is set: %s\n", 
-           cargs_is_set(*cargs, ".debug") ? "yes" : "no");
+           argus_is_set(*argus, ".debug") ? "yes" : "no");
     
     return 0;
 }
 
-int config_set_action(cargs_t *cargs, void *data) {
+int config_set_action(argus_t *argus, void *data) {
     (void)data;
     
     // Access positional arguments (relative path)
-    const char* key = cargs_get(*cargs, "key").as_string;
-    const char* value = cargs_get(*cargs, "value").as_string;
+    const char* key = argus_get(*argus, "key").as_string;
+    const char* value = argus_get(*argus, "value").as_string;
     
     // Alternative: absolute path
-    const char* key_abs = cargs_get(*cargs, "config.set.key").as_string;
+    const char* key_abs = argus_get(*argus, "config.set.key").as_string;
     (void)key_abs;
     
     // Check if positional arguments are set
     printf("Setting config '%s' to '%s'\n", key, value);
     printf("\nPositional check:\n");
     printf("- 'key' positional is set: %s\n", 
-           cargs_is_set(*cargs, "key") ? "yes" : "no");
+           argus_is_set(*argus, "key") ? "yes" : "no");
     printf("- 'value' positional is set: %s\n", 
-           cargs_is_set(*cargs, "value") ? "yes" : "no");
+           argus_is_set(*argus, "value") ? "yes" : "no");
     
     return 0;
 }
 
-int config_get_action(cargs_t *cargs, void *data) {
+int config_get_action(argus_t *argus, void *data) {
     (void)data;
-    const char* key = cargs_get(*cargs, "config.get.key").as_string;
+    const char* key = argus_get(*argus, "config.get.key").as_string;
     
     printf("Getting config value for '%s'\n", key);
     return 0;
 }
 
 int main(int argc, char **argv) {
-    cargs_t cargs = cargs_init(options, "nested_commands", "1.0.0");
-    cargs.description = "Example of nested subcommands and path formats";
+    argus_t argus = argus_init(options, "nested_commands", "1.0.0");
+    argus.description = "Example of nested subcommands and path formats";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Root-level options can be accessed directly from main
-    bool debug = cargs_get(cargs, "debug").as_bool;
+    bool debug = argus_get(argus, "debug").as_bool;
     if (debug) {
         printf("[Debug mode enabled at root level]\n");
     }
     
-    // Check which subcommand was used with cargs_is_set
-    if (cargs_is_set(cargs, "service")) {
+    // Check which subcommand was used with argus_is_set
+    if (argus_is_set(argus, "service")) {
         printf("Service command selected\n");
         
         // Check subcommands
-        if (cargs_is_set(cargs, "service.create")) {
+        if (argus_is_set(argus, "service.create")) {
             printf("Service create subcommand selected\n");
-        } else if (cargs_is_set(cargs, "service.list")) {
+        } else if (argus_is_set(argus, "service.list")) {
             printf("Service list subcommand selected\n");
         }
-    } else if (cargs_is_set(cargs, "config")) {
+    } else if (argus_is_set(argus, "config")) {
         printf("Config command selected\n");
         
         // Check subcommands
-        if (cargs_is_set(cargs, "config.set")) {
+        if (argus_is_set(argus, "config.set")) {
             printf("Config set subcommand selected\n");
-        } else if (cargs_is_set(cargs, "config.get")) {
+        } else if (argus_is_set(argus, "config.get")) {
             printf("Config get subcommand selected\n");
         }
     }
     
-    if (cargs_has_command(cargs)) {
-        status = cargs_exec(&cargs, NULL);
+    if (argus_has_command(argus)) {
+        status = argus_exec(&argus, NULL);
     } else {
         printf("No command specified. Use --help to see available commands.\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }

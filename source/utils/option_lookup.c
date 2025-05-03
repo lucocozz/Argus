@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cargs/internal/context.h"
-#include "cargs/internal/utils.h"
-#include "cargs/types.h"
+#include "argus/internal/context.h"
+#include "argus/internal/utils.h"
+#include "argus/types.h"
 
-cargs_option_t *find_option_by_lname(cargs_option_t *options, const char *lname)
+argus_option_t *find_option_by_lname(argus_option_t *options, const char *lname)
 {
     if (lname == NULL)
         return (NULL);
@@ -17,7 +17,7 @@ cargs_option_t *find_option_by_lname(cargs_option_t *options, const char *lname)
     return (NULL);
 }
 
-cargs_option_t *find_option_by_sname(cargs_option_t *options, char sname)
+argus_option_t *find_option_by_sname(argus_option_t *options, char sname)
 {
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         if (options[i].type == TYPE_OPTION && options[i].sname == sname)
@@ -26,7 +26,7 @@ cargs_option_t *find_option_by_sname(cargs_option_t *options, char sname)
     return (NULL);
 }
 
-cargs_option_t *find_positional(cargs_option_t *options, int position)
+argus_option_t *find_positional(argus_option_t *options, int position)
 {
     int pos_index = 0;
 
@@ -40,7 +40,7 @@ cargs_option_t *find_positional(cargs_option_t *options, int position)
     return (NULL);
 }
 
-cargs_option_t *find_subcommand(cargs_option_t *options, const char *name)
+argus_option_t *find_subcommand(argus_option_t *options, const char *name)
 {
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         if (options[i].type == TYPE_SUBCOMMAND && starts_with(name, options[i].name) != NULL)
@@ -49,7 +49,7 @@ cargs_option_t *find_subcommand(cargs_option_t *options, const char *name)
     return (NULL);
 }
 
-cargs_option_t *find_option_by_name(cargs_option_t *options, const char *name)
+argus_option_t *find_option_by_name(argus_option_t *options, const char *name)
 {
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         if (options[i].name && strcmp(options[i].name, name) == 0) {
@@ -59,26 +59,26 @@ cargs_option_t *find_option_by_name(cargs_option_t *options, const char *name)
     return (NULL);
 }
 
-const cargs_option_t *get_active_options(cargs_t *cargs)
+const argus_option_t *get_active_options(argus_t *argus)
 {
-    const cargs_option_t *command = context_get_subcommand(cargs);
+    const argus_option_t *command = context_get_subcommand(argus);
     if (command != NULL)
         return (command->sub_options);
-    return (cargs->options);
+    return (argus->options);
 }
 
-static cargs_option_t *find_from_relative_path(cargs_t cargs, const char *option_name)
+static argus_option_t *find_from_relative_path(argus_t argus, const char *option_name)
 {
-    for (int i = cargs.context.subcommand_depth; i >= 0; --i) {
-        cargs_option_t *options;
+    for (int i = argus.context.subcommand_depth; i >= 0; --i) {
+        argus_option_t *options;
 
         if (i == 0) {
-            options = cargs.options;
+            options = argus.options;
         } else {
-            options = cargs.context.subcommand_stack[i - 1]->sub_options;
+            options = argus.context.subcommand_stack[i - 1]->sub_options;
         }
 
-        cargs_option_t *option = find_option_by_name(options, option_name);
+        argus_option_t *option = find_option_by_name(options, option_name);
         if (option != NULL)
             return (option);
     }
@@ -96,38 +96,38 @@ static size_t count_components(const char *path)
     return (count);
 }
 
-cargs_option_t *find_option_by_active_path(cargs_t cargs, const char *option_path)
+argus_option_t *find_option_by_active_path(argus_t argus, const char *option_path)
 {
     if (option_path == NULL)
         return (NULL);
 
     // Format: "option_name"
     if (strchr(option_path, '.') == NULL)
-        return (find_from_relative_path(cargs, option_path));
+        return (find_from_relative_path(argus, option_path));
 
     // Format: ".option_name" (root)
     if (option_path[0] == '.')
-        return (find_option_by_name(cargs.options, option_path + 1));
+        return (find_option_by_name(argus.options, option_path + 1));
 
     size_t component_count = count_components(option_path);
-    if (component_count > cargs.context.subcommand_depth)
+    if (component_count > argus.context.subcommand_depth)
         return (NULL);
 
     // Format: "subcommand.option_name"
     const char     *component = option_path;
-    cargs_option_t *options   = cargs.options;
+    argus_option_t *options   = argus.options;
     for (size_t i = 0; i < component_count; ++i) {
         char *next_dot = strchr(component, '.');
         if (next_dot == NULL)
             break;
 
-        const char *command          = cargs.context.subcommand_stack[i]->name;
+        const char *command          = argus.context.subcommand_stack[i]->name;
         size_t      component_lenght = next_dot - component;
         if (strncmp(component, command, component_lenght) != 0)
             return (NULL);
 
         component = next_dot + 1;
-        options   = cargs.context.subcommand_stack[i]->sub_options;
+        options   = argus.context.subcommand_stack[i]->sub_options;
     }
 
     return (find_option_by_name(options, component));

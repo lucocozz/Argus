@@ -1,18 +1,18 @@
 # Guide d'Installation
 
-Ce guide explique comment installer la bibliothèque cargs dans différents environnements.
+Ce guide explique comment installer la bibliothèque argus dans différents environnements.
 
 ## Référence Rapide
 
 | Méthode | Commande | Idéal Pour |
 |--------|---------|----------|
-| **Gestionnaires de Paquets** | `conan install libcargs/1.0.1@` | Utilisation en production |
+| **Gestionnaires de Paquets** | `conan install libargus/1.0.1@` | Utilisation en production |
 | **Depuis les Sources** | `meson setup .build && meson compile -C .build` | Développement |
 | **Avec Just** | `just build` | Flux de développement |
 
 ## Prérequis
 
-cargs n'a qu'une seule dépendance optionnelle :
+argus n'a qu'une seule dépendance optionnelle :
 
 !!! info "Dépendance PCRE2"
     **PCRE2** : Requis uniquement pour la validation par expressions régulières.
@@ -40,29 +40,29 @@ cargs n'a qu'une seule dépendance optionnelle :
 
 ```bash
 # Installation depuis Conan Center
-conan install libcargs/1.0.1@
+conan install libargus/1.0.1@
 
 # Avec des options spécifiques
-conan install libcargs/1.0.1@ -o libcargs:disable_regex=true
+conan install libargus/1.0.1@ -o libargus:disable_regex=true
 ```
 
 Dans votre fichier `conanfile.txt` :
 ```
 [requires]
-libcargs/1.0.1
+libargus/1.0.1
 
 [options]
-libcargs:disable_regex=False
+libargus:disable_regex=False
 ```
 
 #### vcpkg
 
 ```bash
 # Installation depuis le registre vcpkg
-vcpkg install libcargs
+vcpkg install libargus
 
 # Sans support des regex
-vcpkg install libcargs[core]
+vcpkg install libargus[core]
 ```
 
 Dans votre fichier `vcpkg.json` :
@@ -70,7 +70,7 @@ Dans votre fichier `vcpkg.json` :
 {
   "dependencies": [
     {
-      "name": "libcargs",
+      "name": "libargus",
       "features": ["regex"]
     }
   ]
@@ -83,8 +83,8 @@ Dans votre fichier `vcpkg.json` :
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/lucocozz/cargs.git
-cd cargs
+git clone https://github.com/lucocozz/argus.git
+cd argus
 
 # Compiler
 meson setup .build
@@ -101,8 +101,8 @@ meson install -C .build
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/lucocozz/cargs.git
-cd cargs
+git clone https://github.com/lucocozz/argus.git
+cd argus
 
 # Compiler les bibliothèques statiques et partagées
 just build
@@ -116,24 +116,24 @@ just install
 Si vous préférez ne pas installer au niveau système :
 
 1. Compilez le projet en utilisant n'importe quelle méthode ci-dessus
-2. Copiez `libcargs.a` dans votre projet
+2. Copiez `libargus.a` dans votre projet
 3. Copiez le répertoire `includes/` dans votre projet
 4. Liez avec la bibliothèque statique :
 
 ```bash
-gcc votre_programme.c -o votre_programme -L/chemin/vers/libcargs.a -lcargs
+gcc votre_programme.c -o votre_programme -L/chemin/vers/libargus.a -largus
 ```
 
 ### Comme Dépendance Meson
 
 ```meson
 # Dans votre meson.build
-cargs_dep = dependency('cargs', version: '>=1.0.0', required: false)
+argus_dep = dependency('argus', version: '>=1.0.0', required: false)
 
 # Repli sur un sous-projet si non trouvé au niveau système
-if not cargs_dep.found()
-  cargs_proj = subproject('cargs')
-  cargs_dep = cargs_proj.get_variable('cargs_dep')
+if not argus_dep.found()
+  argus_proj = subproject('argus')
+  argus_dep = argus_proj.get_variable('argus_dep')
 endif
 ```
 
@@ -155,19 +155,19 @@ Si vous n'avez pas besoin de validation par regex, vous pouvez compiler sans la 
 
 === "Conan"
     ```bash
-    conan install . -o libcargs:disable_regex=true
+    conan install . -o libargus:disable_regex=true
     ```
 
 === "vcpkg"
     ```bash
-    vcpkg install libcargs --features=""
+    vcpkg install libargus --features=""
     ```
 
 Quand le support des regex est désactivé :
 - Aucune dépendance PCRE2 n'est requise
 - Le validateur `REGEX()` devient une fonction sans effet
-- Tous les motifs prédéfinis dans `cargs/regex.h` sont définis mais ne fonctionneront pas
-- La macro `CARGS_NO_REGEX` est définie pour la compilation conditionnelle
+- Tous les motifs prédéfinis dans `argus/regex.h` sont définis mais ne fonctionneront pas
+- La macro `ARGUS_NO_REGEX` est définie pour la compilation conditionnelle
 
 ### Optimisation des Performances
 
@@ -175,12 +175,12 @@ Pour les déploiements en production, activez le mode release pour ignorer la va
 
 === "Compilation Manuelle"
     ```bash
-    gcc votre_programme.c -o votre_programme -DCARGS_RELEASE -lcargs
+    gcc votre_programme.c -o votre_programme -DARGUS_RELEASE -largus
     ```
 
 === "Meson"
     ```meson
-    add_project_arguments('-DCARGS_RELEASE', language: 'c')
+    add_project_arguments('-DARGUS_RELEASE', language: 'c')
     ```
 
 ## Vérification de l'Installation
@@ -188,17 +188,17 @@ Pour les déploiements en production, activez le mode release pour ignorer la va
 === "Vérifier les Fichiers"
     ```bash
     # Vérifier la bibliothèque partagée
-    ls -la /usr/local/lib/libcargs.so*
+    ls -la /usr/local/lib/libargus.so*
     
     # Vérifier les en-têtes
-    ls -la /usr/local/include/cargs*
+    ls -la /usr/local/include/argus*
     ```
 
 === "Test de Compilation"
     ```bash
     # Compiler un programme exemple
-    gcc -o test_cargs test.c -lcargs
+    gcc -o test_argus test.c -largus
     
     # Exécuter le programme
-    ./test_cargs --help
+    ./test_argus --help
     ```

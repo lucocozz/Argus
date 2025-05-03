@@ -1,10 +1,10 @@
 #include <stdlib.h>
 
-#include "cargs/errors.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/types.h"
 
-int default_free(cargs_option_t *option)
+int default_free(argus_option_t *option)
 {
     free(option->value.as_ptr);
-    return (CARGS_SUCCESS);
+    return (ARGUS_SUCCESS);
 }

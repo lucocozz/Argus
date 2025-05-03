@@ -1,11 +1,11 @@
 # Supported Option Formats
 
-cargs supports multiple option formats to provide maximum flexibility for end users. This flexibility allows your program to handle different command-line conventions and accommodate various user preferences.
+argus supports multiple option formats to provide maximum flexibility for end users. This flexibility allows your program to handle different command-line conventions and accommodate various user preferences.
 
 ## Standard Options
 
 !!! abstract "Overview"
-    cargs recognizes several standard formats for command-line options, including GNU-style long options, POSIX-style short options, and various combinations.
+    argus recognizes several standard formats for command-line options, including GNU-style long options, POSIX-style short options, and various combinations.
 
 ### Long Options
 
@@ -76,7 +76,7 @@ In this example, `--file-with-dashes.txt` is treated as a positional argument, n
 
 ## Multi-Value Collections
 
-cargs supports collection options that can hold multiple values (arrays) or key-value pairs (maps).
+argus supports collection options that can hold multiple values (arrays) or key-value pairs (maps).
 
 ### Array Option Formats
 
@@ -162,14 +162,14 @@ In this example, `file1.txt` and `file2.txt` are positional arguments.
 
 ### Required vs Optional Positionals
 
-cargs distinguishes between required and optional positional arguments:
+argus distinguishes between required and optional positional arguments:
 
 ```bash
 my_program input.txt [output.txt]  # input.txt required, output.txt optional
 ```
 
 !!! warning
-    Required positional arguments must always be defined before optional ones in your `CARGS_OPTIONS` definition.
+    Required positional arguments must always be defined before optional ones in your `ARGUS_OPTIONS` definition.
 
 ### Positional Arguments with Options
 
@@ -180,11 +180,11 @@ my_program --verbose input.txt --output=output.txt
 my_program input.txt --verbose --output=output.txt
 ```
 
-Both commands are equivalent, as cargs identifies positional arguments after matching all options.
+Both commands are equivalent, as argus identifies positional arguments after matching all options.
 
 ## Subcommands
 
-cargs supports Git/Docker-style subcommands, allowing for complex command hierarchies:
+argus supports Git/Docker-style subcommands, allowing for complex command hierarchies:
 
 ### Basic Subcommand Format
 
@@ -200,7 +200,7 @@ my_program add --force file.txt --verbose  # Equivalent
 
 ### Nested Subcommands
 
-cargs also supports nested subcommands for deeper command hierarchies:
+argus also supports nested subcommands for deeper command hierarchies:
 
 ```bash
 my_program [global options] command subcommand [subcommand options] [arguments]
@@ -214,7 +214,7 @@ my_program config set server.port 8080
 
 ### Command Abbreviations
 
-cargs supports command name abbreviations, allowing users to type shortened versions as long as they are unambiguous:
+argus supports command name abbreviations, allowing users to type shortened versions as long as they are unambiguous:
 
 ```bash
 # These are equivalent if no other command starts with "i":
@@ -228,7 +228,7 @@ my_program i package.tgz  # ERROR if both "install" and "init" exist
 
 ## Mixing Different Formats
 
-cargs allows mixing different format styles in a single command line:
+argus allows mixing different format styles in a single command line:
 
 ```bash
 my_program -v --output=file.txt file1.txt file2.txt add --force extra.txt
@@ -242,7 +242,7 @@ This command includes:
 
 ## Handling Ambiguous Options
 
-In some cases, command-line input can be ambiguous. cargs resolves ambiguity using these rules:
+In some cases, command-line input can be ambiguous. argus resolves ambiguity using these rules:
 
 1. An argument starting with a single dash (`-`) followed by a single character is treated as a short option
 2. An argument starting with double dashes (`--`) is treated as a long option
@@ -281,4 +281,4 @@ The following command forms are all equivalent with appropriate option definitio
     - `-vxooutput.txt` (enables the `-v` and `-x` options, and sets `-o` to `output.txt`)
 
 !!! note
-    Positional arguments are always processed in the order defined in `CARGS_OPTIONS`.
+    Positional arguments are always processed in the order defined in `ARGUS_OPTIONS`.

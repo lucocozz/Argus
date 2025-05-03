@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cargs/errors.h"
-#include "cargs/internal/utils.h"
-#include "cargs/options.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/internal/utils.h"
+#include "argus/options.h"
+#include "argus/types.h"
 
 /**
  * Convert a string to a boolean value
@@ -49,19 +49,19 @@ static int string_to_bool(const char *arg)
 /**
  * Set or update a key-value pair in the map
  */
-static int set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
+static int set_kv_pair(argus_t *argus, argus_option_t *option, char *pair)
 {
     // Find the separator '='
     char *separator = strchr(pair, '=');
     if (separator == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
                            "Invalid key-value format, expected 'key=value': '%s'", pair);
     }
 
     // Split the string at the separator
     char *key = strndup(pair, separator - pair);
     if (key == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
                            key);
     }
     char *value = separator + 1;
@@ -69,7 +69,7 @@ static int set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
     // Convert the string value to boolean
     int bool_value = string_to_bool(value);
     if (bool_value == -1) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                            "Invalid boolean value for key '%s': '%s' (expected true/false, yes/no, "
                            "1/0, on/off, y/n)",
                            key, value);
@@ -90,7 +90,7 @@ static int set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
         option->value_count++;
     }
 
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 /**
@@ -99,18 +99,18 @@ static int set_kv_pair(cargs_t *cargs, cargs_option_t *option, char *pair)
  * Accepts various boolean representations: true/false, yes/no, 1/0, on/off, y/n
  * If key exists, replaces the value, otherwise creates a new entry
  */
-int map_bool_handler(cargs_t *cargs, cargs_option_t *option, char *value)
+int map_bool_handler(argus_t *argus, argus_option_t *option, char *value)
 {
     // Process comma-separated pairs
     if (strchr(value, ',') != NULL) {
         char **pairs = split(value, ",");
         if (pairs == NULL) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to split string '%s'", value);
+            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to split string '%s'", value);
         }
 
         for (size_t i = 0; pairs[i] != NULL; ++i) {
-            int status = set_kv_pair(cargs, option, pairs[i]);
-            if (status != CARGS_SUCCESS) {
+            int status = set_kv_pair(argus, option, pairs[i]);
+            if (status != ARGUS_SUCCESS) {
                 free_split(pairs);
                 return status;
             }
@@ -119,20 +119,20 @@ int map_bool_handler(cargs_t *cargs, cargs_option_t *option, char *value)
         free_split(pairs);
     } else {
         // Single key-value pair
-        int status = set_kv_pair(cargs, option, value);
-        if (status != CARGS_SUCCESS)
+        int status = set_kv_pair(argus, option, value);
+        if (status != ARGUS_SUCCESS)
             return status;
     }
 
     apply_map_flags(option);
     option->is_allocated = true;
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 /**
  * Free handler for boolean map options
  */
-int free_map_bool_handler(cargs_option_t *option)
+int free_map_bool_handler(argus_option_t *option)
 {
     if (option->value.as_map != NULL) {
         // No need to free boolean values
@@ -140,5 +140,5 @@ int free_map_bool_handler(cargs_option_t *option)
             free((void *)option->value.as_map[i].key);
         free(option->value.as_map);
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }

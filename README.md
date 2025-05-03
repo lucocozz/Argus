@@ -1,18 +1,18 @@
 <p align="center">
-  <img src="docs/assets/cargs-logo.webp" alt="cargs logo" width="200">
+  <img src="docs/assets/argus-logo.webp" alt="argus logo" width="200">
 </p>
 
-<h1 align="center">cargs</h1>
+<h1 align="center">argus</h1>
 
 <p align="center">
   <strong>Modern C library for command-line argument parsing with an elegant, macro-based API</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/lucocozz/cargs/actions/workflows/ci.yml"><img src="https://github.com/lucocozz/cargs/actions/workflows/ci.yml/badge.svg" alt="CI/CD Pipeline"></a>
-  <a href="https://github.com/lucocozz/cargs/actions/workflows/codeql.yml"><img src="https://github.com/lucocozz/cargs/actions/workflows/codeql.yml/badge.svg" alt="CodeQL Analysis"></a>
+  <a href="https://github.com/lucocozz/argus/actions/workflows/ci.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/ci.yml/badge.svg" alt="CI/CD Pipeline"></a>
+  <a href="https://github.com/lucocozz/argus/actions/workflows/codeql.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/codeql.yml/badge.svg" alt="CodeQL Analysis"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-  <a href="https://conan.io/center/libcargs"><img src="https://img.shields.io/badge/Conan-package-blue" alt="Conan Package"></a>
+  <a href="https://conan.io/center/libargus"><img src="https://img.shields.io/badge/Conan-package-blue" alt="Conan Package"></a>
   <a href="https://vcpkg.io/en/packages.html"><img src="https://img.shields.io/badge/vcpkg-package-blue" alt="vcpkg Package"></a>
 </p>
 
@@ -20,11 +20,11 @@
 
 ## 📋 Overview
 
-**cargs** is a powerful C library that simplifies command-line argument parsing with a modern, expressive API:
+**argus** is a powerful C library that simplifies command-line argument parsing with a modern, expressive API:
 
 ```c
 // Define options with a clean, declarative syntax
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
@@ -32,7 +32,7 @@ CARGS_OPTIONS(
 )
 ```
 
-Designed for both simplicity and flexibility, cargs enables developers to create sophisticated command-line interfaces with minimal effort.
+Designed for both simplicity and flexibility, argus enables developers to create sophisticated command-line interfaces with minimal effort.
 
 ## ⚡ Quick Start
 
@@ -40,12 +40,12 @@ Designed for both simplicity and flexibility, cargs enables developers to create
 
 ```bash
 # Using package managers
-conan install libcargs/1.0.1@
-vcpkg install libcargs
+conan install libargus/1.0.1@
+vcpkg install libargus
 
 # From source with Meson
-git clone https://github.com/lucocozz/cargs.git
-cd cargs
+git clone https://github.com/lucocozz/argus.git
+cd argus
 meson setup builddir && meson compile -C builddir
 sudo meson install -C builddir
 ```
@@ -53,11 +53,11 @@ sudo meson install -C builddir
 ### Basic Usage
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
 // Define options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -69,20 +69,20 @@ CARGS_OPTIONS(
 int main(int argc, char **argv)
 {
     // Initialize and parse
-    cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
-    if (cargs_parse(&cargs, argc, argv) != CARGS_SUCCESS) {
+    argus_t argus = argus_init(options, "my_program", "1.0.0");
+    if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS) {
         return 1;
     }
 
     // Access values
-    const char *input = cargs_get(cargs, "input").as_string;
-    const char *output = cargs_get(cargs, "output").as_string;
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    const char *input = argus_get(argus, "input").as_string;
+    const char *output = argus_get(argus, "output").as_string;
+    bool verbose = argus_get(argus, "verbose").as_bool;
 
     printf("Input: %s\nOutput: %s\nVerbose: %s\n", 
            input, output, verbose ? "yes" : "no");
 
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 | **Subcommands** | Git/Docker style nested commands | `SUBCOMMAND("add", add_options, ACTION(add_command))` |
 | **Collections** | Arrays and maps for multiple values | `OPTION_ARRAY_INT('n', "nums", FLAGS(FLAG_SORTED))` |
 | **Environment Variables** | Auto integration with env vars | `OPTION_STRING('h', "host", ENV_VAR("HOST"))` |
-| **Regex Validation** | Pattern-based validation | `OPTION_STRING('e', "email", REGEX(CARGS_RE_EMAIL))` |
+| **Regex Validation** | Pattern-based validation | `OPTION_STRING('e', "email", REGEX(ARGUS_RE_EMAIL))` |
 | **Command Abbreviations** | GitLab-style command shortening | `program ins` → `program install` |
 | **Flexible Formats** | Support multiple CLI conventions | `--opt=val`, `-o val`, `-oval`, etc. |
 | **Auto Documentation** | Generated help & usage text | `--help` generates formatted documentation |
@@ -113,20 +113,20 @@ int main(int argc, char **argv)
 
 ```bash
 # Basic installation
-conan install libcargs/1.0.1@
+conan install libargus/1.0.1@
 
 # Without regex support
-conan install libcargs/1.0.1@ -o libcargs:disable_regex=true
+conan install libargus/1.0.1@ -o libargus:disable_regex=true
 ```
 
 #### vcpkg
 
 ```bash
 # Full installation
-vcpkg install libcargs
+vcpkg install libargus
 
 # Core functionality only (no regex)
-vcpkg install libcargs[core]
+vcpkg install libargus[core]
 ```
 
 ### Build From Source
@@ -134,8 +134,8 @@ vcpkg install libcargs[core]
 #### Meson (Recommended)
 
 ```bash
-git clone https://github.com/lucocozz/cargs.git
-cd cargs
+git clone https://github.com/lucocozz/argus.git
+cd argus
 meson setup builddir
 meson compile -C builddir
 sudo meson install -C builddir  # Optional
@@ -144,8 +144,8 @@ sudo meson install -C builddir  # Optional
 #### Using Just (Development)
 
 ```bash
-git clone https://github.com/lucocozz/cargs.git
-cd cargs
+git clone https://github.com/lucocozz/argus.git
+cd argus
 just build          # Build libraries
 just test           # Run tests
 just examples       # Build examples
@@ -156,9 +156,9 @@ just install        # Install system-wide
 
 ```bash
 # Download and run installer
-curl -LO https://github.com/lucocozz/cargs/releases/download/v1.0.1/cargs-1.0.1.tar.gz
-tar -xzf cargs-1.0.1.tar.gz
-cd cargs-1.0.1
+curl -LO https://github.com/lucocozz/argus/releases/download/v1.0.1/argus-1.0.1.tar.gz
+tar -xzf argus-1.0.1.tar.gz
+cd argus-1.0.1
 ./install.sh        # System-wide installation
 # or
 ./install.sh --local # Local installation in ~/.local
@@ -169,7 +169,7 @@ cd cargs-1.0.1
 ### Environment Variables
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     // Auto-generated APP_HOST environment variable
     OPTION_STRING('H', "host", HELP("Server hostname"),
@@ -186,20 +186,20 @@ CARGS_OPTIONS(
 ### Subcommands with Actions
 
 ```c
-int add_command(cargs_t *cargs, void *data) {
-    const char* file = cargs_get(*cargs, "file").as_string;
-    bool force = cargs_get(*cargs, "force").as_bool;
+int add_command(argus_t *argus, void *data) {
+    const char* file = argus_get(*argus, "file").as_string;
+    bool force = argus_get(*argus, "force").as_bool;
     printf("Adding %s (force: %s)\n", file, force ? "yes" : "no");
     return 0;
 }
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     add_options,
     OPTION_FLAG('f', "force", HELP("Force add operation")),
     POSITIONAL_STRING("file", HELP("File to add"))
 )
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     SUBCOMMAND("add", add_options, HELP("Add a file"), ACTION(add_command))
 )
@@ -210,7 +210,7 @@ CARGS_OPTIONS(
 ### Collection Types
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     // Array of integers with sorting and uniqueness
     OPTION_ARRAY_INT('n', "numbers", HELP("List of numbers"),
@@ -228,7 +228,7 @@ CARGS_OPTIONS(
 
 ## 📚 Documentation
 
-For detailed documentation, visit [cargs.readthedocs.io](https://cargs.readthedocs.io/).
+For detailed documentation, visit [argus.readthedocs.io](https://argus.readthedocs.io/).
 
 The documentation covers:
 - Complete API reference
@@ -239,7 +239,7 @@ The documentation covers:
 
 ## 🔍 Comparison
 
-| Feature | cargs | getopt | argp | argtable3 |
+| Feature | argus | getopt | argp | argtable3 |
 |---------|-------|--------|------|-----------|
 | Concise macro API | ✅ | ❌ | ❌ | ❌ |
 | Type Safety | ✅ | ❌ | ❌ | ✅ |

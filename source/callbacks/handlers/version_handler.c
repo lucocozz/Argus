@@ -1,13 +1,13 @@
-#include "cargs/errors.h"
-#include "cargs/internal/display.h"
-#include "cargs/internal/utils.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/internal/display.h"
+#include "argus/internal/utils.h"
+#include "argus/types.h"
 
-int version_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+int version_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     UNUSED(arg);
     UNUSED(option);
-    display_version(cargs);
+    display_version(argus);
 
-    return (CARGS_SUCCESS);
+    return (ARGUS_SUCCESS);
 }

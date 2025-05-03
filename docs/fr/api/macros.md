@@ -1,6 +1,6 @@
 # Référence des Macros
 
-Cette référence fournit un guide complet de toutes les macros disponibles dans cargs, organisées par fonction et objectif.
+Cette référence fournit un guide complet de toutes les macros disponibles dans argus, organisées par fonction et objectif.
 
 ## Macros de Définition d'Options
 
@@ -10,7 +10,7 @@ Ces macros sont les éléments de base pour définir les options de ligne de com
 
 | Macro | Objectif | Exemple |
 |-------|----------|---------|
-| `CARGS_OPTIONS(name, ...)` | Définir un ensemble d'options de ligne de commande | `CARGS_OPTIONS(options, HELP_OPTION(), ...)` |
+| `ARGUS_OPTIONS(name, ...)` | Définir un ensemble d'options de ligne de commande | `ARGUS_OPTIONS(options, HELP_OPTION(), ...)` |
 | `OPTION_END()` | Terminer un tableau d'options | Généralement ajouté automatiquement |
 
 ### Options Standard
@@ -84,7 +84,7 @@ Ces macros ajoutent des contraintes de validation aux options :
 | **Plage** | `RANGE(min, max)` | Valide les valeurs numériques dans une plage | `OPTION_INT('p', "port", HELP("Port"), RANGE(1, 65535))` |
 | **Longueur** | `LENGTH(min, max)` | Valide la longueur d'une chaîne dans une plage | `OPTION_STRING('u', "user", HELP("Nom d'utilisateur"), LENGTH(3, 20))` |
 | **Nombre** | `COUNT(min, max)` | Valide la taille d'une collection dans une plage | `OPTION_ARRAY_INT('n', "nums", HELP("Nombres"), COUNT(1, 5))` |
-| **Regex** | `REGEX(pattern)` | Valide un texte selon un modèle | `OPTION_STRING('e', "email", HELP("Email"), REGEX(CARGS_RE_EMAIL))` |
+| **Regex** | `REGEX(pattern)` | Valide un texte selon un modèle | `OPTION_STRING('e', "email", HELP("Email"), REGEX(ARGUS_RE_EMAIL))` |
 | **Modèle Personnalisé** | `MAKE_REGEX(pattern, hint)` | Crée un modèle regex avec explication | `REGEX(MAKE_REGEX("^[A-Z]{2}\\d{4}$", "Format: XX0000"))` |
 | **Validateur Personnalisé** | `VALIDATOR(function, data)` | Logique de validation personnalisée | `VALIDATOR(validateur_pair, NULL)` |
 | **Pré-validateur** | `PRE_VALIDATOR(function, data)` | Valide la chaîne brute avant traitement | `PRE_VALIDATOR(validateur_longueur, &longueur_min)` |
@@ -140,7 +140,7 @@ Voici un exemple complet montrant diverses macros en utilisation :
 
 ```c
 // Définir les options pour la sous-commande "ajouter"
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options_ajout,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('f', "force", HELP("Forcer l'opération d'ajout"), 
@@ -149,7 +149,7 @@ CARGS_OPTIONS(
 )
 
 // Définir les options principales
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),

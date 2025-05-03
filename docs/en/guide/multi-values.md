@@ -1,9 +1,9 @@
 # Multi-Value Collections
 
-cargs supports multi-value collections through arrays and maps, allowing you to handle multiple values for a single option or key-value pairs.
+argus supports multi-value collections through arrays and maps, allowing you to handle multiple values for a single option or key-value pairs.
 
 !!! abstract "Overview"
-    This guide covers the basics of multi-value collections in cargs:
+    This guide covers the basics of multi-value collections in argus:
     
     - **Array options** - Collecting multiple values
     - **Map options** - Collecting key-value pairs
@@ -18,7 +18,7 @@ Array options allow users to provide multiple values for a single option, either
 
 ### Array Types
 
-cargs supports these array types:
+argus supports these array types:
 
 - `OPTION_ARRAY_STRING`: Array of strings
 - `OPTION_ARRAY_INT`: Array of integers
@@ -27,7 +27,7 @@ cargs supports these array types:
 ### Defining Array Options
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -69,7 +69,7 @@ Users can provide array values in several ways:
 
 ### Integer Range Syntax
 
-For integer arrays, cargs supports a convenient range syntax:
+For integer arrays, argus supports a convenient range syntax:
 
 ```bash
 ./program --ids=1-5,10,15-20
@@ -82,7 +82,7 @@ Map options allow users to provide key-value pairs, enabling structured configur
 
 ### Map Types
 
-cargs supports these map types:
+argus supports these map types:
 
 - `OPTION_MAP_STRING`: Map with string values
 - `OPTION_MAP_INT`: Map with integer values
@@ -92,7 +92,7 @@ cargs supports these map types:
 ### Defining Map Options
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -148,7 +148,7 @@ For boolean maps (`OPTION_MAP_BOOL`), values are parsed as booleans:
 
 ## Accessing Multi-Value Collections
 
-cargs provides multiple ways to access collection data.
+argus provides multiple ways to access collection data.
 
 ### Basic Array Access
 
@@ -156,12 +156,12 @@ To access array elements:
 
 ```c
 // Check if array option was set
-if (cargs_is_set(cargs, "names")) {
+if (argus_is_set(argus, "names")) {
     // Get the array count
-    size_t count = cargs_count(cargs, "names");
+    size_t count = argus_count(argus, "names");
     
     // Get the array pointer
-    cargs_value_t *names_array = cargs_get(cargs, "names").as_array;
+    argus_value_t *names_array = argus_get(argus, "names").as_array;
     
     // Print all names
     printf("Names (%zu):\n", count);
@@ -177,12 +177,12 @@ To access map entries:
 
 ```c
 // Check if map option was set
-if (cargs_is_set(cargs, "env")) {
+if (argus_is_set(argus, "env")) {
     // Get the map count
-    size_t count = cargs_count(cargs, "env");
+    size_t count = argus_count(argus, "env");
     
     // Get the map pointer
-    cargs_pair_t *env_map = cargs_get(cargs, "env").as_map;
+    argus_pair_t *env_map = argus_get(argus, "env").as_map;
     
     // Print all environment variables
     printf("Environment variables (%zu):\n", count);
@@ -200,13 +200,13 @@ For more convenient access to specific elements:
 
 ```c
 // Get a specific array element by index
-const char* first_name = cargs_array_get(cargs, "names", 0).as_string;
-int second_id = cargs_array_get(cargs, "ids", 1).as_int;
+const char* first_name = argus_array_get(argus, "names", 0).as_string;
+int second_id = argus_array_get(argus, "ids", 1).as_int;
 
 // Look up a specific map value by key
-const char* user = cargs_map_get(cargs, "env", "USER").as_string;
-int http_port = cargs_map_get(cargs, "ports", "http").as_int;
-bool debug_enabled = cargs_map_get(cargs, "features", "debug").as_bool;
+const char* user = argus_map_get(argus, "env", "USER").as_string;
+int http_port = argus_map_get(argus, "ports", "http").as_int;
+bool debug_enabled = argus_map_get(argus, "features", "debug").as_bool;
 ```
 
 These helpers handle invalid indices or missing keys gracefully, returning an empty value when the requested element doesn't exist.
@@ -251,10 +251,10 @@ Usage:
 Here's a complete example demonstrating both array and map options:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -271,18 +271,18 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "multi_values", "1.0.0");
-    cargs.description = "Example of multi-value collections";
+    argus_t argus = argus_init(options, "multi_values", "1.0.0");
+    argus.description = "Example of multi-value collections";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Process string array
-    if (cargs_is_set(cargs, "name")) {
-        size_t count = cargs_count(cargs, "name");
-        cargs_value_t *names = cargs_get(cargs, "name").as_array;
+    if (argus_is_set(argus, "name")) {
+        size_t count = argus_count(argus, "name");
+        argus_value_t *names = argus_get(argus, "name").as_array;
         
         printf("Names (%zu):\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -292,9 +292,9 @@ int main(int argc, char **argv)
     }
     
     // Process integer array
-    if (cargs_is_set(cargs, "id")) {
-        size_t count = cargs_count(cargs, "id");
-        cargs_value_t *ids = cargs_get(cargs, "id").as_array;
+    if (argus_is_set(argus, "id")) {
+        size_t count = argus_count(argus, "id");
+        argus_value_t *ids = argus_get(argus, "id").as_array;
         
         printf("IDs (%zu):\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -304,9 +304,9 @@ int main(int argc, char **argv)
     }
     
     // Process string map
-    if (cargs_is_set(cargs, "env")) {
-        size_t count = cargs_count(cargs, "env");
-        cargs_pair_t *env = cargs_get(cargs, "env").as_map;
+    if (argus_is_set(argus, "env")) {
+        size_t count = argus_count(argus, "env");
+        argus_pair_t *env = argus_get(argus, "env").as_map;
         
         printf("Environment Variables (%zu):\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -316,9 +316,9 @@ int main(int argc, char **argv)
     }
     
     // Process integer map
-    if (cargs_is_set(cargs, "port")) {
-        size_t count = cargs_count(cargs, "port");
-        cargs_pair_t *ports = cargs_get(cargs, "port").as_map;
+    if (argus_is_set(argus, "port")) {
+        size_t count = argus_count(argus, "port");
+        argus_pair_t *ports = argus_get(argus, "port").as_map;
         
         printf("Port Mappings (%zu):\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -328,9 +328,9 @@ int main(int argc, char **argv)
     }
     
     // Process boolean map
-    if (cargs_is_set(cargs, "feature")) {
-        size_t count = cargs_count(cargs, "feature");
-        cargs_pair_t *features = cargs_get(cargs, "feature").as_map;
+    if (argus_is_set(argus, "feature")) {
+        size_t count = argus_count(argus, "feature");
+        argus_pair_t *features = argus_get(argus, "feature").as_map;
         
         printf("Feature Flags (%zu):\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -340,7 +340,7 @@ int main(int argc, char **argv)
         printf("\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```

@@ -1,16 +1,16 @@
-#include "cargs/errors.h"
-#include "cargs/internal/display.h"
-#include "cargs/internal/utils.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/internal/display.h"
+#include "argus/internal/utils.h"
+#include "argus/types.h"
 
-int help_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+int help_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     UNUSED(arg);
     UNUSED(option);
 
-    const cargs_option_t *command = get_active_options(cargs);
-    display_usage(cargs, command);
-    display_help(cargs, command);
+    const argus_option_t *command = get_active_options(argus);
+    display_usage(argus, command);
+    display_help(argus, command);
 
-    return (CARGS_SUCCESS);
+    return (ARGUS_SUCCESS);
 }

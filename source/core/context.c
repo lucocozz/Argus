@@ -1,73 +1,73 @@
-#include "cargs/errors.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/types.h"
 #include <stdlib.h>
 
-void context_init_subcommands(cargs_t *cargs)
+void context_init_subcommands(argus_t *argus)
 {
     for (size_t i = 0; i < MAX_SUBCOMMAND_DEPTH; i++)
-        cargs->context.subcommand_stack[i] = NULL;
-    cargs->context.subcommand_depth = 0;
+        argus->context.subcommand_stack[i] = NULL;
+    argus->context.subcommand_depth = 0;
 }
 
-const cargs_option_t *context_get_subcommand(cargs_t *cargs)
+const argus_option_t *context_get_subcommand(argus_t *argus)
 {
-    if (cargs->context.subcommand_depth == 0)
+    if (argus->context.subcommand_depth == 0)
         return (NULL);
-    return cargs->context.subcommand_stack[cargs->context.subcommand_depth - 1];
+    return argus->context.subcommand_stack[argus->context.subcommand_depth - 1];
 }
 
-void context_push_subcommand(cargs_t *cargs, const cargs_option_t *cmd)
+void context_push_subcommand(argus_t *argus, const argus_option_t *cmd)
 {
-    if (cargs->context.subcommand_depth >= MAX_SUBCOMMAND_DEPTH) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_STACK_OVERFLOW, "Subcommand stack overflow");
+    if (argus->context.subcommand_depth >= MAX_SUBCOMMAND_DEPTH) {
+        ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_STACK_OVERFLOW, "Subcommand stack overflow");
         return;
     }
-    cargs->context.subcommand_stack[cargs->context.subcommand_depth++] = cmd;
+    argus->context.subcommand_stack[argus->context.subcommand_depth++] = cmd;
 }
 
-const cargs_option_t *context_pop_subcommand(cargs_t *cargs)
+const argus_option_t *context_pop_subcommand(argus_t *argus)
 {
-    if (cargs->context.subcommand_depth == 0)
+    if (argus->context.subcommand_depth == 0)
         return (NULL);
 
-    const cargs_option_t *cmd = cargs->context.subcommand_stack[--cargs->context.subcommand_depth];
-    cargs->context.subcommand_stack[cargs->context.subcommand_depth] = NULL;
+    const argus_option_t *cmd = argus->context.subcommand_stack[--argus->context.subcommand_depth];
+    argus->context.subcommand_stack[argus->context.subcommand_depth] = NULL;
     return (cmd);
 }
 
-void context_set_option(cargs_t *cargs, cargs_option_t *option)
+void context_set_option(argus_t *argus, argus_option_t *option)
 {
-    cargs->context.option = option->name;
+    argus->context.option = option->name;
 }
 
-void context_unset_option(cargs_t *cargs)
+void context_unset_option(argus_t *argus)
 {
-    cargs->context.option = NULL;
+    argus->context.option = NULL;
 }
 
-void context_set_group(cargs_t *cargs, cargs_option_t *group)
+void context_set_group(argus_t *argus, argus_option_t *group)
 {
-    cargs->context.group = group->name;
+    argus->context.group = group->name;
 }
 
-void context_unset_group(cargs_t *cargs)
+void context_unset_group(argus_t *argus)
 {
-    cargs->context.group = NULL;
+    argus->context.group = NULL;
 }
 
-cargs_error_context_t get_error_context(cargs_t *cargs)
+argus_error_context_t get_error_context(argus_t *argus)
 {
-    const cargs_option_t *subcommand = context_get_subcommand(cargs);
+    const argus_option_t *subcommand = context_get_subcommand(argus);
 
-    cargs_error_context_t context = {.option_name     = cargs->context.option,
-                                     .group_name      = cargs->context.group,
+    argus_error_context_t context = {.option_name     = argus->context.option,
+                                     .group_name      = argus->context.group,
                                      .subcommand_name = subcommand ? subcommand->name : NULL};
     return (context);
 }
 
-void context_init(cargs_t *cargs)
+void context_init(argus_t *argus)
 {
-    cargs->context.option = NULL;
-    cargs->context.group  = NULL;
-    context_init_subcommands(cargs);
+    argus->context.option = NULL;
+    argus->context.group  = NULL;
+    context_init_subcommands(argus);
 }

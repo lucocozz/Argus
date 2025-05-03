@@ -1,7 +1,7 @@
-# Contributing to cargs
+# Contributing to argus
 
 !!! abstract "Overview"
-    Thank you for your interest in contributing to cargs! This guide explains how to set up your development environment, submit contributions, and interact with the community. We welcome contributions from everyone, regardless of experience level.
+    Thank you for your interest in contributing to argus! This guide explains how to set up your development environment, submit contributions, and interact with the community. We welcome contributions from everyone, regardless of experience level.
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@
 ### Development Environment Setup
 
 !!! tip "Prerequisites"
-    To contribute to cargs effectively, you'll need the following tools installed:
+    To contribute to argus effectively, you'll need the following tools installed:
     
     - C compiler (GCC or Clang)
     - Meson build system (≥ 1.0.0)
@@ -81,18 +81,18 @@
     This project follows the standard GitHub fork and pull request workflow. If you're new to this process, here's how it works:
 
 === "Step 1: Fork the Repository"
-    Navigate to the [original repository](https://github.com/lucocozz/cargs) and click the "Fork" button in the top-right corner. This creates a copy of the repository in your GitHub account.
+    Navigate to the [original repository](https://github.com/lucocozz/argus) and click the "Fork" button in the top-right corner. This creates a copy of the repository in your GitHub account.
     
     ![Fork Button](https://docs.github.com/assets/cb-6294/mw-1440/images/help/repository/fork_button.webp)
 
 === "Step 2: Clone Your Fork"
     ```bash
     # Clone YOUR fork to your local machine (replace YOUR_USERNAME with your GitHub username)
-    git clone https://github.com/YOUR_USERNAME/cargs.git
-    cd cargs
+    git clone https://github.com/YOUR_USERNAME/argus.git
+    cd argus
     
     # Add the original repository as a remote called "upstream"
-    git remote add upstream https://github.com/lucocozz/cargs.git
+    git remote add upstream https://github.com/lucocozz/argus.git
     ```
 
 === "Step 3: Keep Your Fork Updated"
@@ -234,7 +234,7 @@ After setting up your fork, follow these steps to make changes to the codebase:
     ```
 
 === "Step 2: Create PR"
-    Go to the [original repository](https://github.com/lucocozz/cargs) on GitHub. You should see a "Compare & pull request" button for your recently pushed branch.
+    Go to the [original repository](https://github.com/lucocozz/argus) on GitHub. You should see a "Compare & pull request" button for your recently pushed branch.
     
     ![Compare & Pull Request](https://docs.github.com/assets/cb-23923/mw-1440/images/help/pull_requests/pull-request-start-review-button.webp)
     
@@ -256,7 +256,7 @@ After setting up your fork, follow these steps to make changes to the codebase:
 
 ### Code Style
 
-cargs follows a consistent coding style enforced by clang-format:
+argus follows a consistent coding style enforced by clang-format:
 
 | Rule | Value |
 |------|-------|
@@ -282,12 +282,12 @@ Good documentation is crucial for maintaining the codebase:
 /**
  * Parses command-line arguments according to the defined options.
  *
- * @param cargs Pointer to an initialized cargs context
+ * @param argus Pointer to an initialized argus context
  * @param argc  Argument count (from main)
  * @param argv  Argument values (from main)
- * @return CARGS_SUCCESS on success, error code otherwise
+ * @return ARGUS_SUCCESS on success, error code otherwise
  */
-int cargs_parse(cargs_t *cargs, int argc, char **argv);
+int argus_parse(argus_t *argus, int argc, char **argv);
 ```
 
 ### Testing
@@ -306,7 +306,7 @@ Understanding the project structure will help you make contributions more effect
 
 ```mermaid
 graph TD
-    A[cargs/] --> B[.build/]
+    A[argus/] --> B[.build/]
     A --> C[docs/]
     A --> D[examples/]
     A --> E[includes/]
@@ -317,8 +317,8 @@ graph TD
     C --> C2[api/]
     C --> C3[guide/]
     
-    E --> E1[cargs.h]
-    E --> E2[cargs/]
+    E --> E1[argus.h]
+    E --> E2[argus/]
     
     G --> G1[unit/]
     G --> G2[integration/]
@@ -405,4 +405,4 @@ If you have questions or need help with contributing:
 - Ask in the relevant issue
 - Contact the maintainers directly
 
-Thank you for contributing to cargs! 🎉
+Thank you for contributing to argus! 🎉

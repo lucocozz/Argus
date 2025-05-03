@@ -1,5 +1,5 @@
 /**
- * cargs/internal/display.h - Internal display functions
+ * argus/internal/display.h - Internal display functions
  *
  * INTERNAL HEADER - NOT PART OF THE PUBLIC API
  * This header defines internal functions for displaying help, usage, and version info.
@@ -7,10 +7,10 @@
  * MIT License - Copyright (c) 2024 lucocozz
  */
 
-#ifndef CARGS_INTERNAL_DISPLAY_H
-#define CARGS_INTERNAL_DISPLAY_H
+#ifndef ARGUS_INTERNAL_DISPLAY_H
+#define ARGUS_INTERNAL_DISPLAY_H
 
-#include "cargs/types.h"
+#include "argus/types.h"
 
 /*
  * Configuration constants for display formatting
@@ -22,24 +22,24 @@
 /**
  * display_help - Display help information
  *
- * @param cargs  	Cargs context
+ * @param argus  	Argus context
  * @param command   Specific subcommand to display help for, or NULL for general help
  */
-void display_help(cargs_t *cargs, const cargs_option_t *command);
+void display_help(argus_t *argus, const argus_option_t *command);
 
 /**
  * display_usage - Display short usage information
  *
- * @param cargs  	Cargs context
+ * @param argus  	Argus context
  * @param command   Specific subcommand to display usage for, or NULL for general usage
  */
-void display_usage(cargs_t *cargs, const cargs_option_t *command);
+void display_usage(argus_t *argus, const argus_option_t *command);
 
 /**
  * display_version - Display version information
  *
- * @param cargs  Cargs context
+ * @param argus  Argus context
  */
-void display_version(cargs_t *cargs);
+void display_version(argus_t *argus);
 
-#endif /* CARGS_INTERNAL_DISPLAY_H */
+#endif /* ARGUS_INTERNAL_DISPLAY_H */

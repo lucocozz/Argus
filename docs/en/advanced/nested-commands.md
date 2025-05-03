@@ -3,7 +3,7 @@
 Nested commands extend the basic subcommand concept to create rich, hierarchical command-line interfaces with multiple levels of command nesting and advanced command handling.
 
 !!! abstract "Overview"
-    This guide covers advanced command-line interface features in cargs:
+    This guide covers advanced command-line interface features in argus:
     
     - **Nested Command Hierarchies** - Multiple levels of commands
     - **Command Abbreviations** - Support for shortened command names
@@ -30,7 +30,7 @@ To implement nested commands, you create a hierarchy of command definitions:
 
 ```c
 // Define options for "service create" command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
@@ -38,7 +38,7 @@ CARGS_OPTIONS(
 )
 
 // Define options for "service" command group
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -49,7 +49,7 @@ CARGS_OPTIONS(
 )
 
 // Define main options with top-level subcommands
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -64,11 +64,11 @@ CARGS_OPTIONS(
 
 ## Command Abbreviations
 
-cargs supports command name abbreviations, allowing users to type shortened versions of command names as long as they are unambiguous:
+argus supports command name abbreviations, allowing users to type shortened versions of command names as long as they are unambiguous:
 
 === "Definition"
     ```c
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
@@ -94,23 +94,23 @@ cargs supports command name abbreviations, allowing users to type shortened vers
 This behavior is similar to the command abbreviation found in tools like `ip` where `ip route add` can be abbreviated as `ip r a`.
 
 !!! note "Ambiguous Abbreviations"
-    If an abbreviation matches multiple commands, cargs will report an error.
+    If an abbreviation matches multiple commands, argus will report an error.
     
     For example, with commands `status` and `start`, typing `sta` would be ambiguous.
 
 ### Implementing Command Abbreviation
 
-Command abbreviation is built into cargs and doesn't require special configuration. cargs matches the command by finding the longest unique prefix:
+Command abbreviation is built into argus and doesn't require special configuration. argus matches the command by finding the longest unique prefix:
 
 1. User enters `ip r a 192.168.1.0/24`
-2. cargs looks for commands starting with `r` and finds `route`
-3. cargs matches this to the `route` command
+2. argus looks for commands starting with `r` and finds `route`
+3. argus matches this to the `route` command
 4. Inside the `route` command, it looks for commands starting with `a` and finds `add`
 5. The command is processed as `ip route add 192.168.1.0/24`
 
 ## Flexible Positional Argument Placement
 
-In complex command structures, cargs supports flexible placement of positional arguments:
+In complex command structures, argus supports flexible placement of positional arguments:
 
 ```
 program pos1 pos2 command subcmd pos3 pos4
@@ -120,7 +120,7 @@ This allows for intuitive command structures where some positional arguments mak
 
 === "Definition"
     ```c
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
@@ -132,7 +132,7 @@ This allows for intuitive command structures where some positional arguments mak
                    HELP("Copy files"))
     )
     
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         copy_options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         POSITIONAL_STRING("destination", HELP("Destination directory"))
@@ -151,13 +151,13 @@ This allows for intuitive command structures where some positional arguments mak
 When using positional arguments at different levels, access them with appropriate paths:
 
 ```c
-int copy_command(cargs_t *cargs, void *data)
+int copy_command(argus_t *argus, void *data)
 {
     // Global positional defined before the command
-    const char* source = cargs_get(*cargs, ".source").as_string;
+    const char* source = argus_get(*argus, ".source").as_string;
     
     // Command-specific positional
-    const char* destination = cargs_get(*cargs, "destination").as_string;
+    const char* destination = argus_get(*argus, "destination").as_string;
     
     printf("Copying from %s to %s\n", source, destination);
     return 0;
@@ -166,7 +166,7 @@ int copy_command(cargs_t *cargs, void *data)
 
 ## Advanced Path Formats
 
-When working with nested commands, cargs offers special path formats for accessing options:
+When working with nested commands, argus offers special path formats for accessing options:
 
 ### 1. Absolute Path
 
@@ -174,7 +174,7 @@ An absolute path specifies the full option path from the root:
 
 ```c
 // Access option from anywhere 
-const char* name = cargs_get(*cargs, "service.create.name").as_string;
+const char* name = argus_get(*argus, "service.create.name").as_string;
 ```
 
 ### 2. Relative Path
@@ -182,9 +182,9 @@ const char* name = cargs_get(*cargs, "service.create.name").as_string;
 Inside a subcommand action handler, you can use relative paths:
 
 ```c
-int service_create_action(cargs_t *cargs, void *data) {
+int service_create_action(argus_t *argus, void *data) {
     // "name" automatically resolves to "service.create.name"
-    const char* name = cargs_get(*cargs, "name").as_string;
+    const char* name = argus_get(*argus, "name").as_string;
     // ...
 }
 ```
@@ -194,9 +194,9 @@ int service_create_action(cargs_t *cargs, void *data) {
 To access options defined at the root level from within a deeply nested subcommand:
 
 ```c
-int service_create_action(cargs_t *cargs, void *data) {
+int service_create_action(argus_t *argus, void *data) {
     // Access root-level debug flag with dot prefix
-    bool debug = cargs_get(*cargs, ".debug").as_bool;
+    bool debug = argus_get(*argus, ".debug").as_bool;
     // ...
 }
 ```
@@ -209,13 +209,13 @@ To determine which commands are active at each level:
 
 ```c
 // Check top-level command
-if (cargs_is_set(cargs, "service")) {
+if (argus_is_set(argus, "service")) {
     // Check second-level command
-    if (cargs_is_set(cargs, "service.create")) {
+    if (argus_is_set(argus, "service.create")) {
         // "service create" was used
     }
-} else if (cargs_is_set(cargs, "config")) {
-    if (cargs_is_set(cargs, "config.set")) {
+} else if (argus_is_set(argus, "config")) {
+    if (argus_is_set(argus, "config.set")) {
         // "config set" was used
     }
 }
@@ -223,7 +223,7 @@ if (cargs_is_set(cargs, "service")) {
 
 ### Sharing Context Across Commands
 
-The `void *data` parameter of `cargs_exec()` allows you to pass context to all command handlers:
+The `void *data` parameter of `argus_exec()` allows you to pass context to all command handlers:
 
 ```c
 typedef struct {
@@ -240,16 +240,16 @@ int main(int argc, char **argv) {
     
     // Normal initialization and parsing...
     
-    if (cargs_has_command(cargs)) {
+    if (argus_has_command(argus)) {
         // Pass context to command handlers
-        status = cargs_exec(&cargs, &context);
+        status = argus_exec(&argus, &context);
     }
     
     // Clean up...
 }
 
 // Any command handler can access the context
-int service_create_action(cargs_t *cargs, void *data) {
+int service_create_action(argus_t *argus, void *data) {
     app_context_t *context = (app_context_t *)data;
     fprintf(context->log_file, "Creating service...\n");
     // ...
@@ -263,7 +263,7 @@ With nested commands, you can create complex command structures like those found
 === "Git-like Structure"
     ```c
     // Main options
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -275,7 +275,7 @@ With nested commands, you can create complex command structures like those found
     )
     
     // Remote subcommands
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         remote_options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
@@ -291,7 +291,7 @@ With nested commands, you can create complex command structures like those found
 === "Docker-like Structure"
     ```c
     // Main options
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -306,7 +306,7 @@ With nested commands, you can create complex command structures like those found
     )
     
     // Container subcommands
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         container_options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
@@ -332,18 +332,18 @@ With nested commands, you can create complex command structures like those found
 Here's a complete example demonstrating nested commands with abbreviation support:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 // Action handlers
-int service_create_action(cargs_t *cargs, void *data);
-int service_list_action(cargs_t *cargs, void *data);
-int config_set_action(cargs_t *cargs, void *data);
-int config_get_action(cargs_t *cargs, void *data);
+int service_create_action(argus_t *argus, void *data);
+int service_list_action(argus_t *argus, void *data);
+int config_set_action(argus_t *argus, void *data);
+int config_get_action(argus_t *argus, void *data);
 
 // Define options for "service create" command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
@@ -351,14 +351,14 @@ CARGS_OPTIONS(
 )
 
 // Define options for "service list" command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_list_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('a', "all", "Show all services, including stopped ones")
 )
 
 // Define options for the "service" parent command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -371,7 +371,7 @@ CARGS_OPTIONS(
 )
 
 // Define options for "config set" command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     config_set_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     POSITIONAL_STRING("key", "Configuration key"),
@@ -379,14 +379,14 @@ CARGS_OPTIONS(
 )
 
 // Define options for "config get" command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     config_get_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     POSITIONAL_STRING("key", "Configuration key")
 )
 
 // Define options for the "config" parent command
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     config_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -399,7 +399,7 @@ CARGS_OPTIONS(
 )
 
 // Define main options with top-level subcommands
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -415,22 +415,22 @@ CARGS_OPTIONS(
 )
 
 // Command action implementations
-int service_create_action(cargs_t *cargs, void *data) {
+int service_create_action(argus_t *argus, void *data) {
     (void)data;
     
     // Different ways to access option values
     
     // 1. Relative path (relative to current subcommand)
-    const char* name = cargs_get(*cargs, "name").as_string;
-    const char* image = cargs_get(*cargs, "image").as_string;
+    const char* name = argus_get(*argus, "name").as_string;
+    const char* image = argus_get(*argus, "image").as_string;
     
     // 2. Absolute path (full path from root)
-    const char* name_abs = cargs_get(*cargs, "service.create.name").as_string;
+    const char* name_abs = argus_get(*argus, "service.create.name").as_string;
     (void)name_abs;
     
     // 3. Root-level path (access options at root level)
-    const char* output = cargs_get(*cargs, ".output").as_string;
-    bool debug = cargs_get(*cargs, ".debug").as_bool;
+    const char* output = argus_get(*argus, ".output").as_string;
+    bool debug = argus_get(*argus, ".debug").as_bool;
     
     printf("Creating service '%s' using image '%s'\n", name, image);
     printf("Output file: %s\n", output);
@@ -442,21 +442,21 @@ int service_create_action(cargs_t *cargs, void *data) {
 // Other action handlers...
 
 int main(int argc, char **argv) {
-    cargs_t cargs = cargs_init(options, "nested_commands", "1.0.0");
-    cargs.description = "Example of nested subcommands and command abbreviation";
+    argus_t argus = argus_init(options, "nested_commands", "1.0.0");
+    argus.description = "Example of nested subcommands and command abbreviation";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
-    if (cargs_has_command(cargs)) {
-        status = cargs_exec(&cargs, NULL);
+    if (argus_has_command(argus)) {
+        status = argus_exec(&argus, NULL);
     } else {
         printf("No command specified. Use --help to see available commands.\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
@@ -468,7 +468,7 @@ int main(int argc, char **argv) {
 - Deeply nested commands can become unwieldy for users
 
 !!! tip "Usability Considerations"
-    While cargs supports deep command nesting, keeping your command structure 
+    While argus supports deep command nesting, keeping your command structure 
     relatively flat with well-chosen command names often provides a better user experience.
 
 ## Related Resources

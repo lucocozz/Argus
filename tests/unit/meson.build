@@ -14,7 +14,7 @@ foreach test : unit_tests
   test_exe = executable(
     'test_' + test[0],
     test[1],
-    dependencies: [criterion_dep, cargs_dep],
+    dependencies: [criterion_dep, argus_dep],
     include_directories: test_includes,
     c_args: test_args
   )
@@ -34,7 +34,7 @@ release_mode_test_sources = files('test_core/test_release_mode.c')
 test_release_normal = executable(
   'test_release_mode_normal',
   release_mode_test_sources,
-  dependencies: [criterion_dep, cargs_dep],
+  dependencies: [criterion_dep, argus_dep],
   include_directories: test_includes,
   c_args: test_args
 )
@@ -50,9 +50,9 @@ test(
 test_release_optimized = executable(
   'test_release_mode_optimized',
   release_mode_test_sources,
-  dependencies: [criterion_dep, cargs_dep],
+  dependencies: [criterion_dep, argus_dep],
   include_directories: test_includes,
-  c_args: test_args + ['-DCARGS_RELEASE'],
+  c_args: test_args + ['-DARGUS_RELEASE'],
 )
 
 test(

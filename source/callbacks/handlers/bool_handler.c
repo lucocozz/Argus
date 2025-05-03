@@ -2,9 +2,9 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "cargs/errors.h"
-#include "cargs/internal/utils.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/internal/utils.h"
+#include "argus/types.h"
 
 static int string_to_bool(const char *arg)
 {
@@ -33,21 +33,21 @@ static int string_to_bool(const char *arg)
     return -1;  // Invalid boolean value
 }
 
-int bool_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+int bool_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
-    UNUSED(cargs);
+    UNUSED(argus);
     if (arg == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_ARGUMENT, "Invalid argument for option: '%s'",
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_ARGUMENT, "Invalid argument for option: '%s'",
                            option->name);
-        return (CARGS_ERROR_INVALID_ARGUMENT);
+        return (ARGUS_ERROR_INVALID_ARGUMENT);
     }
 
     int is_bool = string_to_bool(arg);
     if (is_bool == -1) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_ARGUMENT,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_ARGUMENT,
                            "Invalid boolean value: '%s'. Expected 'true' or 'false'", arg);
-        return (CARGS_ERROR_INVALID_ARGUMENT);
+        return (ARGUS_ERROR_INVALID_ARGUMENT);
     }
     option->value.as_bool = is_bool;
-    return (CARGS_SUCCESS);
+    return (ARGUS_SUCCESS);
 }

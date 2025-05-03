@@ -19,7 +19,7 @@ foreach example : example_programs
     executable(
       example,
       example + '.c',
-      dependencies: cargs_dep,
+      dependencies: argus_dep,
       install: false
     )
   endif

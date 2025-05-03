@@ -1,14 +1,14 @@
 /**
- * Positional arguments example for cargs
+ * Positional arguments example for argus
  * 
  * Demonstrates how to use required and optional positional arguments
  */
 
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -37,24 +37,24 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "positional_example", "1.0.0");
-    cargs.description = "Example of positional arguments";
+    argus_t argus = argus_init(options, "positional_example", "1.0.0");
+    argus.description = "Example of positional arguments";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Access required positional arguments
-    const char* source = cargs_get(cargs, "source").as_string;
-    const char* destination = cargs_get(cargs, "destination").as_string;
+    const char* source = argus_get(argus, "source").as_string;
+    const char* destination = argus_get(argus, "destination").as_string;
     
     // Access optional positional arguments
-    int buffer_size = cargs_get(cargs, "buffer_size").as_int;
+    int buffer_size = argus_get(argus, "buffer_size").as_int;
     
     // Optional argument may not be set
-    const char* log_file = cargs_is_set(cargs, "log_file") ? 
-                          cargs_get(cargs, "log_file").as_string : 
+    const char* log_file = argus_is_set(argus, "log_file") ? 
+                          argus_get(argus, "log_file").as_string : 
                           "(none)";
     
     printf("Configuration:\n");
@@ -63,6 +63,6 @@ int main(int argc, char **argv)
     printf("  Buffer size: %d KB\n", buffer_size);
     printf("  Log file: %s\n", log_file);
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }

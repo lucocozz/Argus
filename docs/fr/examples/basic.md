@@ -1,23 +1,23 @@
 # Basic Usage Example
 
-This example shows how to use cargs to create a simple application with different types of options.
+This example shows how to use argus to create a simple application with different types of options.
 
 ## Complete Code
 
 ```c
 /**
- * Basic usage example of the cargs library
+ * Basic usage example of the argus library
  * 
  * Demonstrates the main features: flags, options with values, positional arguments,
  * and options with only a short name or a long name
  */
 
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 // Option definition
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     // Standard options
     HELP_OPTION(FLAGS(FLAG_EXIT)),
@@ -45,22 +45,22 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    // Initialize cargs
-    cargs_t cargs = cargs_init(options, "basic_example", "1.0.0");
-    cargs.description = "Basic example of the cargs library";
+    // Initialize argus
+    argus_t argus = argus_init(options, "basic_example", "1.0.0");
+    argus.description = "Basic example of the argus library";
 
     // Parse command line arguments
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
 
     // Access parsed values
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
-    const char* output = cargs_get(cargs, "output").as_string;
-    int port = cargs_get(cargs, "p").as_int;  // Using short name as ID when only short name exists
-    bool dry_run = cargs_get(cargs, "dry-run").as_bool;
-    const char* input = cargs_get(cargs, "input").as_string;
+    bool verbose = argus_get(argus, "verbose").as_bool;
+    const char* output = argus_get(argus, "output").as_string;
+    int port = argus_get(argus, "p").as_int;  // Using short name as ID when only short name exists
+    bool dry_run = argus_get(argus, "dry-run").as_bool;
+    const char* input = argus_get(argus, "input").as_string;
 
     // Display the configuration
     printf("Configuration:\n");
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
     printf("  Input: %s\n", input);
 
     // Free resources
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 ## Compilation and Execution
 
 ```bash
-gcc basic_usage.c -o basic_usage -lcargs
+gcc basic_usage.c -o basic_usage -largus
 ```
 
 ## Execution Examples
@@ -90,7 +90,7 @@ gcc basic_usage.c -o basic_usage -lcargs
 $ ./basic_usage --help
 basic_example v1.0.0
 
-Basic example of the cargs library
+Basic example of the argus library
 
 Usage: basic_example [OPTIONS] <input>
 
@@ -184,10 +184,10 @@ OPTION_STRING(0, "output", "Output file",
 
 Accessing option values depends on their name:
 
-- For options with a long name, use the long name: `cargs_get(cargs, "verbose")`
-- For options with only a short name, use the short name: `cargs_get(cargs, "p")`
-- For positional arguments, use the defined name: `cargs_get(cargs, "input")`
+- For options with a long name, use the long name: `argus_get(argus, "verbose")`
+- For options with only a short name, use the short name: `argus_get(argus, "p")`
+- For positional arguments, use the defined name: `argus_get(argus, "input")`
 
 ### Freeing Resources
 
-Don't forget to call `cargs_free(&cargs)` to free allocated resources.
+Don't forget to call `argus_free(&argus)` to free allocated resources.

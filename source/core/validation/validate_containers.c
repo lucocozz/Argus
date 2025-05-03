@@ -1,53 +1,53 @@
-#include "cargs/errors.h"
-#include "cargs/internal/context.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/internal/context.h"
+#include "argus/types.h"
 #include <stddef.h>
 
-int validate_subcommand(cargs_t *cargs, cargs_option_t *option)
+int validate_subcommand(argus_t *argus, argus_option_t *option)
 {
-    int status = CARGS_SUCCESS;
+    int status = ARGUS_SUCCESS;
 
     if (option->name == NULL) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION, "Subcommand must have a name");
-        status = CARGS_ERROR_MALFORMED_OPTION;
+        ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_MALFORMED_OPTION, "Subcommand must have a name");
+        status = ARGUS_ERROR_MALFORMED_OPTION;
     }
 
     if (option->help == NULL) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,
+        ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_MALFORMED_OPTION,
                             "Subcommand '%s' must have a help message", option->name);
-        status = CARGS_ERROR_MALFORMED_OPTION;
+        status = ARGUS_ERROR_MALFORMED_OPTION;
     }
 
     if (option->sub_options == NULL) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_MALFORMED_OPTION,
+        ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_MALFORMED_OPTION,
                             "Subcommand '%s' must have options", option->name);
-        status = CARGS_ERROR_MALFORMED_OPTION;
+        status = ARGUS_ERROR_MALFORMED_OPTION;
     }
 
     if (option->flags & ~SUBCOMMAND_FLAG_MASK) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_FLAG, "Invalid flags for subcommand '%s'",
+        ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_FLAG, "Invalid flags for subcommand '%s'",
                             option->name);
-        status = CARGS_ERROR_INVALID_FLAG;
+        status = ARGUS_ERROR_INVALID_FLAG;
     }
 
     if (option->choices_count > 0) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_CHOICE,
+        ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE,
                             "Subcommand '%s' cannot have choices", option->name);
-        status = CARGS_ERROR_INVALID_CHOICE;
+        status = ARGUS_ERROR_INVALID_CHOICE;
     }
 
     return (status);
 }
 
-int validate_group(cargs_t *cargs, cargs_option_t *option)
+int validate_group(argus_t *argus, argus_option_t *option)
 {
-    int status = CARGS_SUCCESS;
+    int status = ARGUS_SUCCESS;
 
-    context_set_group(cargs, option);
+    context_set_group(argus, option);
     if (option->flags & ~GROUP_FLAG_MASK) {
-        CARGS_COLLECT_ERROR(cargs, CARGS_ERROR_INVALID_GROUP, "Invalid flags for group '%s'",
+        ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_GROUP, "Invalid flags for group '%s'",
                             option->name);
-        status = CARGS_ERROR_INVALID_GROUP;
+        status = ARGUS_ERROR_INVALID_GROUP;
     }
 
     return (status);

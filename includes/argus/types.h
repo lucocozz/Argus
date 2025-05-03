@@ -1,5 +1,5 @@
 /**
- * cargs/types.h - Public types and data structures
+ * argus/types.h - Public types and data structures
  *
  * This header defines all the types and structures that are exposed
  * as part of the public API. Users rely on these definitions to
@@ -8,8 +8,8 @@
  * MIT License - Copyright (c) 2024 lucocozz
  */
 
-#ifndef CARGS_TYPES_H
-#define CARGS_TYPES_H
+#ifndef ARGUS_TYPES_H
+#define ARGUS_TYPES_H
 
 #define _GNU_SOURCE  // NOLINT
 
@@ -18,16 +18,16 @@
 #include <stdint.h>
 
 /* Forward declarations */
-typedef struct cargs_s         cargs_t;
-typedef struct cargs_option_s  cargs_option_t;
-typedef union cargs_value_u    cargs_value_t;
-typedef struct cargs_pair_s    cargs_pair_t;
+typedef struct argus_s         argus_t;
+typedef struct argus_option_s  argus_option_t;
+typedef union argus_value_u    argus_value_t;
+typedef struct argus_pair_s    argus_pair_t;
 typedef union validator_data_u validator_data_t;
 
 /**
- * cargs_valtype_t - Types of values an option can hold
+ * argus_valtype_t - Types of values an option can hold
  */
-typedef enum cargs_valtype_e
+typedef enum argus_valtype_e
 {
     VALUE_TYPE_NONE = 0,
 
@@ -47,7 +47,7 @@ typedef enum cargs_valtype_e
     VALUE_TYPE_MAP_BOOL   = 1 << 11,
 
     VALUE_TYPE_CUSTOM = 1 << 12,
-} cargs_valtype_t;
+} argus_valtype_t;
 
 #define VALUE_TYPE_ANY_NUMERIC (VALUE_TYPE_INT | VALUE_TYPE_FLOAT)
 #define VALUE_TYPE_ANY_BOOL    (VALUE_TYPE_BOOL | VALUE_TYPE_FLAG)
@@ -58,21 +58,21 @@ typedef enum cargs_valtype_e
     (VALUE_TYPE_MAP_STRING | VALUE_TYPE_MAP_INT | VALUE_TYPE_MAP_FLOAT | VALUE_TYPE_MAP_BOOL)
 
 /**
- * cargs_optype_t - Types of command line elements
+ * argus_optype_t - Types of command line elements
  */
-typedef enum cargs_optype_e
+typedef enum argus_optype_e
 {
     TYPE_NONE = 0,
     TYPE_OPTION,     /* Standard option with - or -- prefix */
     TYPE_GROUP,      /* Logical grouping of options */
     TYPE_POSITIONAL, /* Positional argument */
     TYPE_SUBCOMMAND, /* Subcommand with its own options */
-} cargs_optype_t;
+} argus_optype_t;
 
 /**
- * cargs_optflags_t - Flags that modify option behavior
+ * argus_optflags_t - Flags that modify option behavior
  */
-typedef enum cargs_optflags_e
+typedef enum argus_optflags_e
 {
     FLAG_NONE = 0,
     /* Option flags */
@@ -95,7 +95,7 @@ typedef enum cargs_optflags_e
 
     /* Group flags */
     FLAG_EXCLUSIVE = 1 << 14, /* Only one option in group can be set */
-} cargs_optflags_t;
+} argus_optflags_t;
 
 #define FLAG_OPTIONAL (FLAG_REQUIRED ^ FLAG_REQUIRED)
 
@@ -111,9 +111,9 @@ typedef enum cargs_optflags_e
 #define SUBCOMMAND_FLAG_MASK (FLAG_HIDDEN | FLAG_ADVANCED | VERSIONING_FLAG_MASK)
 
 /**
- * cargs_value_u - Union to hold option values of different types
+ * argus_value_u - Union to hold option values of different types
  */
-union cargs_value_u {
+union argus_value_u {
     uintptr_t raw;
     void     *as_ptr;
 
@@ -132,38 +132,38 @@ union cargs_value_u {
     char         **as_array_string;
     long long     *as_array_int;
     double        *as_array_float;
-    cargs_value_t *as_array; /* Generic array */
-    cargs_pair_t  *as_map;
+    argus_value_t *as_array; /* Generic array */
+    argus_pair_t  *as_map;
 };
 
-typedef struct cargs_pair_s
+typedef struct argus_pair_s
 {
     const char   *key;
-    cargs_value_t value;
-} cargs_pair_t;
+    argus_value_t value;
+} argus_pair_t;
 
 /**
  * Array iterator structure to efficiently iterate over array elements
  */
-typedef struct cargs_array_iterator_s
+typedef struct argus_array_iterator_s
 {
-    cargs_value_t *_array;    /* Pointer to the array */
+    argus_value_t *_array;    /* Pointer to the array */
     size_t         _count;    /* Number of elements */
     size_t         _position; /* Current position */
-    cargs_value_t  value;     /* Current value */
-} cargs_array_it_t;
+    argus_value_t  value;     /* Current value */
+} argus_array_it_t;
 
 /**
  * Map iterator structure to efficiently iterate over key-value pairs
  */
-typedef struct cargs_map_iterator_s
+typedef struct argus_map_iterator_s
 {
-    cargs_pair_t *_map;      /* Pointer to the map */
+    argus_pair_t *_map;      /* Pointer to the map */
     size_t        _count;    /* Number of elements */
     size_t        _position; /* Current position */
     const char   *key;       /* Current key */
-    cargs_value_t value;     /* Current value */
-} cargs_map_it_t;
+    argus_value_t value;     /* Current value */
+} argus_map_it_t;
 
 /**
  * range_t - Min/max range for numeric validation
@@ -193,17 +193,17 @@ union validator_data_u {
 };
 
 /* Callback function types */
-typedef int (*cargs_handler_t)(cargs_t *, cargs_option_t *, char *);
-typedef int (*cargs_free_handler_t)(cargs_option_t *);
-typedef int (*cargs_validator_t)(cargs_t *, cargs_option_t *, validator_data_t);
-typedef int (*cargs_pre_validator_t)(cargs_t *, const char *, validator_data_t);
-typedef int (*cargs_action_t)(cargs_t *, void *);
+typedef int (*argus_handler_t)(argus_t *, argus_option_t *, char *);
+typedef int (*argus_free_handler_t)(argus_option_t *);
+typedef int (*argus_validator_t)(argus_t *, argus_option_t *, validator_data_t);
+typedef int (*argus_pre_validator_t)(argus_t *, const char *, validator_data_t);
+typedef int (*argus_action_t)(argus_t *, void *);
 
 /**
  * validator_data_t - Data structure for validator functions
  */
-#ifndef CARGS_MAX_VALIDATORS
-    #define CARGS_MAX_VALIDATORS 4
+#ifndef ARGUS_MAX_VALIDATORS
+    #define ARGUS_MAX_VALIDATORS 4
 #endif
 
 /**
@@ -211,17 +211,17 @@ typedef int (*cargs_action_t)(cargs_t *, void *);
  */
 typedef struct validator_entry_s
 {
-    cargs_validator_t func;
+    argus_validator_t func;
     validator_data_t  data;
 } validator_entry_t;
 
 /**
- * cargs_option_s - Defines a command-line option
+ * argus_option_s - Defines a command-line option
  */
-struct cargs_option_s
+struct argus_option_s
 {
     /* Base metadata */
-    cargs_optype_t type;
+    argus_optype_t type;
 
     /* Naming metadata */
     const char *name;  /* Internal name used for references */
@@ -231,23 +231,23 @@ struct cargs_option_s
     const char *hint;  /* Value hint displayed in help */
 
     /* Value metadata */
-    cargs_valtype_t value_type;
-    cargs_value_t   value;
+    argus_valtype_t value_type;
+    argus_value_t   value;
     bool            is_allocated;
-    cargs_value_t   default_value;
+    argus_value_t   default_value;
     bool            have_default;
-    cargs_value_t   choices;
+    argus_value_t   choices;
     size_t          choices_count;
     size_t          value_count;
     size_t          value_capacity;
     char           *env_name;
 
     /* Callbacks metadata */
-    cargs_handler_t       handler;
-    cargs_free_handler_t  free_handler;
-    validator_entry_t     validators[CARGS_MAX_VALIDATORS];
+    argus_handler_t       handler;
+    argus_free_handler_t  free_handler;
+    validator_entry_t     validators[ARGUS_MAX_VALIDATORS];
     size_t                validator_count;
-    cargs_pre_validator_t pre_validator;
+    argus_pre_validator_t pre_validator;
     validator_data_t      pre_validator_data;
 
     /* Dependencies metadata */
@@ -256,12 +256,12 @@ struct cargs_option_s
     const char **conflicts;
 
     /* Flags and state metadata */
-    cargs_optflags_t flags;
+    argus_optflags_t flags;
     bool             is_set;
 
     /* Subcommand metadata */
-    cargs_action_t         action;
-    struct cargs_option_s *sub_options;
+    argus_action_t         action;
+    struct argus_option_s *sub_options;
 };
 
 #define MULTI_VALUE_INITIAL_CAPACITY 8
@@ -274,44 +274,44 @@ struct cargs_option_s
 /**
  * Error context - tracks where errors occurred
  */
-typedef struct cargs_error_context_s
+typedef struct argus_error_context_s
 {
     const char *option_name;
     const char *group_name;
     const char *subcommand_name;
-} cargs_error_context_t;
+} argus_error_context_t;
 
 /**
  * Error structure - contains error details
  */
-#ifndef CARGS_MAX_ERROR_MESSAGE_SIZE
-    #define CARGS_MAX_ERROR_MESSAGE_SIZE 256
+#ifndef ARGUS_MAX_ERROR_MESSAGE_SIZE
+    #define ARGUS_MAX_ERROR_MESSAGE_SIZE 256
 #endif
 
-typedef struct cargs_error_s
+typedef struct argus_error_s
 {
-    cargs_error_context_t context;
+    argus_error_context_t context;
     int                   code;
-    char                  message[CARGS_MAX_ERROR_MESSAGE_SIZE];
-} cargs_error_t;
+    char                  message[ARGUS_MAX_ERROR_MESSAGE_SIZE];
+} argus_error_t;
 
 /**
  * Error stack - contains multiple errors
  */
-#ifndef CARGS_MAX_ERRORS_STACK
-    #define CARGS_MAX_ERRORS_STACK 16
+#ifndef ARGUS_MAX_ERRORS_STACK
+    #define ARGUS_MAX_ERRORS_STACK 16
 #endif
 
-typedef struct cargs_error_stack_s
+typedef struct argus_error_stack_s
 {
-    cargs_error_t errors[CARGS_MAX_ERRORS_STACK];
+    argus_error_t errors[ARGUS_MAX_ERRORS_STACK];
     size_t        count;
-} cargs_error_stack_t;
+} argus_error_stack_t;
 
 /**
- * cargs_s - Main library context
+ * argus_s - Main library context
  */
-struct cargs_s
+struct argus_s
 {
     /* Public fields */
     const char *program_name;
@@ -320,15 +320,15 @@ struct cargs_s
     const char *env_prefix;
 
     /* Internal fields - do not access directly */
-    cargs_option_t     *options;
-    cargs_error_stack_t error_stack;
+    argus_option_t     *options;
+    argus_error_stack_t error_stack;
     struct
     {
         const char           *option;
         const char           *group;
-        const cargs_option_t *subcommand_stack[MAX_SUBCOMMAND_DEPTH];
+        const argus_option_t *subcommand_stack[MAX_SUBCOMMAND_DEPTH];
         size_t                subcommand_depth;
     } context;
 };
 
-#endif /* CARGS_TYPES_H */
+#endif /* ARGUS_TYPES_H */

@@ -1,6 +1,6 @@
 # Macros Reference
 
-This reference provides a comprehensive guide to all macros available in cargs, organized by function and purpose.
+This reference provides a comprehensive guide to all macros available in argus, organized by function and purpose.
 
 ## Option Definition Macros
 
@@ -10,7 +10,7 @@ These macros are the building blocks for defining command-line options and their
 
 | Macro | Purpose | Example |
 |-------|---------|---------|
-| `CARGS_OPTIONS(name, ...)` | Define a set of command-line options | `CARGS_OPTIONS(options, HELP_OPTION(), ...)` |
+| `ARGUS_OPTIONS(name, ...)` | Define a set of command-line options | `ARGUS_OPTIONS(options, HELP_OPTION(), ...)` |
 | `OPTION_END()` | Terminate an options array | Usually added automatically |
 
 ### Standard Options
@@ -84,7 +84,7 @@ These macros add validation constraints to options:
 | **Range** | `RANGE(min, max)` | Validates numeric values within range | `OPTION_INT('p', "port", HELP("Port"), RANGE(1, 65535))` |
 | **Length** | `LENGTH(min, max)` | Validates string length within range | `OPTION_STRING('u', "user", HELP("Username"), LENGTH(3, 20))` |
 | **Count** | `COUNT(min, max)` | Validates collection size within range | `OPTION_ARRAY_INT('n', "nums", HELP("Numbers"), COUNT(1, 5))` |
-| **Regex** | `REGEX(pattern)` | Validates text against a pattern | `OPTION_STRING('e', "email", HELP("Email"), REGEX(CARGS_RE_EMAIL))` |
+| **Regex** | `REGEX(pattern)` | Validates text against a pattern | `OPTION_STRING('e', "email", HELP("Email"), REGEX(ARGUS_RE_EMAIL))` |
 | **Custom Pattern** | `MAKE_REGEX(pattern, hint)` | Creates a regex pattern with explanation | `REGEX(MAKE_REGEX("^[A-Z]{2}\\d{4}$", "Format: XX0000"))` |
 | **Custom Validator** | `VALIDATOR(function, data)` | Custom validation logic | `VALIDATOR(even_validator, NULL)` |
 | **Pre-validator** | `PRE_VALIDATOR(function, data)` | Validates raw string before processing | `PRE_VALIDATOR(length_validator, &min_length)` |
@@ -140,7 +140,7 @@ Here's a comprehensive example showing various macros in use:
 
 ```c
 // Define options for the "add" subcommand
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('f', "force", HELP("Force add operation"), 
@@ -149,7 +149,7 @@ CARGS_OPTIONS(
 )
 
 // Define main options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),

@@ -1,10 +1,10 @@
-#include "cargs/internal/context.h"
-#include "cargs/internal/parsing.h"
-#include "cargs/types.h"
+#include "argus/internal/context.h"
+#include "argus/internal/parsing.h"
+#include "argus/types.h"
 
-int handle_subcommand(cargs_t *cargs, cargs_option_t *option, int argc, char **argv)
+int handle_subcommand(argus_t *argus, argus_option_t *option, int argc, char **argv)
 {
-    context_push_subcommand(cargs, option);
+    context_push_subcommand(argus, option);
     option->is_set = true;
-    return parse_args(cargs, option->sub_options, argc, argv);
+    return parse_args(argus, option->sub_options, argc, argv);
 }

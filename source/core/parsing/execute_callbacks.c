@@ -1,25 +1,25 @@
-#include "cargs/errors.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/types.h"
 #include <stddef.h>
 #include <stdio.h>
 
-int execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)
+int execute_callbacks(argus_t *argus, argus_option_t *option, char *value)
 {
     int status;
 
     if (option->handler == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_HANDLER, "Option %s has no handler",
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_HANDLER, "Option %s has no handler",
                            option->name);
     }
 
     if (option->pre_validator != NULL) {
-        int status = option->pre_validator(cargs, value, option->pre_validator_data);
-        if (status != CARGS_SUCCESS)
+        int status = option->pre_validator(argus, value, option->pre_validator_data);
+        if (status != ARGUS_SUCCESS)
             return status;
     }
 
-    status = option->handler(cargs, option, value);
-    if (status != CARGS_SUCCESS)
+    status = option->handler(argus, option, value);
+    if (status != ARGUS_SUCCESS)
         return (status);
 
     option->is_set = true;
@@ -27,6 +27,6 @@ int execute_callbacks(cargs_t *cargs, cargs_option_t *option, char *value)
         option->value_count = 1;
 
     if (option->flags & FLAG_EXIT)
-        return (CARGS_SOULD_EXIT);
-    return (CARGS_SUCCESS);
+        return (ARGUS_SOULD_EXIT);
+    return (ARGUS_SUCCESS);
 }

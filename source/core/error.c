@@ -1,69 +1,69 @@
-#include "cargs/errors.h"
-#include "cargs/internal/utils.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/internal/utils.h"
+#include "argus/types.h"
 
 #include <stdio.h>
 
-const char *cargs_strerror(cargs_error_type_t error)
+const char *argus_strerror(argus_error_type_t error)
 {
     switch (error) {
-        case CARGS_SUCCESS:
+        case ARGUS_SUCCESS:
             return "Success";
-        case CARGS_ERROR_DUPLICATE_OPTION:
+        case ARGUS_ERROR_DUPLICATE_OPTION:
             return "Duplicate option";
-        case CARGS_ERROR_INVALID_HANDLER:
+        case ARGUS_ERROR_INVALID_HANDLER:
             return "Invalid handler";
-        case CARGS_ERROR_INVALID_DEFAULT:
+        case ARGUS_ERROR_INVALID_DEFAULT:
             return "Invalid default value";
-        case CARGS_ERROR_INVALID_GROUP:
+        case ARGUS_ERROR_INVALID_GROUP:
             return "Invalid group";
-        case CARGS_ERROR_INVALID_DEPENDENCY:
+        case ARGUS_ERROR_INVALID_DEPENDENCY:
             return "Invalid dependency";
-        case CARGS_ERROR_INVALID_FLAG:
+        case ARGUS_ERROR_INVALID_FLAG:
             return "Invalid flag";
-        case CARGS_ERROR_INVALID_POSITION:
+        case ARGUS_ERROR_INVALID_POSITION:
             return "Invalid position";
-        case CARGS_ERROR_INVALID_ARGUMENT:
+        case ARGUS_ERROR_INVALID_ARGUMENT:
             return "Invalid argument";
-        case CARGS_ERROR_MISSING_VALUE:
+        case ARGUS_ERROR_MISSING_VALUE:
             return "Missing value";
-        case CARGS_ERROR_MISSING_REQUIRED:
+        case ARGUS_ERROR_MISSING_REQUIRED:
             return "Missing required option";
-        case CARGS_ERROR_CONFLICTING_OPTIONS:
+        case ARGUS_ERROR_CONFLICTING_OPTIONS:
             return "Conflicting options";
-        case CARGS_ERROR_INVALID_FORMAT:
+        case ARGUS_ERROR_INVALID_FORMAT:
             return "Invalid format";
-        case CARGS_ERROR_EXCLUSIVE_GROUP:
+        case ARGUS_ERROR_EXCLUSIVE_GROUP:
             return "Exclusive group";
-        case CARGS_ERROR_INVALID_CHOICE:
+        case ARGUS_ERROR_INVALID_CHOICE:
             return "Invalid choice";
-        case CARGS_ERROR_INVALID_RANGE:
+        case ARGUS_ERROR_INVALID_RANGE:
             return "Invalid range";
-        case CARGS_ERROR_NO_COMMAND:
+        case ARGUS_ERROR_NO_COMMAND:
             return "No command";
-        case CARGS_ERROR_INVALID_VALUE:
+        case ARGUS_ERROR_INVALID_VALUE:
             return "Invalid value";
-        case CARGS_ERROR_MALFORMED_OPTION:
+        case ARGUS_ERROR_MALFORMED_OPTION:
             return "Malformed option";
-        case CARGS_ERROR_MISSING_HELP:
+        case ARGUS_ERROR_MISSING_HELP:
             return "Missing help option";
-        case CARGS_ERROR_STACK_OVERFLOW:
+        case ARGUS_ERROR_STACK_OVERFLOW:
             return "Error stack overflow";
         default:
             return "Unknown error";
     }
 }
 
-void cargs_print_error_stack(const cargs_t *cargs)
+void argus_print_error_stack(const argus_t *argus)
 {
-    if (cargs->error_stack.count == 0)
+    if (argus->error_stack.count == 0)
         return;
 
     fprintf(stderr, COLOR(ANSI_BOLD ANSI_RED, "Error stack (%zu errors):\n"),
-            cargs->error_stack.count);
+            argus->error_stack.count);
 
-    for (size_t i = 0; i < cargs->error_stack.count && i < CARGS_MAX_ERRORS_STACK; ++i) {
-        const cargs_error_t *error = &cargs->error_stack.errors[i];
+    for (size_t i = 0; i < argus->error_stack.count && i < ARGUS_MAX_ERRORS_STACK; ++i) {
+        const argus_error_t *error = &argus->error_stack.errors[i];
 
         fprintf(stderr, COLOR(ANSI_BOLD, "[%zu]"), i + 1);
 
@@ -84,34 +84,34 @@ void cargs_print_error_stack(const cargs_t *cargs)
         fprintf(stderr, "\n");
 
         fprintf(stderr, COLOR(ANSI_BOLD, "\tError: "));
-        fprintf(stderr, COLOR(ANSI_YELLOW ANSI_BOLD, "%s\n"), cargs_strerror(error->code));
+        fprintf(stderr, COLOR(ANSI_YELLOW ANSI_BOLD, "%s\n"), argus_strerror(error->code));
 
         if (error->message[0] != '\0') {
             fprintf(stderr, COLOR(ANSI_BOLD, "\tDetails: "));
             fprintf(stderr, COLOR(ANSI_ITALIC, "%s\n"), error->message);
         }
     }
-    if (cargs->error_stack.count >= CARGS_MAX_ERRORS_STACK) {
+    if (argus->error_stack.count >= ARGUS_MAX_ERRORS_STACK) {
         printf(COLOR(ANSI_ITALIC ANSI_RED, "(Too many errors, only the first %d are displayed)\n"),
-               CARGS_MAX_ERRORS_STACK);
+               ARGUS_MAX_ERRORS_STACK);
     }
 }
 
-void cargs_clear_errors(cargs_t *cargs)
+void argus_clear_errors(argus_t *argus)
 {
-    cargs->error_stack.count = 0;
+    argus->error_stack.count = 0;
 }
 
-void cargs_push_error(cargs_t *cargs, cargs_error_t error)
+void argus_push_error(argus_t *argus, argus_error_t error)
 {
-    if (cargs->error_stack.count >= CARGS_MAX_ERRORS_STACK) {
-        cargs_error_t *last = &cargs->error_stack.errors[CARGS_MAX_ERRORS_STACK - 1];
-        last->context       = (cargs_error_context_t){0};
-        last->code          = CARGS_ERROR_STACK_OVERFLOW;
-        snprintf(last->message, CARGS_MAX_ERROR_MESSAGE_SIZE, "Too many errors");
+    if (argus->error_stack.count >= ARGUS_MAX_ERRORS_STACK) {
+        argus_error_t *last = &argus->error_stack.errors[ARGUS_MAX_ERRORS_STACK - 1];
+        last->context       = (argus_error_context_t){0};
+        last->code          = ARGUS_ERROR_STACK_OVERFLOW;
+        snprintf(last->message, ARGUS_MAX_ERROR_MESSAGE_SIZE, "Too many errors");
         return;
     }
 
-    cargs_error_t *last = &cargs->error_stack.errors[cargs->error_stack.count++];
+    argus_error_t *last = &argus->error_stack.errors[argus->error_stack.count++];
     *last               = error;
 }

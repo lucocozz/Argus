@@ -3,12 +3,12 @@
 #include <criterion/parameterized.h>
 #include <time.h>
 #include <stdio.h>
-#include "cargs.h"
-#include "cargs/errors.h"
-#include "cargs/internal/utils.h"
+#include "argus.h"
+#include "argus/errors.h"
+#include "argus/internal/utils.h"
 
 // Valid options definition for testing
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     valid_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -19,7 +19,7 @@ CARGS_OPTIONS(
 )
 
 // Invalid options definition (missing help option - should fail validation)
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     invalid_options,
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     OPTION_STRING('o', "output", HELP("Output file")),
@@ -27,7 +27,7 @@ CARGS_OPTIONS(
 )
 
 // Invalid options with duplicated option names
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     duplicate_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
@@ -35,7 +35,7 @@ CARGS_OPTIONS(
 )
 
 // Helper function for measuring initialization time
-double measure_init_time(cargs_option_t *options, const char *program_name, 
+double measure_init_time(argus_option_t *options, const char *program_name, 
                          const char *version, int iterations) 
 {
     clock_t start, end;
@@ -44,55 +44,55 @@ double measure_init_time(cargs_option_t *options, const char *program_name,
     for (int i = 0; i < iterations; i++) {
         start = clock();
         
-        // Initialize cargs
-        cargs_t cargs = cargs_init(options, program_name, version);
+        // Initialize argus
+        argus_t argus = argus_init(options, program_name, version);
         
         end = clock();
         total_time += ((double) (end - start)) / CLOCKS_PER_SEC;
         
         // Clean up
-        cargs_free(&cargs);
+        argus_free(&argus);
     }
     
     return total_time / iterations;
 }
 
-#ifdef CARGS_RELEASE
+#ifdef ARGUS_RELEASE
 Test(release_mode, init_skips_validation_with_invalid_options)
 {
-    // With CARGS_RELEASE defined, initialization should succeed even with invalid options
-    cargs_t cargs = cargs_init(invalid_options, "test_program", "1.0.0");
+    // With ARGUS_RELEASE defined, initialization should succeed even with invalid options
+    argus_t argus = argus_init(invalid_options, "test_program", "1.0.0");
     
     // In release mode, the initialization shouldn't perform validation
     // so no errors should be reported
-    cr_assert_eq(cargs.error_stack.count, 0, 
+    cr_assert_eq(argus.error_stack.count, 0, 
                  "No errors should be reported in release mode");
                  
     // Even options with duplicate names should initialize without errors
-    cargs_t cargs2 = cargs_init(duplicate_options, "test_program", "1.0.0");
-    cr_assert_eq(cargs2.error_stack.count, 0, 
+    argus_t argus2 = argus_init(duplicate_options, "test_program", "1.0.0");
+    cr_assert_eq(argus2.error_stack.count, 0, 
                  "No errors should be reported for duplicate options in release mode");
     
-    cargs_free(&cargs);
-    cargs_free(&cargs2);
+    argus_free(&argus);
+    argus_free(&argus2);
 }
 
 Test(release_mode, parse_works_correctly_with_valid_options)
 {
     // Test that parsing still works correctly in release mode
-    cargs_t cargs = cargs_init(valid_options, "test_program", "1.0.0");
+    argus_t argus = argus_init(valid_options, "test_program", "1.0.0");
     
     char *argv[] = {"test_program", "--verbose", "--output=test.txt", "input.txt"};
     int argc = sizeof(argv) / sizeof(char *);
     
-    int status = cargs_parse(&cargs, argc, argv);
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Parsing should succeed in release mode");
-    cr_assert_eq(cargs_is_set(cargs, "verbose"), true, "Verbose option should be set");
-    cr_assert_str_eq(cargs_get(cargs, "output").as_string, "test.txt", "Output should be correctly set");
-    cr_assert_str_eq(cargs_get(cargs, "input").as_string, "input.txt", "Input should be correctly set");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed in release mode");
+    cr_assert_eq(argus_is_set(argus, "verbose"), true, "Verbose option should be set");
+    cr_assert_str_eq(argus_get(argus, "output").as_string, "test.txt", "Output should be correctly set");
+    cr_assert_str_eq(argus_get(argus, "input").as_string, "input.txt", "Input should be correctly set");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 #else
 // In this test we expect the program to exit, so we don't need the assert_fail
@@ -101,7 +101,7 @@ Test(release_mode, init_performs_validation_with_invalid_options, .exit_code = 1
 {
     // This will exit due to validation errors, which will make the test pass
     // because of the .exit_code = 1 attribute
-    cargs_init(invalid_options, "test_program", "1.0.0");
+    argus_init(invalid_options, "test_program", "1.0.0");
     
     // We should never reach this point, but we need something here
     // to avoid compiler warnings about empty functions
@@ -112,7 +112,7 @@ Test(release_mode, init_performs_validation_with_invalid_options, .exit_code = 1
 Test(release_mode, init_performs_validation_with_duplicate_options, .exit_code = 1, .init = cr_redirect_stderr)
 {
     // This will exit due to validation errors, which will make the test pass
-    cargs_init(duplicate_options, "test_program", "1.0.0");
+    argus_init(duplicate_options, "test_program", "1.0.0");
     
     // We should never reach this point
     cr_assert(false, "Should not reach this point");
@@ -121,13 +121,13 @@ Test(release_mode, init_performs_validation_with_duplicate_options, .exit_code =
 Test(release_mode, init_succeeds_with_valid_options)
 {
     // With validation enabled, initialization should succeed with valid options
-    cargs_t cargs = cargs_init(valid_options, "test_program", "1.0.0");
+    argus_t argus = argus_init(valid_options, "test_program", "1.0.0");
     
     // No errors should be reported for valid options
-    cr_assert_eq(cargs.error_stack.count, 0, 
+    cr_assert_eq(argus.error_stack.count, 0, 
                  "No errors should be reported for valid options");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 #endif
 
@@ -140,7 +140,7 @@ Test(release_mode, performance_comparison)
     // Measure initialization time with valid options
     double time_valid = measure_init_time(valid_options, "test_program", "1.0.0", iterations);
     
-#ifdef CARGS_RELEASE
+#ifdef ARGUS_RELEASE
     // In release mode, we can measure invalid options too (validation is skipped)
     double time_invalid = measure_init_time(invalid_options, "test_program", "1.0.0", iterations);
     double time_duplicate = measure_init_time(duplicate_options, "test_program", "1.0.0", iterations);

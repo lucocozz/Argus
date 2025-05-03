@@ -1,9 +1,9 @@
 # Collections multi-valeurs
 
-cargs prend en charge les collections multi-valeurs à travers les tableaux et les mappages, vous permettant de gérer plusieurs valeurs pour une seule option ou des paires clé-valeur.
+argus prend en charge les collections multi-valeurs à travers les tableaux et les mappages, vous permettant de gérer plusieurs valeurs pour une seule option ou des paires clé-valeur.
 
 !!! abstract "Aperçu"
-    Ce guide couvre les bases des collections multi-valeurs dans cargs :
+    Ce guide couvre les bases des collections multi-valeurs dans argus :
     
     - **Options de type tableau** - Collecte de plusieurs valeurs
     - **Options de type mapping** - Collecte de paires clé-valeur
@@ -18,7 +18,7 @@ Les options de type tableau permettent aux utilisateurs de fournir plusieurs val
 
 ### Types de tableaux
 
-cargs prend en charge ces types de tableaux :
+argus prend en charge ces types de tableaux :
 
 - `OPTION_ARRAY_STRING` : Tableau de chaînes
 - `OPTION_ARRAY_INT` : Tableau d'entiers
@@ -27,7 +27,7 @@ cargs prend en charge ces types de tableaux :
 ### Définition des options de type tableau
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -69,7 +69,7 @@ Les utilisateurs peuvent fournir des valeurs de tableau de plusieurs façons :
 
 ### Syntaxe de plage d'entiers
 
-Pour les tableaux d'entiers, cargs prend en charge une syntaxe de plage pratique :
+Pour les tableaux d'entiers, argus prend en charge une syntaxe de plage pratique :
 
 ```bash
 ./program --ids=1-5,10,15-20
@@ -82,7 +82,7 @@ Les options de type mapping permettent aux utilisateurs de fournir des paires cl
 
 ### Types de mappings
 
-cargs prend en charge ces types de mappings :
+argus prend en charge ces types de mappings :
 
 - `OPTION_MAP_STRING` : Mapping avec valeurs de type chaîne
 - `OPTION_MAP_INT` : Mapping avec valeurs de type entier
@@ -92,7 +92,7 @@ cargs prend en charge ces types de mappings :
 ### Définition des options de type mapping
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -148,7 +148,7 @@ Pour les mappings booléens (`OPTION_MAP_BOOL`), les valeurs sont analysées com
 
 ## Accès aux collections multi-valeurs
 
-cargs fournit plusieurs façons d'accéder aux données de collection.
+argus fournit plusieurs façons d'accéder aux données de collection.
 
 ### Accès aux tableaux de base
 
@@ -156,12 +156,12 @@ Pour accéder aux éléments du tableau :
 
 ```c
 // Vérifier si l'option de tableau a été définie
-if (cargs_is_set(cargs, "names")) {
+if (argus_is_set(argus, "names")) {
     // Obtenir le nombre d'éléments du tableau
-    size_t count = cargs_count(cargs, "names");
+    size_t count = argus_count(argus, "names");
     
     // Obtenir le pointeur du tableau
-    cargs_value_t *names_array = cargs_get(cargs, "names").as_array;
+    argus_value_t *names_array = argus_get(argus, "names").as_array;
     
     // Afficher tous les noms
     printf("Noms (%zu) :\n", count);
@@ -177,12 +177,12 @@ Pour accéder aux entrées de mapping :
 
 ```c
 // Vérifier si l'option de mapping a été définie
-if (cargs_is_set(cargs, "env")) {
+if (argus_is_set(argus, "env")) {
     // Obtenir le nombre d'éléments du mapping
-    size_t count = cargs_count(cargs, "env");
+    size_t count = argus_count(argus, "env");
     
     // Obtenir le pointeur du mapping
-    cargs_pair_t *env_map = cargs_get(cargs, "env").as_map;
+    argus_pair_t *env_map = argus_get(argus, "env").as_map;
     
     // Afficher toutes les variables d'environnement
     printf("Variables d'environnement (%zu) :\n", count);
@@ -200,13 +200,13 @@ Pour un accès plus pratique à des éléments spécifiques :
 
 ```c
 // Obtenir un élément spécifique du tableau par indice
-const char* first_name = cargs_array_get(cargs, "names", 0).as_string;
-int second_id = cargs_array_get(cargs, "ids", 1).as_int;
+const char* first_name = argus_array_get(argus, "names", 0).as_string;
+int second_id = argus_array_get(argus, "ids", 1).as_int;
 
 // Rechercher une valeur spécifique dans un mapping par clé
-const char* user = cargs_map_get(cargs, "env", "USER").as_string;
-int http_port = cargs_map_get(cargs, "ports", "http").as_int;
-bool debug_enabled = cargs_map_get(cargs, "features", "debug").as_bool;
+const char* user = argus_map_get(argus, "env", "USER").as_string;
+int http_port = argus_map_get(argus, "ports", "http").as_int;
+bool debug_enabled = argus_map_get(argus, "features", "debug").as_bool;
 ```
 
 Ces fonctions auxiliaires gèrent les indices invalides ou les clés manquantes avec élégance, retournant une valeur vide lorsque l'élément demandé n'existe pas.
@@ -251,10 +251,10 @@ Utilisation :
 Voici un exemple complet démontrant à la fois les options de type tableau et de type mapping :
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -271,18 +271,18 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "multi_values", "1.0.0");
-    cargs.description = "Exemple de collections multi-valeurs";
+    argus_t argus = argus_init(options, "multi_values", "1.0.0");
+    argus.description = "Exemple de collections multi-valeurs";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Traiter le tableau de chaînes
-    if (cargs_is_set(cargs, "name")) {
-        size_t count = cargs_count(cargs, "name");
-        cargs_value_t *names = cargs_get(cargs, "name").as_array;
+    if (argus_is_set(argus, "name")) {
+        size_t count = argus_count(argus, "name");
+        argus_value_t *names = argus_get(argus, "name").as_array;
         
         printf("Noms (%zu) :\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -292,9 +292,9 @@ int main(int argc, char **argv)
     }
     
     // Traiter le tableau d'entiers
-    if (cargs_is_set(cargs, "id")) {
-        size_t count = cargs_count(cargs, "id");
-        cargs_value_t *ids = cargs_get(cargs, "id").as_array;
+    if (argus_is_set(argus, "id")) {
+        size_t count = argus_count(argus, "id");
+        argus_value_t *ids = argus_get(argus, "id").as_array;
         
         printf("Identifiants (%zu) :\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -304,9 +304,9 @@ int main(int argc, char **argv)
     }
     
     // Traiter le mapping de chaînes
-    if (cargs_is_set(cargs, "env")) {
-        size_t count = cargs_count(cargs, "env");
-        cargs_pair_t *env = cargs_get(cargs, "env").as_map;
+    if (argus_is_set(argus, "env")) {
+        size_t count = argus_count(argus, "env");
+        argus_pair_t *env = argus_get(argus, "env").as_map;
         
         printf("Variables d'environnement (%zu) :\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -316,9 +316,9 @@ int main(int argc, char **argv)
     }
     
     // Traiter le mapping d'entiers
-    if (cargs_is_set(cargs, "port")) {
-        size_t count = cargs_count(cargs, "port");
-        cargs_pair_t *ports = cargs_get(cargs, "port").as_map;
+    if (argus_is_set(argus, "port")) {
+        size_t count = argus_count(argus, "port");
+        argus_pair_t *ports = argus_get(argus, "port").as_map;
         
         printf("Mappages de ports (%zu) :\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -328,9 +328,9 @@ int main(int argc, char **argv)
     }
     
     // Traiter le mapping booléen
-    if (cargs_is_set(cargs, "feature")) {
-        size_t count = cargs_count(cargs, "feature");
-        cargs_pair_t *features = cargs_get(cargs, "feature").as_map;
+    if (argus_is_set(argus, "feature")) {
+        size_t count = argus_count(argus, "feature");
+        argus_pair_t *features = argus_get(argus, "feature").as_map;
         
         printf("Indicateurs de fonctionnalités (%zu) :\n", count);
         for (size_t i = 0; i < count; i++) {
@@ -340,7 +340,7 @@ int main(int argc, char **argv)
         printf("\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```

@@ -1,9 +1,9 @@
 #include <criterion/criterion.h>
 #include <criterion/redirect.h>
-#include "cargs.h"
+#include "argus.h"
 
 // Basic usage example options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     basic_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -26,23 +26,23 @@ Test(basic_usage, successful_parse)
     };
     int argc = sizeof(argv) / sizeof(argv[0]);
     
-    // Initialize cargs
-    cargs_t cargs = cargs_init(basic_options, "program", "1.0.0");
+    // Initialize argus
+    argus_t argus = argus_init(basic_options, "program", "1.0.0");
     
     // Parse arguments
-    int status = cargs_parse(&cargs, argc, argv);
+    int status = argus_parse(&argus, argc, argv);
     
     // Assert parsing succeeded
-    cr_assert_eq(status, CARGS_SUCCESS, "Parsing failed with status %d", status);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Parsing failed with status %d", status);
     
     // Check values
-    cr_assert_eq(cargs_get(cargs, "verbose").as_bool, true);
-    cr_assert_str_eq(cargs_get(cargs, "output").as_string, "custom.txt");
-    cr_assert_eq(cargs_get(cargs, "port").as_int, 9000);
-    cr_assert_str_eq(cargs_get(cargs, "input").as_string, "input.txt");
+    cr_assert_eq(argus_get(argus, "verbose").as_bool, true);
+    cr_assert_str_eq(argus_get(argus, "output").as_string, "custom.txt");
+    cr_assert_eq(argus_get(argus, "port").as_int, 9000);
+    cr_assert_str_eq(argus_get(argus, "input").as_string, "input.txt");
     
     // Clean up
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Test help display
@@ -53,11 +53,11 @@ Test(basic_usage, display_help, .init = cr_redirect_stdout)
     int argc = sizeof(argv) / sizeof(argv[0]);
 	(void)argc;
 
-    // Initialize cargs
-    cargs_t cargs = cargs_init(basic_options, "program", "1.0.0");
-    cargs.description = "Test program description";
+    // Initialize argus
+    argus_t argus = argus_init(basic_options, "program", "1.0.0");
+    argus.description = "Test program description";
 
-	cargs_parse(&cargs, argc, argv);
+	argus_parse(&argus, argc, argv);
 
     // We expect this to exit, but we'll catch the exit with Criterion's special assertion
     cr_assert_fail(); // Should not reach this line
@@ -77,15 +77,15 @@ Test(basic_usage, missing_required, .init = setup_error_case)
     char *argv[] = {"program", "--verbose"};
     int argc = sizeof(argv) / sizeof(argv[0]);
     
-    // Initialize cargs
-    cargs_t cargs = cargs_init(basic_options, "program", "1.0.0");
+    // Initialize argus
+    argus_t argus = argus_init(basic_options, "program", "1.0.0");
     
     // Parse arguments
-    int status = cargs_parse(&cargs, argc, argv);
+    int status = argus_parse(&argus, argc, argv);
     
     // Assert parsing failed with appropriate error
-    cr_assert_neq(status, CARGS_SUCCESS);
+    cr_assert_neq(status, ARGUS_SUCCESS);
     
     // Clean up
-    cargs_free(&cargs);
+    argus_free(&argus);
 }

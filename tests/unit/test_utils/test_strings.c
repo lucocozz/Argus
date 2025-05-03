@@ -1,5 +1,5 @@
 #include <criterion/criterion.h>
-#include "cargs/internal/utils.h"
+#include "argus/internal/utils.h"
 
 Test(strings, starts_with_valid)
 {

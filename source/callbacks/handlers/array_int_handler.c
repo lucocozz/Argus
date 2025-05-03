@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cargs/errors.h"
-#include "cargs/internal/utils.h"
-#include "cargs/options.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/internal/utils.h"
+#include "argus/options.h"
+#include "argus/types.h"
 
 #ifndef MIN
     #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -76,7 +76,7 @@ static int parse_int_range(int_range_t *range, const char *value)
 /**
  * Add a range of integers to the option's value array
  */
-static void add_range_values(cargs_option_t *option, const int_range_t *range)
+static void add_range_values(argus_option_t *option, const int_range_t *range)
 {
     for (int i = range->start; i <= range->end; i++) {
         adjust_array_size(option);
@@ -88,16 +88,16 @@ static void add_range_values(cargs_option_t *option, const int_range_t *range)
 /**
  * Process a single value or range and add it to the option
  */
-static int set_value(cargs_t *cargs, cargs_option_t *option, char *value)
+static int set_value(argus_t *argus, argus_option_t *option, char *value)
 {
     int_range_t range;
 
     if (parse_int_range(&range, value) != 0) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
                            "Invalid integer or range format: '%s'", value);
     }
     add_range_values(option, &range);
-    return (CARGS_SUCCESS);
+    return (ARGUS_SUCCESS);
 }
 
 /**
@@ -107,17 +107,17 @@ static int set_value(cargs_t *cargs, cargs_option_t *option, char *value)
  *   "1-5"          => [1,2,3,4,5]
  *   "1-3,5,7-9"    => [1,2,3,5,7,8,9]
  */
-int array_int_handler(cargs_t *cargs, cargs_option_t *option, char *value)
+int array_int_handler(argus_t *argus, argus_option_t *option, char *value)
 {
     if (strchr(value, ',') != NULL) {
         char **splited_values = split(value, ",");
         if (splited_values == NULL) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Failed to split string '%s'", value);
+            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to split string '%s'", value);
         }
 
         for (size_t i = 0; splited_values[i] != NULL; ++i) {
-            int status = set_value(cargs, option, splited_values[i]);
-            if (status != CARGS_SUCCESS) {
+            int status = set_value(argus, option, splited_values[i]);
+            if (status != ARGUS_SUCCESS) {
                 free_split(splited_values);
                 return status;
             }
@@ -125,21 +125,21 @@ int array_int_handler(cargs_t *cargs, cargs_option_t *option, char *value)
 
         free_split(splited_values);
     } else {
-        int status = set_value(cargs, option, value);
-        if (status != CARGS_SUCCESS)
+        int status = set_value(argus, option, value);
+        if (status != ARGUS_SUCCESS)
             return status;
     }
 
     apply_array_flags(option);
     option->is_allocated = true;
-    return (CARGS_SUCCESS);
+    return (ARGUS_SUCCESS);
 }
 
 /**
  * Free handler for integer array options
  */
-int free_array_int_handler(cargs_option_t *option)
+int free_array_int_handler(argus_option_t *option)
 {
     free(option->value.as_array);
-    return (CARGS_SUCCESS);
+    return (ARGUS_SUCCESS);
 }

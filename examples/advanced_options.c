@@ -1,15 +1,15 @@
 /**
- * Advanced options example for cargs
+ * Advanced options example for argus
  * 
  * Demonstrates dependencies (REQUIRES), conflicts (CONFLICTS),
  * and exclusive option groups (FLAG_EXCLUSIVE)
  */
 
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -45,52 +45,52 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "advanced_options", "1.0.0"); 
-    cargs.description = "Example of advanced options";
+    argus_t argus = argus_init(options, "advanced_options", "1.0.0"); 
+    argus.description = "Example of advanced options";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Access input
-    const char* input = cargs_get(cargs, "input").as_string;
+    const char* input = argus_get(argus, "input").as_string;
     printf("Processing file: %s\n", input);
     
     // Check compression options
-    if (cargs_is_set(cargs, "gzip")) {
+    if (argus_is_set(argus, "gzip")) {
         printf("Using gzip compression");
-    } else if (cargs_is_set(cargs, "bzip2")) {
+    } else if (argus_is_set(argus, "bzip2")) {
         printf("Using bzip2 compression");
-    } else if (cargs_is_set(cargs, "lzma")) {
+    } else if (argus_is_set(argus, "lzma")) {
         printf("Using lzma compression");
     } else {
         printf("No compression selected");
     }
     
     // Show compression level if any compression is selected
-    if (cargs_is_set(cargs, "gzip") || 
-        cargs_is_set(cargs, "bzip2") || 
-        cargs_is_set(cargs, "lzma")) {
-        int level = cargs_get(cargs, "level").as_int;
+    if (argus_is_set(argus, "gzip") || 
+        argus_is_set(argus, "bzip2") || 
+        argus_is_set(argus, "lzma")) {
+        int level = argus_get(argus, "level").as_int;
         printf(" (level %d)\n", level);
     } else {
         printf("\n");
     }
     
     // Check authentication
-    if (cargs_is_set(cargs, "username")) {
-        const char* username = cargs_get(cargs, "username").as_string;
+    if (argus_is_set(argus, "username")) {
+        const char* username = argus_get(argus, "username").as_string;
         printf("Authenticated as: %s\n", username);
     }
     
     // Check output mode
-    if (cargs_is_set(cargs, "verbose")) {
+    if (argus_is_set(argus, "verbose")) {
         printf("Verbose mode enabled\n");
-    } else if (cargs_is_set(cargs, "quiet")) {
+    } else if (argus_is_set(argus, "quiet")) {
         // In a real app, we would suppress output
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }

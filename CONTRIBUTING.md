@@ -1,6 +1,6 @@
-# Contributing to cargs
+# Contributing to argus
 
-Thank you for your interest in contributing to cargs! We welcome contributions from everyone, whether it's in the form of bug reports, feature requests, documentation improvements, or code contributions.
+Thank you for your interest in contributing to argus! We welcome contributions from everyone, whether it's in the form of bug reports, feature requests, documentation improvements, or code contributions.
 
 ## Contribution Workflow
 
@@ -35,8 +35,8 @@ To set up a development environment:
 
 1. **Fork and clone the repository**:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/cargs.git
-   cd cargs
+   git clone https://github.com/YOUR_USERNAME/argus.git
+   cd argus
    ```
 
 2. **Install dependencies**:
@@ -85,4 +85,4 @@ Please adhere to our code of conduct when participating in this project. Be resp
 
 If you have any questions, feel free to open a discussion on GitHub or ask in an issue.
 
-Thank you for contributing to cargs! 🎉
+Thank you for contributing to argus! 🎉

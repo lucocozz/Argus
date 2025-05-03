@@ -6,9 +6,9 @@ subdir('core')
 subdir('display')
 
 # Collect all sources
-cargs_sources = []
-cargs_sources += utils_sources
-cargs_sources += callbacks_sources
-cargs_sources += api_sources
-cargs_sources += core_sources
-cargs_sources += display_sources
+argus_sources = []
+argus_sources += utils_sources
+argus_sources += callbacks_sources
+argus_sources += api_sources
+argus_sources += core_sources
+argus_sources += display_sources

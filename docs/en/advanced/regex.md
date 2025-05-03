@@ -1,9 +1,9 @@
 # Regular Expressions
 
-cargs offers powerful regular expression support via PCRE2 (Perl Compatible Regular Expressions) to validate user inputs with sophisticated pattern matching.
+argus offers powerful regular expression support via PCRE2 (Perl Compatible Regular Expressions) to validate user inputs with sophisticated pattern matching.
 
 !!! abstract "Overview"
-    This guide covers advanced usage of regular expressions in cargs:
+    This guide covers advanced usage of regular expressions in argus:
     
     - Using predefined patterns
     - Creating custom patterns
@@ -14,50 +14,50 @@ cargs offers powerful regular expression support via PCRE2 (Perl Compatible Regu
 
 ## Using Predefined Patterns
 
-cargs provides a wide range of predefined patterns in `cargs/regex.h` that cover common validation scenarios.
+argus provides a wide range of predefined patterns in `argus/regex.h` that cover common validation scenarios.
 
 === "Basic Usage"
     ```c
-    #include "cargs/regex.h"
+    #include "argus/regex.h"
     
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Email validation
         OPTION_STRING('e', "email", HELP("Email address"),
-                    REGEX(CARGS_RE_EMAIL)),
+                    REGEX(ARGUS_RE_EMAIL)),
         
         // IP address validation
         OPTION_STRING('i', "ip", HELP("IP address"),
-                    REGEX(CARGS_RE_IPV4)),
+                    REGEX(ARGUS_RE_IPV4)),
         
         // URL validation
         OPTION_STRING('u', "url", HELP("URL"),
-                    REGEX(CARGS_RE_URL))
+                    REGEX(ARGUS_RE_URL))
     )
     ```
 
 === "Multiple Patterns"
     ```c
     // Options with different types of validation
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Date in ISO format (YYYY-MM-DD)
         OPTION_STRING('d', "date", HELP("Date (YYYY-MM-DD)"),
-                    REGEX(CARGS_RE_ISO_DATE),
+                    REGEX(ARGUS_RE_ISO_DATE),
                     HINT("YYYY-MM-DD")),
         
         // Password with strong validation
         OPTION_STRING('p', "password", HELP("Password (8+ chars, mixed case, numbers, symbols)"),
-                    REGEX(CARGS_RE_PASSWD_STRONG),
+                    REGEX(ARGUS_RE_PASSWD_STRONG),
                     HINT("StrongP@ss1")),
         
         // Semantic version number
         OPTION_STRING('v', "version", HELP("Semantic version"),
-                    REGEX(CARGS_RE_SEMVER),
+                    REGEX(ARGUS_RE_SEMVER),
                     HINT("X.Y.Z"),
                     FLAGS(FLAG_REQUIRED))
     )
@@ -82,7 +82,7 @@ The `MAKE_REGEX` macro creates a new regex pattern with an error hint:
 
 === "Using Custom Patterns"
     ```c
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
@@ -124,7 +124,7 @@ For more complex validation requirements, you can create composite patterns:
 
 ## Error Messages
 
-A key advantage of cargs' regex implementation is the ability to provide helpful error messages:
+A key advantage of argus' regex implementation is the ability to provide helpful error messages:
 
 === "Pattern with Detailed Error"
     ```c
@@ -142,7 +142,7 @@ A key advantage of cargs' regex implementation is the ability to provide helpful
 
 ## Pattern Syntax
 
-Since cargs uses PCRE2, you have access to powerful pattern matching features:
+Since argus uses PCRE2, you have access to powerful pattern matching features:
 
 ### Common Pattern Elements
 
@@ -198,10 +198,10 @@ Regex validation can be powerful, but complex patterns can impact performance:
 
 ## Implementation Details
 
-cargs implements regex validation through the PCRE2 library:
+argus implements regex validation through the PCRE2 library:
 
 ```c
-int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
+int regex_validator(argus_t *argus, const char *value, validator_data_t data)
 {
     const char *pattern = data.regex.pattern;
     
@@ -213,16 +213,16 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
     
     // Return validation result
     if (rc < 0) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, 
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, 
                           "Invalid value '%s': %s", value, data.regex.hint);
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
 ## Best Practices
 
-When using regex validation with cargs:
+When using regex validation with argus:
 
 1. **Use predefined patterns** when possible for common validations
 2. **Create descriptive error messages** that help the user understand what's required
@@ -235,28 +235,28 @@ When using regex validation with cargs:
 Here's a comprehensive example demonstrating multiple regex validation techniques:
 
 ```c
-#include "cargs.h"
-#include "cargs/regex.h"
+#include "argus.h"
+#include "argus/regex.h"
 #include <stdio.h>
 
 /* Custom regex patterns */
 #define RE_PRODUCT_ID MAKE_REGEX("^[A-Z]{2}\\d{4}-[A-Z0-9]{6}$", "Format: XX0000-XXXXXX")
 #define RE_SIMPLE_NAME MAKE_REGEX("^[a-zA-Z][a-zA-Z0-9_-]{2,29}$", "Letters, numbers, underscore, dash")
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
 
     // Using predefined patterns
     GROUP_START("Network and Communication", GROUP_DESC("Network-related options")),
        OPTION_STRING('i', "ip", HELP("IPv4 address"),
-                    REGEX(CARGS_RE_IPV4)),
+                    REGEX(ARGUS_RE_IPV4)),
 
        OPTION_STRING('e', "email", HELP("Email address"),
-                    REGEX(CARGS_RE_EMAIL)),
+                    REGEX(ARGUS_RE_EMAIL)),
 
         OPTION_STRING('u', "url", HELP("URL with any protocol"),
-                    REGEX(CARGS_RE_URL)),
+                    REGEX(ARGUS_RE_URL)),
     GROUP_END(),
 
     // Custom patterns defined above
@@ -280,37 +280,37 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "regex_example", "1.0.0");
-    cargs.description = "Example of using regex validation with both predefined and custom patterns";
+    argus_t argus = argus_init(options, "regex_example", "1.0.0");
+    argus.description = "Example of using regex validation with both predefined and custom patterns";
 
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS)
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS)
         return status;
 
     printf("Validation successful! All provided values match the expected patterns.\n\n");
 
     // Display validated values
     printf("Network & Communication:\n");
-    printf("  IP Address: %s\n", cargs_is_set(cargs, "ip") ?
-           cargs_get(cargs, "ip").as_string : "(not provided)");
-    printf("  Email: %s\n", cargs_is_set(cargs, "email") ?
-           cargs_get(cargs, "email").as_string : "(not provided)");
-    printf("  URL: %s\n", cargs_is_set(cargs, "url") ?
-           cargs_get(cargs, "url").as_string : "(not provided)");
+    printf("  IP Address: %s\n", argus_is_set(argus, "ip") ?
+           argus_get(argus, "ip").as_string : "(not provided)");
+    printf("  Email: %s\n", argus_is_set(argus, "email") ?
+           argus_get(argus, "email").as_string : "(not provided)");
+    printf("  URL: %s\n", argus_is_set(argus, "url") ?
+           argus_get(argus, "url").as_string : "(not provided)");
 
     printf("\nCustom Formats:\n");
-    printf("  Product ID: %s\n", cargs_is_set(cargs, "product") ?
-           cargs_get(cargs, "product").as_string : "(not provided)");
-    printf("  Username: %s\n", cargs_is_set(cargs, "name") ?
-           cargs_get(cargs, "name").as_string : "(not provided)");
+    printf("  Product ID: %s\n", argus_is_set(argus, "product") ?
+           argus_get(argus, "product").as_string : "(not provided)");
+    printf("  Username: %s\n", argus_is_set(argus, "name") ?
+           argus_get(argus, "name").as_string : "(not provided)");
 
     printf("\nInline Patterns:\n");
-    printf("  Zip Code: %s\n", cargs_is_set(cargs, "zipcode") ?
-           cargs_get(cargs, "zipcode").as_string : "(not provided)");
-    printf("  Time: %s\n", cargs_is_set(cargs, "time") ?
-           cargs_get(cargs, "time").as_string : "(not provided)");
+    printf("  Zip Code: %s\n", argus_is_set(argus, "zipcode") ?
+           argus_get(argus, "zipcode").as_string : "(not provided)");
+    printf("  Time: %s\n", argus_is_set(argus, "time") ?
+           argus_get(argus, "time").as_string : "(not provided)");
 
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```

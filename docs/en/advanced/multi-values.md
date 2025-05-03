@@ -1,6 +1,6 @@
 # Multi-Value Collections
 
-cargs provides powerful support for multi-value collections through arrays and maps, allowing you to handle complex command-line scenarios that traditional argument parsing libraries struggle with.
+argus provides powerful support for multi-value collections through arrays and maps, allowing you to handle complex command-line scenarios that traditional argument parsing libraries struggle with.
 
 !!! abstract "Overview"
     This guide covers advanced techniques for working with collections:
@@ -19,7 +19,7 @@ Array options allow users to provide multiple values for a single option, either
 
 ### Supported Array Types
 
-cargs supports these array types:
+argus supports these array types:
 
 - `OPTION_ARRAY_STRING`: Array of strings
 - `OPTION_ARRAY_INT`: Array of integers (with support for ranges)
@@ -28,7 +28,7 @@ cargs supports these array types:
 ### Defining Array Options
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -76,7 +76,7 @@ Users can provide array values in several ways:
 
 ### Integer Range Syntax
 
-For integer arrays, cargs supports a special range syntax:
+For integer arrays, argus supports a special range syntax:
 
 ```bash
 # Ranges expand to include all values in the range
@@ -96,7 +96,7 @@ Map options allow users to provide key-value pairs, enabling structured configur
 
 ### Supported Map Types
 
-cargs supports these map types:
+argus supports these map types:
 
 | Type | Macro | Values | Example Usage |
 |------|-------|--------|---------------|
@@ -117,7 +117,7 @@ All values are case-insensitive, so "True", "TRUE", and "true" are all equivalen
 
 ## Collection Flags
 
-cargs provides special flags to modify how collections are processed:
+argus provides special flags to modify how collections are processed:
 
 ### Array Flags
 
@@ -145,7 +145,7 @@ OPTION_ARRAY_INT('i', "ids", "IDs", FLAGS(FLAG_SORTED | FLAG_UNIQUE))
 
 ## Accessing Collections
 
-cargs provides multiple ways to access collection data, each with its own advantages:
+argus provides multiple ways to access collection data, each with its own advantages:
 
 ### Direct Access
 
@@ -153,8 +153,8 @@ The most straightforward approach is direct access to the value arrays or maps:
 
 ```c
 // Get the entire array
-cargs_value_t *names_array = cargs_get(cargs, "names").as_array;
-size_t names_count = cargs_count(cargs, "names");
+argus_value_t *names_array = argus_get(argus, "names").as_array;
+size_t names_count = argus_count(argus, "names");
 
 // Access array elements directly
 for (size_t i = 0; i < names_count; i++) {
@@ -163,8 +163,8 @@ for (size_t i = 0; i < names_count; i++) {
 }
 
 // Get the entire map
-cargs_pair_t *env_map = cargs_get(cargs, "env").as_map;
-size_t env_count = cargs_count(cargs, "env");
+argus_pair_t *env_map = argus_get(argus, "env").as_map;
+size_t env_count = argus_count(argus, "env");
 
 // Access map entries directly
 for (size_t i = 0; i < env_count; i++) {
@@ -176,33 +176,33 @@ for (size_t i = 0; i < env_count; i++) {
 
 ### Element Access Helpers
 
-cargs provides helper functions for more convenient access to specific elements:
+argus provides helper functions for more convenient access to specific elements:
 
 ```c
 // Get a specific array element by index
-const char* first_name = cargs_array_get(cargs, "names", 0).as_string;
-int second_id = cargs_array_get(cargs, "ids", 1).as_int;
+const char* first_name = argus_array_get(argus, "names", 0).as_string;
+int second_id = argus_array_get(argus, "ids", 1).as_int;
 
 // Look up a specific map value by key
-const char* user = cargs_map_get(cargs, "env", "USER").as_string;
-int http_port = cargs_map_get(cargs, "ports", "http").as_int;
-bool debug_enabled = cargs_map_get(cargs, "features", "debug").as_bool;
+const char* user = argus_map_get(argus, "env", "USER").as_string;
+int http_port = argus_map_get(argus, "ports", "http").as_int;
+bool debug_enabled = argus_map_get(argus, "features", "debug").as_bool;
 ```
 
 These helper functions handle invalid indices or missing keys gracefully, returning an empty value (`{.raw = 0}`) when the requested element doesn't exist.
 
 ### Iterator API
 
-For more idiomatic iteration, cargs provides a clean iterator API:
+For more idiomatic iteration, argus provides a clean iterator API:
 
 #### Array Iterators
 
 ```c
 // Create an array iterator
-cargs_array_it_t names_it = cargs_array_it(cargs, "names");
+argus_array_it_t names_it = argus_array_it(argus, "names");
 
 // Iterate through all elements
-while (cargs_array_next(&names_it)) {
+while (argus_array_next(&names_it)) {
     printf("Name: %s\n", names_it.value.as_string);
 }
 ```
@@ -211,10 +211,10 @@ while (cargs_array_next(&names_it)) {
 
 ```c
 // Create a map iterator
-cargs_map_it_t env_it = cargs_map_it(cargs, "env");
+argus_map_it_t env_it = argus_map_it(argus, "env");
 
 // Iterate through all key-value pairs
-while (cargs_map_next(&env_it)) {
+while (argus_map_next(&env_it)) {
     printf("%s = %s\n", env_it.key, env_it.value.as_string);
 }
 ```
@@ -224,11 +224,11 @@ while (cargs_map_next(&env_it)) {
 Iterators can be reset and reused for multiple passes through the collection:
 
 ```c
-cargs_map_it_t features_it = cargs_map_it(cargs, "features");
+argus_map_it_t features_it = argus_map_it(argus, "features");
 
 // First pass: print enabled features
 printf("Enabled features: ");
-while (cargs_map_next(&features_it)) {
+while (argus_map_next(&features_it)) {
     if (features_it.value.as_bool) {
         printf("%s ", features_it.key);
     }
@@ -236,11 +236,11 @@ while (cargs_map_next(&features_it)) {
 printf("\n");
 
 // Reset the iterator for a second pass
-cargs_map_reset(&features_it);
+argus_map_reset(&features_it);
 
 // Second pass: print disabled features
 printf("Disabled features: ");
-while (cargs_map_next(&features_it)) {
+while (argus_map_next(&features_it)) {
     if (!features_it.value.as_bool) {
         printf("%s ", features_it.key);
     }
@@ -315,10 +315,10 @@ Usage:
 A complete example of feature management with toggles:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -329,28 +329,28 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "feature_manager", "1.0.0");
+    argus_t argus = argus_init(options, "feature_manager", "1.0.0");
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
-    if (cargs_is_set(cargs, "feature")) {
+    if (argus_is_set(argus, "feature")) {
         // Create categories for enabled/disabled
         printf("Feature Configuration:\n");
         
         printf("  Enabled Features:\n");
-        cargs_map_it_t it = cargs_map_it(cargs, "feature");
-        while (cargs_map_next(&it)) {
+        argus_map_it_t it = argus_map_it(argus, "feature");
+        while (argus_map_next(&it)) {
             if (it.value.as_bool) {
                 printf("    - %s\n", it.key);
             }
         }
         
         printf("  Disabled Features:\n");
-        cargs_map_reset(&it);
-        while (cargs_map_next(&it)) {
+        argus_map_reset(&it);
+        while (argus_map_next(&it)) {
             if (!it.value.as_bool) {
                 printf("    - %s\n", it.key);
             }
@@ -359,35 +359,35 @@ int main(int argc, char **argv)
         printf("No features configured.\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
 
 ## Technical Implementation Details
 
-Behind the scenes, cargs implements collections using efficient data structures:
+Behind the scenes, argus implements collections using efficient data structures:
 
 ### Arrays
 
-Arrays are implemented as dynamic arrays of `cargs_value_t` elements:
+Arrays are implemented as dynamic arrays of `argus_value_t` elements:
 
 ```c
 // Array storage in option
-option->value.as_array = malloc(option->value_capacity * sizeof(cargs_value_t));
+option->value.as_array = malloc(option->value_capacity * sizeof(argus_value_t));
 ```
 
 When an array needs to grow:
 
 ```c
-void adjust_array_size(cargs_option_t *option)
+void adjust_array_size(argus_option_t *option)
 {
     if (option->value.as_array == NULL) {
         option->value_capacity = MULTI_VALUE_INITIAL_CAPACITY;
-        option->value.as_array = malloc(option->value_capacity * sizeof(cargs_value_t));
+        option->value.as_array = malloc(option->value_capacity * sizeof(argus_value_t));
     } else if (option->value_count >= option->value_capacity) {
         option->value_capacity *= 2;
-        void *new = realloc(option->value.as_array, option->value_capacity * sizeof(cargs_value_t));
+        void *new = realloc(option->value.as_array, option->value_capacity * sizeof(argus_value_t));
         if (new == NULL) {
             option->value_capacity /= 2;
             return;
@@ -399,20 +399,20 @@ void adjust_array_size(cargs_option_t *option)
 
 ### Maps
 
-Maps are implemented as dynamic arrays of `cargs_pair_t` elements:
+Maps are implemented as dynamic arrays of `argus_pair_t` elements:
 
 ```c
-typedef struct cargs_pair_s
+typedef struct argus_pair_s
 {
     const char *key;
-    cargs_value_t     value;
-} cargs_pair_t;
+    argus_value_t     value;
+} argus_pair_t;
 ```
 
 Key lookup is performed by linear search:
 
 ```c
-int map_find_key(cargs_option_t *option, const char *key)
+int map_find_key(argus_option_t *option, const char *key)
 {
     for (size_t i = 0; i < option->value_count; ++i) {
         if (option->value.as_map[i].key && strcmp(option->value.as_map[i].key, key) == 0)
@@ -427,22 +427,22 @@ int map_find_key(cargs_option_t *option, const char *key)
 Iterators are simple structures that maintain a reference to the collection and a current position:
 
 ```c
-typedef struct cargs_array_iterator_s
+typedef struct argus_array_iterator_s
 {
-    cargs_value_t *_array;    /* Pointer to the array */
+    argus_value_t *_array;    /* Pointer to the array */
     size_t   _count;    /* Number of elements */
     size_t   _position; /* Current position */
-    cargs_value_t  value;     /* Current value */
-} cargs_array_it_t;
+    argus_value_t  value;     /* Current value */
+} argus_array_it_t;
 
-typedef struct cargs_map_iterator_s
+typedef struct argus_map_iterator_s
 {
-    cargs_pair_t *_map;      /* Pointer to the map */
+    argus_pair_t *_map;      /* Pointer to the map */
     size_t        _count;    /* Number of elements */
     size_t        _position; /* Current position */
     const char   *key;       /* Current key */
-    cargs_value_t       value;     /* Current value */
-} cargs_map_it_t;
+    argus_value_t       value;     /* Current value */
+} argus_map_it_t;
 ```
 
 ## Complete Example
@@ -450,10 +450,10 @@ typedef struct cargs_map_iterator_s
 Here's a complete example demonstrating advanced collection handling techniques:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -474,55 +474,55 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "multi_values", "1.0.0");
-    cargs.description = "Advanced multi-value collections example";
+    argus_t argus = argus_init(options, "multi_values", "1.0.0");
+    argus.description = "Advanced multi-value collections example";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Process arrays using iterators
-    if (cargs_is_set(cargs, "name")) {
+    if (argus_is_set(argus, "name")) {
         printf("Users:\n");
-        cargs_array_it_t it = cargs_array_it(cargs, "name");
-        while (cargs_array_next(&it)) {
+        argus_array_it_t it = argus_array_it(argus, "name");
+        while (argus_array_next(&it)) {
             printf("  - %s\n", it.value.as_string);
         }
     }
     
-    if (cargs_is_set(cargs, "id")) {
+    if (argus_is_set(argus, "id")) {
         printf("User IDs:\n");
-        cargs_array_it_t it = cargs_array_it(cargs, "id");
-        while (cargs_array_next(&it)) {
+        argus_array_it_t it = argus_array_it(argus, "id");
+        while (argus_array_next(&it)) {
             printf("  - %d\n", it.value.as_int);
         }
     }
     
     // Process maps using iterators
-    if (cargs_is_set(cargs, "env")) {
+    if (argus_is_set(argus, "env")) {
         printf("Environment Variables:\n");
-        cargs_map_it_t it = cargs_map_it(cargs, "env");
-        while (cargs_map_next(&it)) {
+        argus_map_it_t it = argus_map_it(argus, "env");
+        while (argus_map_next(&it)) {
             printf("  %s = %s\n", it.key, it.value.as_string);
         }
     }
     
-    if (cargs_is_set(cargs, "port")) {
+    if (argus_is_set(argus, "port")) {
         printf("Port Mappings:\n");
-        cargs_map_it_t it = cargs_map_it(cargs, "port");
-        while (cargs_map_next(&it)) {
+        argus_map_it_t it = argus_map_it(argus, "port");
+        while (argus_map_next(&it)) {
             printf("  %s: %d\n", it.key, it.value.as_int);
         }
     }
     
     // Process boolean map with categories and filtering
-    if (cargs_is_set(cargs, "feature")) {
+    if (argus_is_set(argus, "feature")) {
         printf("Features:\n");
         
         printf("  Enabled:");
-        cargs_map_it_t it = cargs_map_it(cargs, "feature");
-        while (cargs_map_next(&it)) {
+        argus_map_it_t it = argus_map_it(argus, "feature");
+        while (argus_map_next(&it)) {
             if (it.value.as_bool) {
                 printf(" %s", it.key);
             }
@@ -530,8 +530,8 @@ int main(int argc, char **argv)
         printf("\n");
         
         printf("  Disabled:");
-        cargs_map_reset(&it);
-        while (cargs_map_next(&it)) {
+        argus_map_reset(&it);
+        while (argus_map_next(&it)) {
             if (!it.value.as_bool) {
                 printf(" %s", it.key);
             }
@@ -539,7 +539,7 @@ int main(int argc, char **argv)
         printf("\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
@@ -553,7 +553,7 @@ This example demonstrates:
 
 ## Summary
 
-cargs' multi-value collections provide a powerful way to handle complex command-line interfaces with:
+argus' multi-value collections provide a powerful way to handle complex command-line interfaces with:
 
 - **Multiple values** for a single option (arrays)
 - **Key-value configuration** through a single option (maps)
@@ -561,4 +561,4 @@ cargs' multi-value collections provide a powerful way to handle complex command-
 - **Sorting and uniqueness** for organized data
 - **Efficient iteration** through the iterator API
 
-These advanced features allow cargs to handle scenarios that would be difficult or impossible with traditional argument parsing libraries.
+These advanced features allow argus to handle scenarios that would be difficult or impossible with traditional argument parsing libraries.

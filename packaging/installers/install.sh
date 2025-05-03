@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-VERSION="1.0.2"
+VERSION="1.0.0"
 
 PREFIX="/usr/local"
 LIBDIR="${PREFIX}/lib"
@@ -17,7 +17,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 show_help() {
-    echo -e "${BLUE}cargs installer${NC} - v${VERSION}"
+    echo -e "${BLUE}argus installer${NC} - v${VERSION}"
     echo ""
     echo "Usage: $0 [options]"
     echo ""
@@ -110,7 +110,7 @@ check_permissions() {
 }
 
 install_library() {
-    log "${BLUE}Installing cargs to:${NC}"
+    log "${BLUE}Installing argus to:${NC}"
     log "  Library: $LIBDIR"
     log "  Headers: $INCLUDEDIR"
     
@@ -127,32 +127,32 @@ install_library() {
     
     if [ -d "$LIBDIR/pkgconfig" ] || mkdir -p "$LIBDIR/pkgconfig"; then
         log "${BLUE}Creating pkg-config file...${NC}"
-        cat > "$LIBDIR/pkgconfig/cargs.pc" << EOF
+        cat > "$LIBDIR/pkgconfig/argus.pc" << EOF
 prefix=$PREFIX
 exec_prefix=\${prefix}
 libdir=$LIBDIR
 includedir=$INCLUDEDIR
 
-Name: cargs
+Name: argus
 Description: Modern C library for command-line argument parsing
 Version: $VERSION
 Requires.private: libpcre2-8
-Libs: -L\${libdir} -lcargs
+Libs: -L\${libdir} -largus
 Cflags: -I\${includedir}
 EOF
     fi
     
-    echo -e "${GREEN}cargs has been successfully installed!${NC}"
+    echo -e "${GREEN}argus has been successfully installed!${NC}"
     
     echo ""
-    echo "You can now use cargs in your projects:"
+    echo "You can now use argus in your projects:"
     echo ""
     if [ $INSTALL_LOCAL -eq 1 ]; then
-        echo "  With pkg-config: gcc -o myapp myapp.c \$(pkg-config --cflags --libs cargs)"
-        echo "  Or directly:     gcc -o myapp myapp.c -I$INCLUDEDIR -L$LIBDIR -lcargs"
+        echo "  With pkg-config: gcc -o myapp myapp.c \$(pkg-config --cflags --libs argus)"
+        echo "  Or directly:     gcc -o myapp myapp.c -I$INCLUDEDIR -L$LIBDIR -largus"
     else
-        echo "  Direct linking:  gcc -o myapp myapp.c -lcargs"
-        echo "  Or with pkg-config: gcc -o myapp myapp.c \$(pkg-config --cflags --libs cargs)"
+        echo "  Direct linking:  gcc -o myapp myapp.c -largus"
+        echo "  Or with pkg-config: gcc -o myapp myapp.c \$(pkg-config --cflags --libs argus)"
     fi
     
     if [ $INSTALL_LOCAL -eq 1 ]; then
@@ -168,21 +168,21 @@ EOF
 }
 
 uninstall_library() {
-    log "${BLUE}Uninstalling cargs from:${NC}"
+    log "${BLUE}Uninstalling argus from:${NC}"
     log "  Library: $LIBDIR"
     log "  Headers: $INCLUDEDIR"
     
-    rm -f "$LIBDIR/libcargs.a" "$LIBDIR/libcargs.so"*
-    rm -f "$LIBDIR/pkgconfig/cargs.pc"
-    rm -rf "$INCLUDEDIR/cargs"
-    rm -f "$INCLUDEDIR/cargs.h"
+    rm -f "$LIBDIR/libargus.a" "$LIBDIR/libargus.so"*
+    rm -f "$LIBDIR/pkgconfig/argus.pc"
+    rm -rf "$INCLUDEDIR/argus"
+    rm -f "$INCLUDEDIR/argus.h"
     
     if [ "$(id -u)" -eq 0 ] && [ "$(uname)" = "Linux" ]; then
         log "${BLUE}Updating library cache...${NC}"
         ldconfig
     fi
     
-    echo -e "${GREEN}cargs has been successfully uninstalled!${NC}"
+    echo -e "${GREEN}argus has been successfully uninstalled!${NC}"
 }
 
 if [ $UNINSTALL -eq 1 ]; then

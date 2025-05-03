@@ -1,16 +1,16 @@
 /**
- * Basic usage example for cargs library
+ * Basic usage example for argus library
  * 
  * Demonstrates core features: flags, options with values, positional arguments,
  * and options with only short name or only long name
  */
 
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 // Define options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     // Standard options
     HELP_OPTION(FLAGS(FLAG_EXIT)),
@@ -44,23 +44,23 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    // Initialize cargs
-    cargs_t cargs = cargs_init(options, "basic_example", "1.0.0");
-    cargs.description = "Basic example of cargs library";
+    // Initialize argus
+    argus_t argus = argus_init(options, "basic_example", "1.0.0");
+    argus.description = "Basic example of argus library";
 
     // Parse command-line arguments
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
 
     // Access parsed values
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
-    const char* output = cargs_get(cargs, "output").as_string;
-    int port = cargs_get(cargs, "p").as_int;  // Using short name as ID when only short name exists
-    bool dry_run = cargs_get(cargs, "dry-run").as_bool;
-    const char* input = cargs_get(cargs, "input").as_string;
-    bool debug = cargs_get(cargs, "d").as_bool;  // Using short name as ID when both exist
+    bool verbose = argus_get(argus, "verbose").as_bool;
+    const char* output = argus_get(argus, "output").as_string;
+    int port = argus_get(argus, "p").as_int;  // Using short name as ID when only short name exists
+    bool dry_run = argus_get(argus, "dry-run").as_bool;
+    const char* input = argus_get(argus, "input").as_string;
+    bool debug = argus_get(argus, "d").as_bool;  // Using short name as ID when both exist
 
     // Display configuration
     printf("Configuration:\n");
@@ -70,9 +70,9 @@ int main(int argc, char **argv)
     printf("  Dry run (--dry-run only): %s\n", dry_run ? "enabled" : "disabled");
     printf("  Debug (-d only): %s\n", debug ? "enabled" : "disabled");
     printf("  Input: %s\n", input);
-    printf("  Value: %d\n", cargs_get(cargs, "value").as_int);
+    printf("  Value: %d\n", argus_get(argus, "value").as_int);
 
     // Free resources
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }

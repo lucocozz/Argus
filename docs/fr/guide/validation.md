@@ -1,9 +1,9 @@
 # Validation
 
-cargs offre de solides capacités de validation pour garantir que les entrées de ligne de commande répondent aux exigences de votre application.
+argus offre de solides capacités de validation pour garantir que les entrées de ligne de commande répondent aux exigences de votre application.
 
 !!! abstract "Aperçu"
-    La validation dans cargs est organisée en plusieurs catégories :
+    La validation dans argus est organisée en plusieurs catégories :
     
     - **Validateurs intégrés** - Validation simple avec `RANGE` et `CHOICES`
     - **Validation par expression régulière** - Validation de motifs de chaînes avec PCRE2
@@ -13,7 +13,7 @@ cargs offre de solides capacités de validation pour garantir que les entrées d
 
 ## Validateurs intégrés
 
-cargs fournit plusieurs validateurs intégrés pour simplifier les scénarios de validation courants. Ceux-ci peuvent être appliqués directement aux définitions d'options.
+argus fournit plusieurs validateurs intégrés pour simplifier les scénarios de validation courants. Ceux-ci peuvent être appliqués directement aux définitions d'options.
 
 ### Validation de plage
 
@@ -59,12 +59,12 @@ Le validateur `CHOICES` garantit que la valeur est l'une d'un ensemble spécifiq
 
 ## Validation par expression régulière
 
-cargs utilise PCRE2 pour une validation puissante par expression régulière :
+argus utilise PCRE2 pour une validation puissante par expression régulière :
 
 === "Utilisation de base"
     ```c
     OPTION_STRING('e', "email", HELP("Adresse email"),
-                  REGEX(CARGS_RE_EMAIL))  // Doit être un email valide
+                  REGEX(ARGUS_RE_EMAIL))  // Doit être un email valide
     ```
 
 === "Motif personnalisé"
@@ -74,14 +74,14 @@ cargs utilise PCRE2 pour une validation puissante par expression régulière :
     ```
 
 !!! tip "Motifs prédéfinis"
-    cargs inclut de nombreux motifs prédéfinis dans `cargs/regex.h` :
+    argus inclut de nombreux motifs prédéfinis dans `argus/regex.h` :
     
     | Constante | Valide | Exemple |
     |----------|-----------|---------|
-    | `CARGS_RE_EMAIL` | Adresses email | user@example.com |
-    | `CARGS_RE_IPV4` | Adresses IPv4 | 192.168.1.1 |
-    | `CARGS_RE_URL` | URLs | https://example.com |
-    | `CARGS_RE_ISO_DATE` | Dates au format ISO | 2023-01-31 |
+    | `ARGUS_RE_EMAIL` | Adresses email | user@example.com |
+    | `ARGUS_RE_IPV4` | Adresses IPv4 | 192.168.1.1 |
+    | `ARGUS_RE_URL` | URLs | https://example.com |
+    | `ARGUS_RE_ISO_DATE` | Dates au format ISO | 2023-01-31 |
     
     Pour une liste complète, consultez la [référence API des expressions régulières](../api/regex.md).
     
@@ -113,13 +113,13 @@ Pour une logique de validation plus complexe, vous pouvez créer vos propres val
 
 === "Validateur simple"
     ```c
-    int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+    int even_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
     {
         if (option->value.as_int % 2 != 0) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                              "La valeur doit être un nombre pair");
         }
-        return CARGS_SUCCESS;
+        return ARGUS_SUCCESS;
     }
     
     // Utilisation
@@ -129,15 +129,15 @@ Pour une logique de validation plus complexe, vous pouvez créer vos propres val
 
 === "Pré-validateur de base"
     ```c
-    int length_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
+    int length_pre_validator(argus_t *argus, const char *value, validator_data_t data)
     {
         size_t min_length = *(size_t *)data.custom;
         
         if (strlen(value) < min_length) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                               "La chaîne doit comporter au moins %zu caractères", min_length);
         }
-        return CARGS_SUCCESS;
+        return ARGUS_SUCCESS;
     }
     
     // Utilisation
@@ -147,7 +147,7 @@ Pour une logique de validation plus complexe, vous pouvez créer vos propres val
     ```
 
 !!! info "Types de validateurs"
-    cargs prend en charge deux types de validateurs personnalisés :
+    argus prend en charge deux types de validateurs personnalisés :
     
     1. **Validateurs** - Valident la valeur **traitée** après conversion vers son type final
     2. **Pré-validateurs** - Valident la **chaîne brute** avant tout traitement
@@ -168,10 +168,10 @@ OPTION_INT('p', "port", HELP("Numéro de port"),
 
 ## Rapport d'erreurs
 
-Les validateurs doivent utiliser `CARGS_REPORT_ERROR` pour fournir des messages d'erreur clairs :
+Les validateurs doivent utiliser `ARGUS_REPORT_ERROR` pour fournir des messages d'erreur clairs :
 
 ```c
-CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
+ARGUS_REPORT_ERROR(argus, error_code, format_string, ...);
 ```
 
 !!! example "Exemple de message d'erreur"
@@ -180,9 +180,9 @@ CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
     ```
 
 Les codes d'erreur courants incluent :
-- `CARGS_ERROR_INVALID_VALUE` : La valeur ne répond pas aux exigences
-- `CARGS_ERROR_INVALID_RANGE` : Valeur hors de la plage autorisée
-- `CARGS_ERROR_INVALID_FORMAT` : La valeur a un format incorrect
+- `ARGUS_ERROR_INVALID_VALUE` : La valeur ne répond pas aux exigences
+- `ARGUS_ERROR_INVALID_RANGE` : Valeur hors de la plage autorisée
+- `ARGUS_ERROR_INVALID_FORMAT` : La valeur a un format incorrect
 
 ## Exemples complets
 
@@ -198,4 +198,4 @@ Pour une couverture plus approfondie des sujets de validation, consultez ces gui
 
 - [Validateurs personnalisés](../advanced/custom-validators.md) - Création de validateurs personnalisés avec une logique spécialisée
 - [Expressions régulières](../advanced/regex.md) - Guide détaillé de la validation par motifs regex
-- [Motifs regex prédéfinis](../api/regex_patterns.md) - Liste des motifs d'expressions régulières prédéfinis dans cargs
+- [Motifs regex prédéfinis](../api/regex_patterns.md) - Liste des motifs d'expressions régulières prédéfinis dans argus

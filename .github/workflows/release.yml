@@ -31,25 +31,25 @@ jobs:
       
       - name: Create package with installer
         run: |
-          mkdir -p cargs-${{ env.VERSION }}/include
-          mkdir -p cargs-${{ env.VERSION }}/lib
+          mkdir -p argus-${{ env.VERSION }}/include
+          mkdir -p argus-${{ env.VERSION }}/lib
 
-          cp -r includes/* cargs-${{ env.VERSION }}/include/
-          cp .build/libcargs.a cargs-${{ env.VERSION }}/lib/
-          cp .build/libcargs.so.${{ env.VERSION }} cargs-${{ env.VERSION }}/lib/
+          cp -r includes/* argus-${{ env.VERSION }}/include/
+          cp .build/libargus.a argus-${{ env.VERSION }}/lib/
+          cp .build/libargus.so.${{ env.VERSION }} argus-${{ env.VERSION }}/lib/
 
-          cp packaging/installers/install.sh cargs-${{ env.VERSION }}/
-          chmod +x cargs-${{ env.VERSION }}/install.sh
+          cp packaging/installers/install.sh argus-${{ env.VERSION }}/
+          chmod +x argus-${{ env.VERSION }}/install.sh
 
-          cp README.md LICENSE cargs-${{ env.VERSION }}/
+          cp README.md LICENSE argus-${{ env.VERSION }}/
 
-          tar -czf cargs-${{ env.VERSION }}.tar.gz cargs-${{ env.VERSION }}
-          zip -r cargs-${{ env.VERSION }}.zip cargs-${{ env.VERSION }}
+          tar -czf argus-${{ env.VERSION }}.tar.gz argus-${{ env.VERSION }}
+          zip -r argus-${{ env.VERSION }}.zip argus-${{ env.VERSION }}
       
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            cargs-${{ env.VERSION }}.tar.gz
-            cargs-${{ env.VERSION }}.zip
+            argus-${{ env.VERSION }}.tar.gz
+            argus-${{ env.VERSION }}.zip
           token: ${{ secrets.GITHUB_TOKEN }}

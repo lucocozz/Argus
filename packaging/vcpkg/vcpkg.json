@@ -1,8 +1,8 @@
 {
-  "name": "libcargs",
+  "name": "libargus",
   "version": "1.0.1",
   "description": "Modern C library for command-line argument parsing with an elegant, macro-based API",
-  "homepage": "https://github.com/lucocozz/cargs",
+  "homepage": "https://github.com/lucocozz/argus",
   "license": "MIT",
   "supports": "linux | osx",
   "dependencies": [

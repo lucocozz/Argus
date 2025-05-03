@@ -1,10 +1,10 @@
 #include <criterion/criterion.h>
-#include "cargs/internal/utils.h"
-#include "cargs/internal/context.h"
-#include "cargs.h"
+#include "argus/internal/utils.h"
+#include "argus/internal/context.h"
+#include "argus.h"
 
 // Mock options for testing
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     test_options,
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     OPTION_STRING('o', "output", HELP("Output file")),
@@ -16,45 +16,45 @@ CARGS_OPTIONS(
 )
 
 // Mock subcommand options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     sub_options,
     OPTION_FLAG('d', "debug", HELP("Debug mode")),
     POSITIONAL_STRING("subfile", HELP("Subcommand file"))
 )
 
 // Mock nested subcommand options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     nested_options,
     OPTION_FLAG('n', "nested", HELP("Nested option"))
 )
 
 // Mock options with subcommands
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     cmd_options,
     OPTION_FLAG('g', "global", HELP("Global option")),
     SUBCOMMAND("sub", sub_options, HELP("Subcommand")),
     SUBCOMMAND("nested", nested_options, HELP("Nested subcommand"))
 )
 
-// Mock cargs context for testing
-static cargs_t test_cargs;
+// Mock argus context for testing
+static argus_t test_argus;
 
 // Setup function
 void setup(void)
 {
-    test_cargs.program_name = "test_prog";
-    test_cargs.options = test_options;
-    test_cargs.error_stack.count = 0;
-    context_init(&test_cargs);
+    test_argus.program_name = "test_prog";
+    test_argus.options = test_options;
+    test_argus.error_stack.count = 0;
+    context_init(&test_argus);
 }
 
 // Setup function for subcommand tests
 void setup_subcommands(void)
 {
-    test_cargs.program_name = "test_prog";
-    test_cargs.options = cmd_options;
-    test_cargs.error_stack.count = 0;
-    context_init(&test_cargs);
+    test_argus.program_name = "test_prog";
+    test_argus.options = cmd_options;
+    test_argus.error_stack.count = 0;
+    context_init(&test_argus);
 }
 
 // This is a placeholder test since full parsing tests are complex
@@ -68,7 +68,7 @@ Test(parsing, parse_args_basic)
 // Testing find option functions
 Test(parsing, find_option_by_name)
 {
-    cargs_option_t* option = find_option_by_name(test_options, "verbose");
+    argus_option_t* option = find_option_by_name(test_options, "verbose");
     cr_assert_not_null(option, "Should find option by name");
     cr_assert_eq(option->sname, 'v', "Found option should have correct short name");
     
@@ -93,7 +93,7 @@ Test(parsing, find_option_by_name)
 
 Test(parsing, find_option_by_sname)
 {
-    cargs_option_t* option = find_option_by_sname(test_options, 'v');
+    argus_option_t* option = find_option_by_sname(test_options, 'v');
     cr_assert_not_null(option, "Should find option by short name");
     cr_assert_str_eq(option->name, "verbose", "Found option should have correct name");
     
@@ -108,7 +108,7 @@ Test(parsing, find_option_by_sname)
 
 Test(parsing, find_option_by_lname)
 {
-    cargs_option_t* option = find_option_by_lname(test_options, "verbose");
+    argus_option_t* option = find_option_by_lname(test_options, "verbose");
     cr_assert_not_null(option, "Should find option by long name");
     cr_assert_eq(option->sname, 'v', "Found option should have correct short name");
     
@@ -127,7 +127,7 @@ Test(parsing, find_option_by_lname)
 
 Test(parsing, find_positional)
 {
-    cargs_option_t* option = find_positional(test_options, 0);
+    argus_option_t* option = find_positional(test_options, 0);
     cr_assert_not_null(option, "Should find first positional argument");
     cr_assert_str_eq(option->name, "input", "First positional should be 'input'");
     
@@ -145,7 +145,7 @@ Test(parsing, find_positional)
 
 Test(parsing, find_subcommand, .init = setup_subcommands)
 {
-    cargs_option_t* option = find_subcommand(cmd_options, "sub");
+    argus_option_t* option = find_subcommand(cmd_options, "sub");
     cr_assert_not_null(option, "Should find subcommand");
     cr_assert_str_eq(option->name, "sub", "Should find correct subcommand");
     cr_assert_eq(option->type, TYPE_SUBCOMMAND, "Found option should be subcommand");
@@ -161,55 +161,55 @@ Test(parsing, find_subcommand, .init = setup_subcommands)
 Test(parsing, find_option_by_active_path, .init = setup_subcommands)
 {
     // Test finding option at root level
-    cargs_option_t* option = find_option_by_active_path(test_cargs, "global");
+    argus_option_t* option = find_option_by_active_path(test_argus, "global");
     cr_assert_not_null(option, "Should find option at root level");
     cr_assert_str_eq(option->name, "global", "Should find correct option");
     
     // Test finding option by explicit root path
-    option = find_option_by_active_path(test_cargs, ".global");
+    option = find_option_by_active_path(test_argus, ".global");
     cr_assert_not_null(option, "Should find option by explicit root path");
     cr_assert_str_eq(option->name, "global", "Should find correct option");
     
     // Test with subcommand path (should fail since no active subcommand)
-    option = find_option_by_active_path(test_cargs, "sub.debug");
+    option = find_option_by_active_path(test_argus, "sub.debug");
     cr_assert_null(option, "Should return NULL when no matching subcommand is active");
     
     // Test with an invalid path
-    option = find_option_by_active_path(test_cargs, "nonexistent.option");
+    option = find_option_by_active_path(test_argus, "nonexistent.option");
     cr_assert_null(option, "Should return NULL for invalid path");
     
     // Test with active subcommand
-    cargs_option_t* sub_cmd = find_subcommand(cmd_options, "sub");
-    context_push_subcommand(&test_cargs, sub_cmd);
+    argus_option_t* sub_cmd = find_subcommand(cmd_options, "sub");
+    context_push_subcommand(&test_argus, sub_cmd);
     
     // Now we should be able to find the subcommand option
-    option = find_option_by_active_path(test_cargs, "debug");
+    option = find_option_by_active_path(test_argus, "debug");
     cr_assert_not_null(option, "Should find option in active subcommand");
     cr_assert_str_eq(option->name, "debug", "Should find correct option in subcommand");
     
     // Still should be able to access root option with explicit path
-    option = find_option_by_active_path(test_cargs, ".global");
+    option = find_option_by_active_path(test_argus, ".global");
     cr_assert_not_null(option, "Should still find root option with explicit path");
     cr_assert_str_eq(option->name, "global", "Should find correct root option");
     
     // Clean up
-    context_pop_subcommand(&test_cargs);
+    context_pop_subcommand(&test_argus);
 }
 
 Test(parsing, get_active_options, .init = setup_subcommands)
 {
     // Initially should get root options
-    const cargs_option_t* options = get_active_options(&test_cargs);
+    const argus_option_t* options = get_active_options(&test_argus);
     cr_assert_eq(options, cmd_options, "Should initially return root options");
     
     // Push a subcommand
-    cargs_option_t* sub_cmd = find_subcommand(cmd_options, "sub");
-    context_push_subcommand(&test_cargs, sub_cmd);
+    argus_option_t* sub_cmd = find_subcommand(cmd_options, "sub");
+    context_push_subcommand(&test_argus, sub_cmd);
     
     // Now should get subcommand options
-    options = get_active_options(&test_cargs);
+    options = get_active_options(&test_argus);
     cr_assert_eq(options, sub_options, "Should return subcommand options when subcommand is active");
     
     // Clean up
-    context_pop_subcommand(&test_cargs);
+    context_pop_subcommand(&test_argus);
 }
