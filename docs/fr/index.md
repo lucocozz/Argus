@@ -1,12 +1,12 @@
-# cargs
+# argus
 
-![CI/CD Pipeline](https://github.com/lucocozz/cargs/actions/workflows/ci.yml/badge.svg)
-![CodeQL Analysis](https://github.com/lucocozz/cargs/actions/workflows/codeql.yml/badge.svg)
+![CI/CD Pipeline](https://github.com/lucocozz/argus/actions/workflows/ci.yml/badge.svg)
+![CodeQL Analysis](https://github.com/lucocozz/argus/actions/workflows/codeql.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 > Bibliothèque C moderne pour l'analyse des arguments de ligne de commande avec une API élégante basée sur des macros.
 
-**cargs** est une bibliothèque C puissante pour gérer les arguments de ligne de commande, conçue pour être à la fois simple à utiliser et suffisamment flexible pour les scénarios d'utilisation avancés.
+**argus** est une bibliothèque C puissante pour gérer les arguments de ligne de commande, conçue pour être à la fois simple à utiliser et suffisamment flexible pour les scénarios d'utilisation avancés.
 
 ## ✨ Fonctionnalités
 
@@ -28,11 +28,11 @@
 ## Exemple rapide
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
 // Définition des options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -44,20 +44,20 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    // Initialiser cargs
-    cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
-    cargs.description = "Démonstrateur de cargs";
+    // Initialiser argus
+    argus_t argus = argus_init(options, "my_program", "1.0.0");
+    argus.description = "Démonstrateur de argus";
 
     // Analyser les arguments
-    if (cargs_parse(&cargs, argc, argv) != CARGS_SUCCESS) {
+    if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS) {
         return 1;
     }
 
     // Accéder aux valeurs analysées
-    const char *input = cargs_get(cargs, "input").as_string;
-    const char *output = cargs_get(cargs, "output").as_string;
-    int port = cargs_get(cargs, "port").as_int;
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    const char *input = argus_get(argus, "input").as_string;
+    const char *output = argus_get(argus, "output").as_string;
+    int port = argus_get(argus, "port").as_int;
+    bool verbose = argus_get(argus, "verbose").as_bool;
 
     printf("Configuration :\n");
     printf("  Entrée : %s\n", input);
@@ -66,22 +66,22 @@ int main(int argc, char **argv)
     printf("  Verbose : %s\n", verbose ? "oui" : "non");
 
     // Libérer les ressources
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
 
 ## 🚀 Démarrage rapide
 
-- [Installation](guide/installation.md) - Comment installer la bibliothèque cargs
-- [Démarrage rapide](guide/quickstart.md) - Créez votre première application avec cargs
+- [Installation](guide/installation.md) - Comment installer la bibliothèque argus
+- [Démarrage rapide](guide/quickstart.md) - Créez votre première application avec argus
 - [Exemples](examples/basic.md) - Explorez des exemples d'utilisation
 
 ## 📚 Documentation
 
 La documentation est organisée comme suit :
 
-- **[Guide de l'utilisateur](guide/installation.md)** - Instructions détaillées pour utiliser cargs
-- **[Référence API](api/overview.md)** - Référence complète de l'API cargs
+- **[Guide de l'utilisateur](guide/installation.md)** - Instructions détaillées pour utiliser argus
+- **[Référence API](api/overview.md)** - Référence complète de l'API argus
 - **[Exemples](examples/basic.md)** - Exemples de code pratiques
 - **[Fonctionnalités avancées](advanced/custom-handlers.md)** - Utilisation des fonctionnalités avancées

@@ -3,7 +3,7 @@
 Les commandes imbriquées étendent le concept de base des sous-commandes pour créer des interfaces en ligne de commande riches et hiérarchiques avec plusieurs niveaux de commandes et une gestion avancée des commandes.
 
 !!! abstract "Aperçu"
-    Ce guide couvre les fonctionnalités avancées d'interface en ligne de commande dans cargs :
+    Ce guide couvre les fonctionnalités avancées d'interface en ligne de commande dans argus :
     
     - **Hiérarchies de commandes imbriquées** - Plusieurs niveaux de commandes
     - **Abréviations de commandes** - Support pour les noms de commandes raccourcis
@@ -30,7 +30,7 @@ Pour implémenter des commandes imbriquées, vous créez une hiérarchie de déf
 
 ```c
 // Définir les options pour la commande "service create"
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_STRING('n', "name", HELP("Nom du service"), FLAGS(FLAG_REQUIRED)),
@@ -38,7 +38,7 @@ CARGS_OPTIONS(
 )
 
 // Définir les options pour le groupe de commandes "service"
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -49,7 +49,7 @@ CARGS_OPTIONS(
 )
 
 // Définir les options principales avec des sous-commandes de premier niveau
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -64,11 +64,11 @@ CARGS_OPTIONS(
 
 ## Abréviations de commandes
 
-cargs prend en charge les abréviations de noms de commandes, permettant aux utilisateurs de taper des versions raccourcies de noms de commandes tant qu'elles sont sans ambiguïté :
+argus prend en charge les abréviations de noms de commandes, permettant aux utilisateurs de taper des versions raccourcies de noms de commandes tant qu'elles sont sans ambiguïté :
 
 === "Définition"
     ```c
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
@@ -94,23 +94,23 @@ cargs prend en charge les abréviations de noms de commandes, permettant aux uti
 Ce comportement est similaire à l'abréviation de commande que l'on trouve dans des outils comme `ip` où `ip route add` peut être abrégé en `ip r a`.
 
 !!! note "Abréviations ambiguës"
-    Si une abréviation correspond à plusieurs commandes, cargs signalera une erreur.
+    Si une abréviation correspond à plusieurs commandes, argus signalera une erreur.
     
     Par exemple, avec les commandes `status` et `start`, taper `sta` serait ambigu.
 
 ### Implémentation de l'abréviation de commande
 
-L'abréviation de commande est intégrée à cargs et ne nécessite pas de configuration spéciale. cargs fait correspondre la commande en trouvant le préfixe unique le plus long :
+L'abréviation de commande est intégrée à argus et ne nécessite pas de configuration spéciale. argus fait correspondre la commande en trouvant le préfixe unique le plus long :
 
 1. L'utilisateur entre `ip r a 192.168.1.0/24`
-2. cargs recherche les commandes commençant par `r` et trouve `route`
-3. cargs associe cela à la commande `route`
+2. argus recherche les commandes commençant par `r` et trouve `route`
+3. argus associe cela à la commande `route`
 4. À l'intérieur de la commande `route`, il recherche les commandes commençant par `a` et trouve `add`
 5. La commande est traitée comme `ip route add 192.168.1.0/24`
 
 ## Placement flexible des arguments positionnels
 
-Dans les structures de commandes complexes, cargs prend en charge un placement flexible des arguments positionnels :
+Dans les structures de commandes complexes, argus prend en charge un placement flexible des arguments positionnels :
 
 ```
 program pos1 pos2 command subcmd pos3 pos4
@@ -120,7 +120,7 @@ Cela permet des structures de commandes intuitives où certains arguments positi
 
 === "Définition"
     ```c
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
@@ -132,7 +132,7 @@ Cela permet des structures de commandes intuitives où certains arguments positi
                    HELP("Copier des fichiers"))
     )
     
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         copy_options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         POSITIONAL_STRING("destination", HELP("Répertoire de destination"))
@@ -151,13 +151,13 @@ Cela permet des structures de commandes intuitives où certains arguments positi
 Lors de l'utilisation d'arguments positionnels à différents niveaux, accédez-y avec les chemins appropriés :
 
 ```c
-int copy_command(cargs_t *cargs, void *data)
+int copy_command(argus_t *argus, void *data)
 {
     // Argument positionnel global défini avant la commande
-    const char* source = cargs_get(*cargs, ".source").as_string;
+    const char* source = argus_get(*argus, ".source").as_string;
     
     // Argument positionnel spécifique à la commande
-    const char* destination = cargs_get(*cargs, "destination").as_string;
+    const char* destination = argus_get(*argus, "destination").as_string;
     
     printf("Copie de %s vers %s\n", source, destination);
     return 0;
@@ -166,7 +166,7 @@ int copy_command(cargs_t *cargs, void *data)
 
 ## Formats de chemins avancés
 
-Lorsque vous travaillez avec des commandes imbriquées, cargs offre des formats de chemin spéciaux pour accéder aux options :
+Lorsque vous travaillez avec des commandes imbriquées, argus offre des formats de chemin spéciaux pour accéder aux options :
 
 ### 1. Chemin absolu
 
@@ -174,7 +174,7 @@ Un chemin absolu spécifie le chemin complet de l'option depuis la racine :
 
 ```c
 // Accéder à l'option de n'importe où 
-const char* name = cargs_get(*cargs, "service.create.name").as_string;
+const char* name = argus_get(*argus, "service.create.name").as_string;
 ```
 
 ### 2. Chemin relatif
@@ -182,9 +182,9 @@ const char* name = cargs_get(*cargs, "service.create.name").as_string;
 Dans un gestionnaire d'action de sous-commande, vous pouvez utiliser des chemins relatifs :
 
 ```c
-int service_create_action(cargs_t *cargs, void *data) {
+int service_create_action(argus_t *argus, void *data) {
     // "name" se résout automatiquement en "service.create.name"
-    const char* name = cargs_get(*cargs, "name").as_string;
+    const char* name = argus_get(*argus, "name").as_string;
     // ...
 }
 ```
@@ -194,9 +194,9 @@ int service_create_action(cargs_t *cargs, void *data) {
 Pour accéder aux options définies au niveau racine depuis une sous-commande profondément imbriquée :
 
 ```c
-int service_create_action(cargs_t *cargs, void *data) {
+int service_create_action(argus_t *argus, void *data) {
     // Accéder au drapeau de debug au niveau racine avec le préfixe point
-    bool debug = cargs_get(*cargs, ".debug").as_bool;
+    bool debug = argus_get(*argus, ".debug").as_bool;
     // ...
 }
 ```
@@ -209,13 +209,13 @@ Pour déterminer quelles commandes sont actives à chaque niveau :
 
 ```c
 // Vérifier la commande de premier niveau
-if (cargs_is_set(cargs, "service")) {
+if (argus_is_set(argus, "service")) {
     // Vérifier la commande de second niveau
-    if (cargs_is_set(cargs, "service.create")) {
+    if (argus_is_set(argus, "service.create")) {
         // "service create" a été utilisée
     }
-} else if (cargs_is_set(cargs, "config")) {
-    if (cargs_is_set(cargs, "config.set")) {
+} else if (argus_is_set(argus, "config")) {
+    if (argus_is_set(argus, "config.set")) {
         // "config set" a été utilisée
     }
 }
@@ -223,7 +223,7 @@ if (cargs_is_set(cargs, "service")) {
 
 ### Partage de contexte entre commandes
 
-Le paramètre `void *data` de `cargs_exec()` vous permet de passer un contexte à tous les gestionnaires de commandes :
+Le paramètre `void *data` de `argus_exec()` vous permet de passer un contexte à tous les gestionnaires de commandes :
 
 ```c
 typedef struct {
@@ -240,16 +240,16 @@ int main(int argc, char **argv) {
     
     // Initialisation et analyse normales...
     
-    if (cargs_has_command(cargs)) {
+    if (argus_has_command(argus)) {
         // Passer le contexte aux gestionnaires de commandes
-        status = cargs_exec(&cargs, &context);
+        status = argus_exec(&argus, &context);
     }
     
     // Nettoyage...
 }
 
 // N'importe quel gestionnaire de commande peut accéder au contexte
-int service_create_action(cargs_t *cargs, void *data) {
+int service_create_action(argus_t *argus, void *data) {
     app_context_t *context = (app_context_t *)data;
     fprintf(context->log_file, "Création du service...\n");
     // ...
@@ -263,7 +263,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
 === "Structure similaire à Git"
     ```c
     // Options principales
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -275,7 +275,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
     )
     
     // Sous-commandes de remote
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         remote_options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
@@ -291,7 +291,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
 === "Structure similaire à Docker"
     ```c
     // Options principales
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -306,7 +306,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
     )
     
     // Sous-commandes de container
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         container_options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
@@ -332,18 +332,18 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
 Voici un exemple complet démontrant des commandes imbriquées avec prise en charge des abréviations :
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 // Gestionnaires d'actions
-int service_create_action(cargs_t *cargs, void *data);
-int service_list_action(cargs_t *cargs, void *data);
-int config_set_action(cargs_t *cargs, void *data);
-int config_get_action(cargs_t *cargs, void *data);
+int service_create_action(argus_t *argus, void *data);
+int service_list_action(argus_t *argus, void *data);
+int config_set_action(argus_t *argus, void *data);
+int config_get_action(argus_t *argus, void *data);
 
 // Définir les options pour la commande "service create"
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_STRING('n', "name", HELP("Nom du service"), FLAGS(FLAG_REQUIRED)),
@@ -351,14 +351,14 @@ CARGS_OPTIONS(
 )
 
 // Définir les options pour la commande "service list"
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_list_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('a', "all", HELP("Afficher tous les services, y compris les arrêtés"))
 )
 
 // Définir les options pour la commande parente "service"
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     service_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -371,7 +371,7 @@ CARGS_OPTIONS(
 )
 
 // Définir les options pour la commande "config set"
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     config_set_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     POSITIONAL_STRING("key", HELP("Clé de configuration")),
@@ -379,14 +379,14 @@ CARGS_OPTIONS(
 )
 
 // Définir les options pour la commande "config get"
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     config_get_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     POSITIONAL_STRING("key", HELP("Clé de configuration"))
 )
 
 // Définir les options pour la commande parente "config"
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     config_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -399,7 +399,7 @@ CARGS_OPTIONS(
 )
 
 // Définir les options principales avec des sous-commandes de premier niveau
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -415,22 +415,22 @@ CARGS_OPTIONS(
 )
 
 // Implémentations d'actions de commandes
-int service_create_action(cargs_t *cargs, void *data) {
+int service_create_action(argus_t *argus, void *data) {
     (void)data;
     
     // Différentes façons d'accéder aux valeurs d'options
     
     // 1. Chemin relatif (relatif à la sous-commande courante)
-    const char* name = cargs_get(*cargs, "name").as_string;
-    const char* image = cargs_get(*cargs, "image").as_string;
+    const char* name = argus_get(*argus, "name").as_string;
+    const char* image = argus_get(*argus, "image").as_string;
     
     // 2. Chemin absolu (chemin complet depuis la racine)
-    const char* name_abs = cargs_get(*cargs, "service.create.name").as_string;
+    const char* name_abs = argus_get(*argus, "service.create.name").as_string;
     (void)name_abs;
     
     // 3. Chemin au niveau racine (accès aux options au niveau racine)
-    const char* output = cargs_get(*cargs, ".output").as_string;
-    bool debug = cargs_get(*cargs, ".debug").as_bool;
+    const char* output = argus_get(*argus, ".output").as_string;
+    bool debug = argus_get(*argus, ".debug").as_bool;
     
     printf("Création du service '%s' utilisant l'image '%s'\n", name, image);
     printf("Fichier de sortie : %s\n", output);
@@ -442,21 +442,21 @@ int service_create_action(cargs_t *cargs, void *data) {
 // Autres gestionnaires d'actions...
 
 int main(int argc, char **argv) {
-    cargs_t cargs = cargs_init(options, "nested_commands", "1.0.0");
-    cargs.description = "Exemple de sous-commandes imbriquées et d'abréviation de commandes";
+    argus_t argus = argus_init(options, "nested_commands", "1.0.0");
+    argus.description = "Exemple de sous-commandes imbriquées et d'abréviation de commandes";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
-    if (cargs_has_command(cargs)) {
-        status = cargs_exec(&cargs, NULL);
+    if (argus_has_command(argus)) {
+        status = argus_exec(&argus, NULL);
     } else {
         printf("Aucune commande spécifiée. Utilisez --help pour voir les commandes disponibles.\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
@@ -468,7 +468,7 @@ int main(int argc, char **argv) {
 - Les commandes profondément imbriquées peuvent devenir difficiles à manier pour les utilisateurs
 
 !!! tip "Considérations d'utilisabilité"
-    Bien que cargs prenne en charge une imbrication profonde des commandes, garder votre structure de commandes relativement plate avec des noms de commandes bien choisis offre souvent une meilleure expérience utilisateur.
+    Bien que argus prenne en charge une imbrication profonde des commandes, garder votre structure de commandes relativement plate avec des noms de commandes bien choisis offre souvent une meilleure expérience utilisateur.
 
 ## Ressources associées
 

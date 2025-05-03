@@ -1,10 +1,10 @@
 # Basic Options
 
-cargs supports different types of options to meet various needs. This page presents the fundamental option types.
+argus supports different types of options to meet various needs. This page presents the fundamental option types.
 
 ## Main Option Types
 
-cargs supports four fundamental types of command-line elements:
+argus supports four fundamental types of command-line elements:
 
 * **Options** - Elements with dash prefix
     * With values (`-o value`, `--option=value`)
@@ -38,7 +38,7 @@ cargs supports four fundamental types of command-line elements:
 
 === "Accessing"
     ```c
-    const char* output = cargs_get(cargs, "output").as_string;
+    const char* output = argus_get(argus, "output").as_string;
     ```
 
 ### Integer Option
@@ -58,7 +58,7 @@ cargs supports four fundamental types of command-line elements:
 
 === "Accessing"
     ```c
-    int port = cargs_get(cargs, "port").as_int;
+    int port = argus_get(argus, "port").as_int;
     ```
 
 ### Float Option
@@ -77,7 +77,7 @@ cargs supports four fundamental types of command-line elements:
 
 === "Accessing"
     ```c
-    float scale = cargs_get(cargs, "scale").as_float;
+    float scale = argus_get(argus, "scale").as_float;
     ```
 
 ### Boolean Options
@@ -93,7 +93,7 @@ cargs supports four fundamental types of command-line elements:
     ```
 === "Accessing"
     ```c
-    bool force = cargs_get(cargs, "force").as_bool;
+    bool force = argus_get(argus, "force").as_bool;
     ```
 
 ## Flag Options (no value)
@@ -111,7 +111,7 @@ cargs supports four fundamental types of command-line elements:
 
 === "Accessing"
     ```c
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    bool verbose = argus_get(argus, "verbose").as_bool;
     ```
 
 !!! info
@@ -153,12 +153,12 @@ Positional arguments are ordered and not preceded by dashes.
     ```
 
 !!! warning "Important"
-    Required positional arguments must always be defined before optional ones in your `CARGS_OPTIONS` definition. This ordering requirement is validated by cargs during initialization, and failure to follow this rule will result in an error.
+    Required positional arguments must always be defined before optional ones in your `ARGUS_OPTIONS` definition. This ordering requirement is validated by argus during initialization, and failure to follow this rule will result in an error.
 
 For example, this is the correct order:
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     // Required positional arguments first
     POSITIONAL_STRING("input", HELP("Input file")),                       // Required
@@ -175,13 +175,13 @@ CARGS_OPTIONS(
 
 | Type | Definition | User Format | Access Code |
 |------|------------|-------------|-------------|
-| Short Name Only | `OPTION_INT('p', NULL, "Port number")` | `-p 8080` | `cargs_get(cargs, "p").as_int` |
-| Long Name Only | `OPTION_FLAG('\0', "dry-run", "Run without changes")` | `--dry-run` | `cargs_get(cargs, "dry-run").as_bool` |
+| Short Name Only | `OPTION_INT('p', NULL, "Port number")` | `-p 8080` | `argus_get(argus, "p").as_int` |
+| Long Name Only | `OPTION_FLAG('\0', "dry-run", "Run without changes")` | `--dry-run` | `argus_get(argus, "dry-run").as_bool` |
 
 !!! tip "Accessing Options"
-    When accessing option values with functions like `cargs_get()`, cargs uses a specific rule:
+    When accessing option values with functions like `argus_get()`, argus uses a specific rule:
     
-    - By default, cargs uses the **long name** as the identifier
+    - By default, argus uses the **long name** as the identifier
     - If the long name is not set (NULL), it uses the **short name** as the identifier
 
 ## Option Groups
@@ -189,7 +189,7 @@ CARGS_OPTIONS(
 Groups allow you to visually organize options in the help:
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -260,19 +260,19 @@ After parsing the arguments, you can access option values:
 
 ```c
 // Get a string value
-const char *output = cargs_get(cargs, "output").as_string;
+const char *output = argus_get(argus, "output").as_string;
 
 // Get an integer value
-int port = cargs_get(cargs, "port").as_int;
+int port = argus_get(argus, "port").as_int;
 
 // Get a float value
-float scale = cargs_get(cargs, "scale").as_float;
+float scale = argus_get(argus, "scale").as_float;
 
 // Check if a flag is enabled
-bool verbose = cargs_get(cargs, "verbose").as_bool;
+bool verbose = argus_get(argus, "verbose").as_bool;
 
 // Check if an option was explicitly set
-if (cargs_is_set(cargs, "output")) {
+if (argus_is_set(argus, "output")) {
     // The output option was specified by the user
 }
 ```
@@ -308,10 +308,10 @@ OPTION_FLAG('q', "quiet", HELP("Quiet mode"),
 ## Complete Example
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -338,34 +338,34 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
+    argus_t argus = argus_init(options, "my_program", "1.0.0");
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Access values
-    const char *input = cargs_get(cargs, "input").as_string;
-    const char *output = cargs_get(cargs, "output").as_string;
-    int port = cargs_get(cargs, "port").as_int;
-    float scale = cargs_get(cargs, "scale").as_float;
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    const char *input = argus_get(argus, "input").as_string;
+    const char *output = argus_get(argus, "output").as_string;
+    int port = argus_get(argus, "port").as_int;
+    float scale = argus_get(argus, "scale").as_float;
+    bool verbose = argus_get(argus, "verbose").as_bool;
     
     // Check exclusive options
-    bool debug = cargs_get(cargs, "debug").as_bool;
-    bool release = cargs_get(cargs, "release").as_bool;
+    bool debug = argus_get(argus, "debug").as_bool;
+    bool release = argus_get(argus, "release").as_bool;
     
     // Authentication if specified
-    if (cargs_is_set(cargs, "username")) {
-        const char *username = cargs_get(cargs, "username").as_string;
-        const char *password = cargs_get(cargs, "password").as_string;
+    if (argus_is_set(argus, "username")) {
+        const char *username = argus_get(argus, "username").as_string;
+        const char *password = argus_get(argus, "password").as_string;
         
         printf("Authenticating with %s\n", username);
     }
     
     // Free resources
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```

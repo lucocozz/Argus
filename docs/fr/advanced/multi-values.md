@@ -1,6 +1,6 @@
 # Collections multi-valeurs
 
-cargs offre un support puissant pour les collections multi-valeurs à travers les tableaux et les mappages, vous permettant de gérer des scénarios complexes de ligne de commande que les bibliothèques traditionnelles d'analyse d'arguments ont du mal à traiter.
+argus offre un support puissant pour les collections multi-valeurs à travers les tableaux et les mappages, vous permettant de gérer des scénarios complexes de ligne de commande que les bibliothèques traditionnelles d'analyse d'arguments ont du mal à traiter.
 
 !!! abstract "Aperçu"
     Ce guide couvre des techniques avancées pour travailler avec les collections :
@@ -19,7 +19,7 @@ Les options de tableau permettent aux utilisateurs de fournir plusieurs valeurs 
 
 ### Types de tableaux pris en charge
 
-cargs prend en charge ces types de tableaux :
+argus prend en charge ces types de tableaux :
 
 - `OPTION_ARRAY_STRING` : Tableau de chaînes
 - `OPTION_ARRAY_INT` : Tableau d'entiers (avec prise en charge des plages)
@@ -28,7 +28,7 @@ cargs prend en charge ces types de tableaux :
 ### Définition des options de tableau
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -76,7 +76,7 @@ Les utilisateurs peuvent fournir des valeurs de tableau de plusieurs façons :
 
 ### Syntaxe de plage d'entiers
 
-Pour les tableaux d'entiers, cargs prend en charge une syntaxe de plage spéciale :
+Pour les tableaux d'entiers, argus prend en charge une syntaxe de plage spéciale :
 
 ```bash
 # Les plages s'étendent pour inclure toutes les valeurs dans la plage
@@ -95,7 +95,7 @@ Les options de mapping permettent aux utilisateurs de fournir des paires clé-va
 
 ### Types de mappings pris en charge
 
-cargs prend en charge ces types de mappings :
+argus prend en charge ces types de mappings :
 
 | Type | Macro | Valeurs | Exemple d'utilisation |
 |------|-------|--------|---------------|
@@ -116,7 +116,7 @@ Toutes les valeurs sont insensibles à la casse, donc "True", "TRUE", et "true" 
 
 ## Drapeaux de collection
 
-cargs fournit des drapeaux spéciaux pour modifier la façon dont les collections sont traitées :
+argus fournit des drapeaux spéciaux pour modifier la façon dont les collections sont traitées :
 
 ### Drapeaux de tableau
 
@@ -144,7 +144,7 @@ OPTION_ARRAY_INT('i', "ids", "IDs", FLAGS(FLAG_SORTED | FLAG_UNIQUE))
 
 ## Accès aux collections
 
-cargs fournit plusieurs façons d'accéder aux données de collection, chacune avec ses propres avantages :
+argus fournit plusieurs façons d'accéder aux données de collection, chacune avec ses propres avantages :
 
 ### Accès direct
 
@@ -152,8 +152,8 @@ L'approche la plus directe est l'accès direct aux tableaux ou mappages de valeu
 
 ```c
 // Obtenir le tableau entier
-cargs_value_t *names_array = cargs_get(cargs, "names").as_array;
-size_t names_count = cargs_count(cargs, "names");
+argus_value_t *names_array = argus_get(argus, "names").as_array;
+size_t names_count = argus_count(argus, "names");
 
 // Accéder directement aux éléments du tableau
 for (size_t i = 0; i < names_count; i++) {
@@ -162,8 +162,8 @@ for (size_t i = 0; i < names_count; i++) {
 }
 
 // Obtenir le mapping entier
-cargs_pair_t *env_map = cargs_get(cargs, "env").as_map;
-size_t env_count = cargs_count(cargs, "env");
+argus_pair_t *env_map = argus_get(argus, "env").as_map;
+size_t env_count = argus_count(argus, "env");
 
 // Accéder directement aux entrées du mapping
 for (size_t i = 0; i < env_count; i++) {
@@ -175,33 +175,33 @@ for (size_t i = 0; i < env_count; i++) {
 
 ### Fonctions d'aide pour l'accès aux éléments
 
-cargs fournit des fonctions d'aide pour un accès plus pratique à des éléments spécifiques :
+argus fournit des fonctions d'aide pour un accès plus pratique à des éléments spécifiques :
 
 ```c
 // Obtenir un élément spécifique du tableau par indice
-const char* first_name = cargs_array_get(cargs, "names", 0).as_string;
-int second_id = cargs_array_get(cargs, "ids", 1).as_int;
+const char* first_name = argus_array_get(argus, "names", 0).as_string;
+int second_id = argus_array_get(argus, "ids", 1).as_int;
 
 // Rechercher une valeur spécifique de mapping par clé
-const char* user = cargs_map_get(cargs, "env", "USER").as_string;
-int http_port = cargs_map_get(cargs, "ports", "http").as_int;
-bool debug_enabled = cargs_map_get(cargs, "features", "debug").as_bool;
+const char* user = argus_map_get(argus, "env", "USER").as_string;
+int http_port = argus_map_get(argus, "ports", "http").as_int;
+bool debug_enabled = argus_map_get(argus, "features", "debug").as_bool;
 ```
 
 Ces fonctions d'aide gèrent les indices invalides ou les clés manquantes avec élégance, retournant une valeur vide (`{.raw = 0}`) lorsque l'élément demandé n'existe pas.
 
 ### API d'itérateur
 
-Pour une itération plus idiomatique, cargs fournit une API d'itérateur propre :
+Pour une itération plus idiomatique, argus fournit une API d'itérateur propre :
 
 #### Itérateurs de tableau
 
 ```c
 // Créer un itérateur de tableau
-cargs_array_it_t names_it = cargs_array_it(cargs, "names");
+argus_array_it_t names_it = argus_array_it(argus, "names");
 
 // Itérer à travers tous les éléments
-while (cargs_array_next(&names_it)) {
+while (argus_array_next(&names_it)) {
     printf("Nom : %s\n", names_it.value.as_string);
 }
 ```
@@ -210,10 +210,10 @@ while (cargs_array_next(&names_it)) {
 
 ```c
 // Créer un itérateur de mapping
-cargs_map_it_t env_it = cargs_map_it(cargs, "env");
+argus_map_it_t env_it = argus_map_it(argus, "env");
 
 // Itérer à travers toutes les paires clé-valeur
-while (cargs_map_next(&env_it)) {
+while (argus_map_next(&env_it)) {
     printf("%s = %s\n", env_it.key, env_it.value.as_string);
 }
 ```
@@ -223,11 +223,11 @@ while (cargs_map_next(&env_it)) {
 Les itérateurs peuvent être réinitialisés et réutilisés pour plusieurs passages à travers la collection :
 
 ```c
-cargs_map_it_t features_it = cargs_map_it(cargs, "features");
+argus_map_it_t features_it = argus_map_it(argus, "features");
 
 // Premier passage : afficher les fonctionnalités activées
 printf("Fonctionnalités activées : ");
-while (cargs_map_next(&features_it)) {
+while (argus_map_next(&features_it)) {
     if (features_it.value.as_bool) {
         printf("%s ", features_it.key);
     }
@@ -235,11 +235,11 @@ while (cargs_map_next(&features_it)) {
 printf("\n");
 
 // Réinitialiser l'itérateur pour un second passage
-cargs_map_reset(&features_it);
+argus_map_reset(&features_it);
 
 // Second passage : afficher les fonctionnalités désactivées
 printf("Fonctionnalités désactivées : ");
-while (cargs_map_next(&features_it)) {
+while (argus_map_next(&features_it)) {
     if (!features_it.value.as_bool) {
         printf("%s ", features_it.key);
     }
@@ -314,10 +314,10 @@ Utilisation :
 Un exemple complet de gestion de fonctionnalités avec bascules :
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -328,28 +328,28 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "feature_manager", "1.0.0");
+    argus_t argus = argus_init(options, "feature_manager", "1.0.0");
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
-    if (cargs_is_set(cargs, "feature")) {
+    if (argus_is_set(argus, "feature")) {
         // Créer des catégories pour activé/désactivé
         printf("Configuration des fonctionnalités :\n");
         
         printf("  Fonctionnalités activées :\n");
-        cargs_map_it_t it = cargs_map_it(cargs, "feature");
-        while (cargs_map_next(&it)) {
+        argus_map_it_t it = argus_map_it(argus, "feature");
+        while (argus_map_next(&it)) {
             if (it.value.as_bool) {
                 printf("    - %s\n", it.key);
             }
         }
         
         printf("  Fonctionnalités désactivées :\n");
-        cargs_map_reset(&it);
-        while (cargs_map_next(&it)) {
+        argus_map_reset(&it);
+        while (argus_map_next(&it)) {
             if (!it.value.as_bool) {
                 printf("    - %s\n", it.key);
             }
@@ -358,35 +358,35 @@ int main(int argc, char **argv)
         printf("Aucune fonctionnalité configurée.\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
 
 ## Détails d'implémentation technique
 
-En coulisses, cargs implémente les collections en utilisant des structures de données efficaces :
+En coulisses, argus implémente les collections en utilisant des structures de données efficaces :
 
 ### Tableaux
 
-Les tableaux sont implémentés comme des tableaux dynamiques d'éléments `cargs_value_t` :
+Les tableaux sont implémentés comme des tableaux dynamiques d'éléments `argus_value_t` :
 
 ```c
 // Stockage de tableau dans l'option
-option->value.as_array = malloc(option->value_capacity * sizeof(cargs_value_t));
+option->value.as_array = malloc(option->value_capacity * sizeof(argus_value_t));
 ```
 
 Quand un tableau a besoin de croître :
 
 ```c
-void adjust_array_size(cargs_option_t *option)
+void adjust_array_size(argus_option_t *option)
 {
     if (option->value.as_array == NULL) {
         option->value_capacity = MULTI_VALUE_INITIAL_CAPACITY;
-        option->value.as_array = malloc(option->value_capacity * sizeof(cargs_value_t));
+        option->value.as_array = malloc(option->value_capacity * sizeof(argus_value_t));
     } else if (option->value_count >= option->value_capacity) {
         option->value_capacity *= 2;
-        void *new = realloc(option->value.as_array, option->value_capacity * sizeof(cargs_value_t));
+        void *new = realloc(option->value.as_array, option->value_capacity * sizeof(argus_value_t));
         if (new == NULL) {
             option->value_capacity /= 2;
             return;
@@ -398,20 +398,20 @@ void adjust_array_size(cargs_option_t *option)
 
 ### Mappings
 
-Les mappings sont implémentés comme des tableaux dynamiques d'éléments `cargs_pair_t` :
+Les mappings sont implémentés comme des tableaux dynamiques d'éléments `argus_pair_t` :
 
 ```c
-typedef struct cargs_pair_s
+typedef struct argus_pair_s
 {
     const char *key;
-    cargs_value_t     value;
-} cargs_pair_t;
+    argus_value_t     value;
+} argus_pair_t;
 ```
 
 La recherche de clé est effectuée par recherche linéaire :
 
 ```c
-int map_find_key(cargs_option_t *option, const char *key)
+int map_find_key(argus_option_t *option, const char *key)
 {
     for (size_t i = 0; i < option->value_count; ++i) {
         if (option->value.as_map[i].key && strcmp(option->value.as_map[i].key, key) == 0)
@@ -426,22 +426,22 @@ int map_find_key(cargs_option_t *option, const char *key)
 Les itérateurs sont des structures simples qui maintiennent une référence à la collection et une position courante :
 
 ```c
-typedef struct cargs_array_iterator_s
+typedef struct argus_array_iterator_s
 {
-    cargs_value_t *_array;    /* Pointeur vers le tableau */
+    argus_value_t *_array;    /* Pointeur vers le tableau */
     size_t   _count;    /* Nombre d'éléments */
     size_t   _position; /* Position courante */
-    cargs_value_t  value;     /* Valeur courante */
-} cargs_array_it_t;
+    argus_value_t  value;     /* Valeur courante */
+} argus_array_it_t;
 
-typedef struct cargs_map_iterator_s
+typedef struct argus_map_iterator_s
 {
-    cargs_pair_t *_map;      /* Pointeur vers le mapping */
+    argus_pair_t *_map;      /* Pointeur vers le mapping */
     size_t        _count;    /* Nombre d'éléments */
     size_t        _position; /* Position courante */
     const char   *key;       /* Clé courante */
-    cargs_value_t       value;     /* Valeur courante */
-} cargs_map_it_t;
+    argus_value_t       value;     /* Valeur courante */
+} argus_map_it_t;
 ```
 
 ## Exemple complet
@@ -449,10 +449,10 @@ typedef struct cargs_map_iterator_s
 Voici un exemple complet démontrant des techniques avancées de gestion de collection :
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -473,55 +473,55 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "multi_values", "1.0.0");
-    cargs.description = "Exemple avancé de collections multi-valeurs";
+    argus_t argus = argus_init(options, "multi_values", "1.0.0");
+    argus.description = "Exemple avancé de collections multi-valeurs";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Traiter les tableaux en utilisant des itérateurs
-    if (cargs_is_set(cargs, "name")) {
+    if (argus_is_set(argus, "name")) {
         printf("Utilisateurs :\n");
-        cargs_array_it_t it = cargs_array_it(cargs, "name");
-        while (cargs_array_next(&it)) {
+        argus_array_it_t it = argus_array_it(argus, "name");
+        while (argus_array_next(&it)) {
             printf("  - %s\n", it.value.as_string);
         }
     }
     
-    if (cargs_is_set(cargs, "id")) {
+    if (argus_is_set(argus, "id")) {
         printf("IDs d'utilisateurs :\n");
-        cargs_array_it_t it = cargs_array_it(cargs, "id");
-        while (cargs_array_next(&it)) {
+        argus_array_it_t it = argus_array_it(argus, "id");
+        while (argus_array_next(&it)) {
             printf("  - %d\n", it.value.as_int);
         }
     }
     
     // Traiter les mappings en utilisant des itérateurs
-    if (cargs_is_set(cargs, "env")) {
+    if (argus_is_set(argus, "env")) {
         printf("Variables d'environnement :\n");
-        cargs_map_it_t it = cargs_map_it(cargs, "env");
-        while (cargs_map_next(&it)) {
+        argus_map_it_t it = argus_map_it(argus, "env");
+        while (argus_map_next(&it)) {
             printf("  %s = %s\n", it.key, it.value.as_string);
         }
     }
     
-    if (cargs_is_set(cargs, "port")) {
+    if (argus_is_set(argus, "port")) {
         printf("Mappages de ports :\n");
-        cargs_map_it_t it = cargs_map_it(cargs, "port");
-        while (cargs_map_next(&it)) {
+        argus_map_it_t it = argus_map_it(argus, "port");
+        while (argus_map_next(&it)) {
             printf("  %s: %d\n", it.key, it.value.as_int);
         }
     }
     
     // Traiter le mapping booléen avec catégories et filtrage
-    if (cargs_is_set(cargs, "feature")) {
+    if (argus_is_set(argus, "feature")) {
         printf("Fonctionnalités :\n");
         
         printf("  Activées :");
-        cargs_map_it_t it = cargs_map_it(cargs, "feature");
-        while (cargs_map_next(&it)) {
+        argus_map_it_t it = argus_map_it(argus, "feature");
+        while (argus_map_next(&it)) {
             if (it.value.as_bool) {
                 printf(" %s", it.key);
             }
@@ -529,8 +529,8 @@ int main(int argc, char **argv)
         printf("\n");
         
         printf("  Désactivées :");
-        cargs_map_reset(&it);
-        while (cargs_map_next(&it)) {
+        argus_map_reset(&it);
+        while (argus_map_next(&it)) {
             if (!it.value.as_bool) {
                 printf(" %s", it.key);
             }
@@ -538,7 +538,7 @@ int main(int argc, char **argv)
         printf("\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
@@ -552,7 +552,7 @@ Cet exemple démontre :
 
 ## Résumé
 
-Les collections multi-valeurs de cargs fournissent un moyen puissant de gérer des interfaces en ligne de commande complexes avec :
+Les collections multi-valeurs de argus fournissent un moyen puissant de gérer des interfaces en ligne de commande complexes avec :
 
 - **Valeurs multiples** pour une seule option (tableaux)
 - **Configuration clé-valeur** à travers une seule option (mappings)
@@ -560,4 +560,4 @@ Les collections multi-valeurs de cargs fournissent un moyen puissant de gérer d
 - **Tri et unicité** pour des données organisées
 - **Itération efficace** à travers l'API d'itérateur
 
-Ces fonctionnalités avancées permettent à cargs de gérer des scénarios qui seraient difficiles ou impossibles avec les bibliothèques traditionnelles d'analyse d'arguments.
+Ces fonctionnalités avancées permettent à argus de gérer des scénarios qui seraient difficiles ou impossibles avec les bibliothèques traditionnelles d'analyse d'arguments.

@@ -1,11 +1,11 @@
 # Formats d'options pris en charge
 
-cargs prend en charge plusieurs formats d'options pour offrir une flexibilité maximale aux utilisateurs finaux. Cette flexibilité permet à votre programme de gérer différentes conventions de ligne de commande et de s'adapter aux diverses préférences des utilisateurs.
+argus prend en charge plusieurs formats d'options pour offrir une flexibilité maximale aux utilisateurs finaux. Cette flexibilité permet à votre programme de gérer différentes conventions de ligne de commande et de s'adapter aux diverses préférences des utilisateurs.
 
 ## Options standard
 
 !!! abstract "Aperçu"
-    cargs reconnaît plusieurs formats standard pour les options de ligne de commande, notamment les options longues de style GNU, les options courtes de style POSIX, et diverses combinaisons.
+    argus reconnaît plusieurs formats standard pour les options de ligne de commande, notamment les options longues de style GNU, les options courtes de style POSIX, et diverses combinaisons.
 
 ### Options longues
 
@@ -76,7 +76,7 @@ Dans cet exemple, `--file-with-dashes.txt` est traité comme un argument positio
 
 ## Collections multi-valeurs
 
-cargs prend en charge les options de collection qui peuvent contenir plusieurs valeurs (tableaux) ou paires clé-valeur (mappages).
+argus prend en charge les options de collection qui peuvent contenir plusieurs valeurs (tableaux) ou paires clé-valeur (mappages).
 
 ### Formats d'options de tableau
 
@@ -162,14 +162,14 @@ Dans cet exemple, `file1.txt` et `file2.txt` sont des arguments positionnels.
 
 ### Arguments positionnels requis vs optionnels
 
-cargs distingue les arguments positionnels requis et optionnels :
+argus distingue les arguments positionnels requis et optionnels :
 
 ```bash
 my_program input.txt [output.txt]  # input.txt requis, output.txt optionnel
 ```
 
 !!! warning
-    Les arguments positionnels requis doivent toujours être définis avant les optionnels dans votre définition `CARGS_OPTIONS`.
+    Les arguments positionnels requis doivent toujours être définis avant les optionnels dans votre définition `ARGUS_OPTIONS`.
 
 ### Arguments positionnels avec options
 
@@ -180,11 +180,11 @@ my_program --verbose input.txt --output=output.txt
 my_program input.txt --verbose --output=output.txt
 ```
 
-Les deux commandes sont équivalentes, car cargs identifie les arguments positionnels après avoir fait correspondre toutes les options.
+Les deux commandes sont équivalentes, car argus identifie les arguments positionnels après avoir fait correspondre toutes les options.
 
 ## Sous-commandes
 
-cargs prend en charge les sous-commandes de style Git/Docker, permettant des hiérarchies de commandes complexes :
+argus prend en charge les sous-commandes de style Git/Docker, permettant des hiérarchies de commandes complexes :
 
 ### Format de base des sous-commandes
 
@@ -200,7 +200,7 @@ my_program add --force file.txt --verbose  # Équivalent
 
 ### Sous-commandes imbriquées
 
-cargs prend également en charge les sous-commandes imbriquées pour des hiérarchies de commandes plus profondes :
+argus prend également en charge les sous-commandes imbriquées pour des hiérarchies de commandes plus profondes :
 
 ```bash
 my_program [options globales] commande sous-commande [options de sous-commande] [arguments]
@@ -214,7 +214,7 @@ my_program config set server.port 8080
 
 ### Abréviations de commandes
 
-cargs prend en charge les abréviations de noms de commandes, permettant aux utilisateurs de taper des versions abrégées tant qu'elles sont sans ambiguïté :
+argus prend en charge les abréviations de noms de commandes, permettant aux utilisateurs de taper des versions abrégées tant qu'elles sont sans ambiguïté :
 
 ```bash
 # Ces commandes sont équivalentes si aucune autre commande ne commence par "i" :
@@ -228,7 +228,7 @@ my_program i package.tgz  # ERREUR si "install" et "init" existent tous deux
 
 ## Mélange de différents formats
 
-cargs permet de mélanger différents styles de format dans une seule ligne de commande :
+argus permet de mélanger différents styles de format dans une seule ligne de commande :
 
 ```bash
 my_program -v --output=file.txt file1.txt file2.txt add --force extra.txt
@@ -242,7 +242,7 @@ Cette commande comprend :
 
 ## Gestion des options ambiguës
 
-Dans certains cas, l'entrée de ligne de commande peut être ambiguë. cargs résout l'ambiguïté en utilisant ces règles :
+Dans certains cas, l'entrée de ligne de commande peut être ambiguë. argus résout l'ambiguïté en utilisant ces règles :
 
 1. Un argument commençant par un seul tiret (`-`) suivi d'un seul caractère est traité comme une option courte
 2. Un argument commençant par des doubles tirets (`--`) est traité comme une option longue
@@ -281,4 +281,4 @@ Les formes de commande suivantes sont toutes équivalentes avec des définitions
     - `-vxooutput.txt` (active les options `-v` et `-x`, et définit `-o` à `output.txt`)
 
 !!! note
-    Les arguments positionnels sont toujours traités dans l'ordre défini dans `CARGS_OPTIONS`.
+    Les arguments positionnels sont toujours traités dans l'ordre défini dans `ARGUS_OPTIONS`.

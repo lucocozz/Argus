@@ -131,8 +131,8 @@ jobs:
         with:
           name: lib-${{ matrix.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}${{ matrix.disable_regex && '-noregex' || '' }}
           path: |
-            .build/source/libcargs.a
-            .build/source/libcargs.so
-            .build/source/libcargs.dylib
+            .build/source/libargus.a
+            .build/source/libargus.so
+            .build/source/libargus.dylib
           if-no-files-found: ignore
           retention-days: 7 # Keep release artifacts longer

@@ -1,5 +1,5 @@
 /**
- * Environment variables example for cargs
+ * Environment variables example for argus
  * 
  * This example demonstrates different ways to use environment variables:
  * - Explicit environment variable names
@@ -23,11 +23,11 @@
  *   ./env_variables --host=cli-server.example.com --port=8080 --timeout=30
  */
 
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
 	options,
 	HELP_OPTION(FLAGS(FLAG_EXIT)),
 	VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -69,24 +69,24 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-	// Initialize cargs and set environment prefix
+	// Initialize argus and set environment prefix
 	// This prefix will be applied to all environment variables 
 	// unless FLAG_NO_ENV_PREFIX is specified
-	cargs_t cargs = cargs_init(options, "env_variables", "1.0.0");
-	cargs.description = "Example of environment variables usage";
-	cargs.env_prefix = "APP";
+	argus_t argus = argus_init(options, "env_variables", "1.0.0");
+	argus.description = "Example of environment variables usage";
+	argus.env_prefix = "APP";
 	
-	int status = cargs_parse(&cargs, argc, argv);
-	if (status != CARGS_SUCCESS)
+	int status = argus_parse(&argus, argc, argv);
+	if (status != ARGUS_SUCCESS)
 		return status;
 
 	// Access option values as usual
-	const char* host = cargs_get(cargs, "host").as_string;
-	int port = cargs_get(cargs, "port").as_int;
-	const char* database = cargs_get(cargs, "database").as_string;
-	bool verbose = cargs_get(cargs, "verbose").as_bool;
-	int timeout = cargs_get(cargs, "timeout").as_int;
-	bool debug = cargs_get(cargs, "debug").as_bool;
+	const char* host = argus_get(argus, "host").as_string;
+	int port = argus_get(argus, "port").as_int;
+	const char* database = argus_get(argus, "database").as_string;
+	bool verbose = argus_get(argus, "verbose").as_bool;
+	int timeout = argus_get(argus, "timeout").as_int;
+	bool debug = argus_get(argus, "debug").as_bool;
 	
 	// Display configuration
 	printf("═════════════════════════════════════════\n");
@@ -119,6 +119,6 @@ int main(int argc, char **argv)
 	printf("  FORCE_TIMEOUT:  %s\n", getenv("FORCE_TIMEOUT") ? getenv("FORCE_TIMEOUT") : "(not set)");
 	printf("  APP_DEBUG:      %s\n", getenv("APP_DEBUG") ? getenv("APP_DEBUG") : "(not set)");
 	
-	cargs_free(&cargs);
+	argus_free(&argus);
 	return 0;
 }

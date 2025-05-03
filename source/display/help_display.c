@@ -1,7 +1,7 @@
 /**
  * help_display.c - Functions for displaying help information
  *
- * This file implements the help display functionality for the cargs library.
+ * This file implements the help display functionality for the argus library.
  *
  * MIT License - Copyright (c) 2024 lucocozz
  */
@@ -13,9 +13,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cargs/internal/display.h"
-#include "cargs/internal/utils.h"
-#include "cargs/types.h"
+#include "argus/internal/display.h"
+#include "argus/internal/utils.h"
+#include "argus/types.h"
 
 /*
  * Helper data structures
@@ -23,7 +23,7 @@
 
 typedef struct option_entry_s
 {
-    const cargs_option_t  *option;
+    const argus_option_t  *option;
     struct option_entry_s *next;
 } option_entry_t;
 
@@ -47,7 +47,7 @@ typedef struct help_data_s
  * Memory management functions
  */
 
-static option_entry_t *create_option_entry(const cargs_option_t *option)
+static option_entry_t *create_option_entry(const argus_option_t *option)
 {
     option_entry_t *entry = malloc(sizeof(option_entry_t));
     if (!entry)
@@ -58,7 +58,7 @@ static option_entry_t *create_option_entry(const cargs_option_t *option)
     return entry;
 }
 
-static void add_option_to_list(option_entry_t **list, const cargs_option_t *option)
+static void add_option_to_list(option_entry_t **list, const argus_option_t *option)
 {
     option_entry_t *entry = create_option_entry(option);
     if (!entry)
@@ -154,14 +154,14 @@ static void free_help_data(help_data_t *data)
  * Option organizing function
  */
 
-static void organize_options(const cargs_option_t *options, help_data_t *data)
+static void organize_options(const argus_option_t *options, help_data_t *data)
 {
     const char   *current_group      = NULL;
     const char   *current_group_desc = NULL;
     group_info_t *group              = NULL;
 
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
-        const cargs_option_t *option = &options[i];
+        const argus_option_t *option = &options[i];
 
         switch (option->type) {
             case TYPE_GROUP:
@@ -202,7 +202,7 @@ static void organize_options(const cargs_option_t *options, help_data_t *data)
  */
 
 // Helper function to get the base type name without collection indicators
-static const char *get_base_type_name(cargs_valtype_t type)
+static const char *get_base_type_name(argus_valtype_t type)
 {
     switch (type) {
         case VALUE_TYPE_INT:
@@ -221,7 +221,7 @@ static const char *get_base_type_name(cargs_valtype_t type)
 }
 
 // Helper function to get the collection format pattern
-static const char *get_collection_format(cargs_valtype_t type)
+static const char *get_collection_format(argus_valtype_t type)
 {
     if (type & VALUE_TYPE_ARRAY) {
         return "%s,...";
@@ -240,7 +240,7 @@ static char *format_collection_hint(const char *format, const char *type_name)
     return buffer;
 }
 
-static void print_value_hint(const cargs_option_t *option)
+static void print_value_hint(const argus_option_t *option)
 {
     if (option->value_type == VALUE_TYPE_FLAG)
         return;  // No hint for boolean flags
@@ -331,7 +331,7 @@ static void print_wrapped_text(const char *text, size_t indent, size_t line_widt
  * Print functions for different option types
  */
 
-static void print_option_description(const cargs_option_t *option, size_t padding)
+static void print_option_description(const argus_option_t *option, size_t padding)
 {
     // Determine where description starts
     size_t description_indent = DESCRIPTION_COLUMN;
@@ -483,7 +483,7 @@ static void print_option_description(const cargs_option_t *option, size_t paddin
     printf("\n");
 }
 
-static size_t print_option_name(const cargs_option_t *option, size_t indent)
+static size_t print_option_name(const argus_option_t *option, size_t indent)
 {
     size_t name_len = 0;
 
@@ -539,7 +539,7 @@ static size_t print_option_name(const cargs_option_t *option, size_t indent)
     return name_len;
 }
 
-static void print_option(const cargs_option_t *option, size_t indent)
+static void print_option(const argus_option_t *option, size_t indent)
 {
     size_t name_width = print_option_name(option, indent);
 
@@ -549,7 +549,7 @@ static void print_option(const cargs_option_t *option, size_t indent)
     print_option_description(option, padding);
 }
 
-static void print_positional(const cargs_option_t *option, size_t indent)
+static void print_positional(const argus_option_t *option, size_t indent)
 {
     size_t name_len = 0;
 
@@ -574,9 +574,9 @@ static void print_positional(const cargs_option_t *option, size_t indent)
     print_option_description(option, padding);
 }
 
-static void print_subcommand(cargs_t *cargs, const cargs_option_t *option, size_t indent)
+static void print_subcommand(argus_t *argus, const argus_option_t *option, size_t indent)
 {
-    UNUSED(cargs);
+    UNUSED(argus);
     size_t name_len = 0;
 
     // Print indent
@@ -618,11 +618,11 @@ static void print_positional_list(option_entry_t *list, size_t indent)
     }
 }
 
-static void print_subcommand_list(cargs_t *cargs, option_entry_t *list, size_t indent)
+static void print_subcommand_list(argus_t *argus, option_entry_t *list, size_t indent)
 {
     option_entry_t *current = list;
     while (current != NULL) {
-        print_subcommand(cargs, current->option, indent);
+        print_subcommand(argus, current->option, indent);
         current = current->next;
     }
 }
@@ -637,7 +637,7 @@ static bool has_groups(group_info_t *groups)
     return groups != NULL;
 }
 
-static void print_help_sections(cargs_t *cargs, help_data_t *data)
+static void print_help_sections(argus_t *argus, help_data_t *data)
 {
     // Print positional arguments
     if (has_entries(data->positionals)) {
@@ -667,11 +667,11 @@ static void print_help_sections(cargs_t *cargs, help_data_t *data)
     // Print subcommands
     if (has_entries(data->subcommands)) {
         printf("\nCommands:\n");
-        print_subcommand_list(cargs, data->subcommands, OPTION_INDENT);
+        print_subcommand_list(argus, data->subcommands, OPTION_INDENT);
 
-        printf("\nRun '%s", cargs->program_name);
-        for (size_t i = 0; i < cargs->context.subcommand_depth; ++i)
-            printf(" %s", cargs->context.subcommand_stack[i]->name);
+        printf("\nRun '%s", argus->program_name);
+        for (size_t i = 0; i < argus->context.subcommand_depth; ++i)
+            printf(" %s", argus->context.subcommand_stack[i]->name);
         printf(" COMMAND --help' for more information on a command.\n");
     }
 }
@@ -680,10 +680,10 @@ static void print_help_sections(cargs_t *cargs, help_data_t *data)
  * Main help display function
  */
 
-void display_help(cargs_t *cargs, const cargs_option_t *command)
+void display_help(argus_t *argus, const argus_option_t *command)
 {
     if (command == NULL)
-        command = get_active_options(cargs);
+        command = get_active_options(argus);
 
     // Initialize help data
     help_data_t data = {NULL, NULL, NULL, NULL};
@@ -692,7 +692,7 @@ void display_help(cargs_t *cargs, const cargs_option_t *command)
     organize_options(command, &data);
 
     // Print the help sections
-    print_help_sections(cargs, &data);
+    print_help_sections(argus, &data);
 
     // Clean up
     free_help_data(&data);

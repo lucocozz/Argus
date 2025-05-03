@@ -1,6 +1,6 @@
 # Gestionnaires personnalisés
 
-Les gestionnaires personnalisés étendent les capacités de cargs en vous permettant de transformer et de valider les données d'entrée selon vos besoins spécifiques.
+Les gestionnaires personnalisés étendent les capacités de argus en vous permettant de transformer et de valider les données d'entrée selon vos besoins spécifiques.
 
 !!! abstract "Aperçu"
     Ce guide couvre le traitement avancé des entrées avec des gestionnaires personnalisés :
@@ -15,7 +15,7 @@ Les gestionnaires personnalisés étendent les capacités de cargs en vous perme
 
 ## Comprendre les gestionnaires
 
-Alors que cargs fournit des gestionnaires standard pour les types courants (chaîne, entier, flottant, booléen), les gestionnaires personnalisés permettent un traitement plus avancé :
+Alors que argus fournit des gestionnaires standard pour les types courants (chaîne, entier, flottant, booléen), les gestionnaires personnalisés permettent un traitement plus avancé :
 
 - Transformation des entrées en structures de données complexes
 - Analyse de formats spécialisés (hôte:port, coordonnées, couleurs)
@@ -29,16 +29,16 @@ Contrairement aux validateurs qui vérifient simplement les valeurs, les gestion
 Toutes les fonctions de gestionnaire doivent suivre cette signature :
 
 ```c
-int handler_function(cargs_t *cargs, cargs_option_t *option, char *arg);
+int handler_function(argus_t *argus, argus_option_t *option, char *arg);
 ```
 
 Paramètres :
-- `cargs` : Le contexte cargs, utilisé pour le rapport d'erreurs
+- `argus` : Le contexte argus, utilisé pour le rapport d'erreurs
 - `option` : L'option en cours de traitement, où stocker la valeur
 - `arg` : La valeur de chaîne brute à traiter (NULL pour les drapeaux booléens)
 
 Valeur de retour :
-- `CARGS_SUCCESS` (0) en cas de succès
+- `ARGUS_SUCCESS` (0) en cas de succès
 - Tout code d'erreur (non nul) en cas d'échec
 
 ## Création d'un gestionnaire personnalisé
@@ -51,23 +51,23 @@ typedef struct {
     int port;
 } endpoint_t;
 
-int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+int endpoint_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     if (arg == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MISSING_VALUE, "Le point de terminaison est requis");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MISSING_VALUE, "Le point de terminaison est requis");
     }
     
     // Allouer la structure de point de terminaison
     endpoint_t *endpoint = calloc(1, sizeof(endpoint_t));
     if (!endpoint) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Échec de l'allocation mémoire");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Échec de l'allocation mémoire");
     }
     
     // Trouver le séparateur
     char *colon = strchr(arg, ':');
     if (!colon) {
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT, 
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, 
                           "Format de point de terminaison invalide : %s (format attendu : hôte:port)", arg);
     }
     
@@ -76,7 +76,7 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     endpoint->host = strndup(arg, host_len);
     if (!endpoint->host) {
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Échec de l'allocation mémoire");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Échec de l'allocation mémoire");
     }
     
     // Extraire le port
@@ -84,7 +84,7 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     if (port <= 0 || port > 65535) {
         free(endpoint->host);
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, 
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, 
                           "Port invalide : %ld (doit être entre 1 et 65535)", port);
     }
     
@@ -93,7 +93,7 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     // Stocker la structure de point de terminaison
     option->value.as_ptr = endpoint;
     option->is_allocated = true;  // Important : marquer comme alloué pour un nettoyage approprié
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -102,14 +102,14 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
 Lorsque votre gestionnaire alloue de la mémoire, vous devez fournir un gestionnaire de libération personnalisé :
 
 ```c
-int endpoint_free_handler(cargs_option_t *option)
+int endpoint_free_handler(argus_option_t *option)
 {
     endpoint_t *endpoint = (endpoint_t*)option->value.as_ptr;
     if (endpoint) {
         free(endpoint->host);
         free(endpoint);
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -118,7 +118,7 @@ int endpoint_free_handler(cargs_option_t *option)
 Pour utiliser un gestionnaire personnalisé, définissez une option avec la macro `OPTION_BASE` :
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -143,7 +143,7 @@ Pour la réutilisabilité et un code plus propre, vous pouvez créer votre propr
                 ##__VA_ARGS__)
 
 // Utilisation dans les définitions d'options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -157,9 +157,9 @@ CARGS_OPTIONS(
 Pour accéder aux valeurs traitées par des gestionnaires personnalisés :
 
 ```c
-if (cargs_is_set(cargs, "endpoint")) {
+if (argus_is_set(argus, "endpoint")) {
     // Récupérer et convertir la valeur au type correct
-    endpoint_t *endpoint = (endpoint_t*)cargs_get(cargs, "endpoint").as_ptr;
+    endpoint_t *endpoint = (endpoint_t*)argus_get(argus, "endpoint").as_ptr;
     
     // Utiliser les données structurées
     printf("Hôte : %s\n", endpoint->host);
@@ -194,7 +194,7 @@ Pour des types plus complexes, vous pouvez implémenter un traitement spécialis
         unsigned char b;
     } rgb_color_t;
     
-    int color_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+    int color_handler(argus_t *argus, argus_option_t *option, char *arg)
     {
         // Allouer et initialiser la structure de couleur
         rgb_color_t *color = calloc(1, sizeof(rgb_color_t));
@@ -207,7 +207,7 @@ Pour des types plus complexes, vous pouvez implémenter un traitement spécialis
         // Stocker la structure de couleur
         option->value.as_ptr = color;
         option->is_allocated = true;
-        return CARGS_SUCCESS;
+        return ARGUS_SUCCESS;
     }
     ```
 
@@ -218,7 +218,7 @@ Pour des types plus complexes, vous pouvez implémenter un traitement spécialis
         double lon;
     } geo_coord_t;
     
-    int coordinate_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+    int coordinate_handler(argus_t *argus, argus_option_t *option, char *arg)
     {
         // Allouer la structure de coordonnées
         geo_coord_t *coord = calloc(1, sizeof(geo_coord_t));
@@ -230,16 +230,16 @@ Pour des types plus complexes, vous pouvez implémenter un traitement spécialis
         // Stocker la structure de coordonnées
         option->value.as_ptr = coord;
         option->is_allocated = true;
-        return CARGS_SUCCESS;
+        return ARGUS_SUCCESS;
     }
     ```
 
 ## Rapport d'erreurs
 
-Les gestionnaires personnalisés doivent utiliser la macro `CARGS_REPORT_ERROR` pour signaler des erreurs :
+Les gestionnaires personnalisés doivent utiliser la macro `ARGUS_REPORT_ERROR` pour signaler des erreurs :
 
 ```c
-CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
+ARGUS_REPORT_ERROR(argus, error_code, format_string, ...);
 ```
 
 Cette macro :
@@ -248,10 +248,10 @@ Cette macro :
 3. Renvoie le code d'erreur spécifié depuis votre fonction
 
 Codes d'erreur courants :
-- `CARGS_ERROR_MISSING_VALUE` : Valeur requise mais non fournie
-- `CARGS_ERROR_INVALID_FORMAT` : Format de valeur incorrect
-- `CARGS_ERROR_INVALID_VALUE` : Valeur sémantiquement invalide
-- `CARGS_ERROR_MEMORY` : Échec de l'allocation mémoire
+- `ARGUS_ERROR_MISSING_VALUE` : Valeur requise mais non fournie
+- `ARGUS_ERROR_INVALID_FORMAT` : Format de valeur incorrect
+- `ARGUS_ERROR_INVALID_VALUE` : Valeur sémantiquement invalide
+- `ARGUS_ERROR_MEMORY` : Échec de l'allocation mémoire
 
 ## Points clés de la gestion de la mémoire
 
@@ -272,14 +272,14 @@ Implémentez toujours une gestion d'erreurs complète :
 // Allouer de la mémoire
 endpoint_t *endpoint = calloc(1, sizeof(endpoint_t));
 if (!endpoint) {
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Échec de l'allocation mémoire");
+    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Échec de l'allocation mémoire");
 }
 
 // Vérifier les erreurs de format
 char *colon = strchr(arg, ':');
 if (!colon) {
     free(endpoint);  // Nettoyer en cas d'erreur
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT, 
+    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, 
                        "Format invalide : format attendu hôte:port");
 }
 ```
@@ -290,13 +290,13 @@ Fournissez des messages d'erreur informatifs qui aident les utilisateurs :
 
 === "Bon message"
     ```c
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT,
+    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
                      "Format de point de terminaison invalide : %s (format attendu : hôte:port)", arg);
     ```
 
 === "Mauvais message"
     ```c
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT, "Entrée incorrecte");
+    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Entrée incorrecte");
     ```
 
 ### 3. Gestion cohérente de la mémoire
@@ -304,7 +304,7 @@ Fournissez des messages d'erreur informatifs qui aident les utilisateurs :
 Suivez des modèles cohérents de gestion de la mémoire :
 
 ```c
-int my_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+int my_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     // 1. Valider l'entrée
     if (arg == NULL) { ... }
@@ -322,7 +322,7 @@ int my_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     // 5. En cas de succès, stocker le résultat et marquer comme alloué
     option->value.as_ptr = obj;
     option->is_allocated = true;
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -349,7 +349,7 @@ Créez des macros d'aide pour les types personnalisés :
 Voici un exemple complet implémentant un gestionnaire de point de terminaison personnalisé :
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -361,23 +361,23 @@ typedef struct {
 } endpoint_t;
 
 // Gestionnaire personnalisé pour le point de terminaison "hôte:port"
-int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+int endpoint_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     if (arg == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MISSING_VALUE, "Le point de terminaison est requis");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MISSING_VALUE, "Le point de terminaison est requis");
     }
     
     // Allouer la structure de point de terminaison
     endpoint_t *endpoint = calloc(1, sizeof(endpoint_t));
     if (!endpoint) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Échec de l'allocation mémoire");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Échec de l'allocation mémoire");
     }
     
     // Trouver le séparateur
     char *colon = strchr(arg, ':');
     if (!colon) {
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT, 
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, 
                           "Format de point de terminaison invalide : %s (format attendu : hôte:port)", arg);
     }
     
@@ -386,7 +386,7 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     endpoint->host = strndup(arg, host_len);
     if (!endpoint->host) {
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Échec de l'allocation mémoire");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Échec de l'allocation mémoire");
     }
     
     // Extraire le port
@@ -394,7 +394,7 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     if (port <= 0 || port > 65535) {
         free(endpoint->host);
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, 
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, 
                           "Port invalide : %ld (doit être entre 1 et 65535)", port);
     }
     
@@ -403,18 +403,18 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     // Stocker la structure de point de terminaison
     option->value.as_ptr = endpoint;
     option->is_allocated = true;
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Gestionnaire de libération pour la structure de point de terminaison
-int endpoint_free_handler(cargs_option_t *option)
+int endpoint_free_handler(argus_option_t *option)
 {
     endpoint_t *endpoint = (endpoint_t*)option->value.as_ptr;
     if (endpoint) {
         free(endpoint->host);
         free(endpoint);
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Macro d'aide pour les options de point de terminaison
@@ -425,7 +425,7 @@ int endpoint_free_handler(cargs_option_t *option)
                 ##__VA_ARGS__)
 
 // Définition des options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -440,17 +440,17 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "custom_handlers_example", "1.0.0");
-    cargs.description = "Exemple de gestionnaires personnalisés";
+    argus_t argus = argus_init(options, "custom_handlers_example", "1.0.0");
+    argus.description = "Exemple de gestionnaires personnalisés";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Traiter le point de terminaison du serveur s'il est fourni
-    if (cargs_is_set(cargs, "server")) {
-        endpoint_t *server = cargs_get(cargs, "server").as_ptr;
+    if (argus_is_set(argus, "server")) {
+        endpoint_t *server = argus_get(argus, "server").as_ptr;
         
         printf("Informations du serveur :\n");
         printf("  Hôte : %s\n", server->host);
@@ -459,8 +459,8 @@ int main(int argc, char **argv)
     }
     
     // Traiter le point de terminaison de la base de données s'il est fourni
-    if (cargs_is_set(cargs, "database")) {
-        endpoint_t *db = cargs_get(cargs, "database").as_ptr;
+    if (argus_is_set(argus, "database")) {
+        endpoint_t *db = argus_get(argus, "database").as_ptr;
         
         printf("Informations de la base de données :\n");
         printf("  Hôte : %s\n", db->host);
@@ -468,7 +468,7 @@ int main(int argc, char **argv)
         printf("\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```

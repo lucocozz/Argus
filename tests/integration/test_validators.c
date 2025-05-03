@@ -1,49 +1,49 @@
 // tests/integration/test_validators.c
 #include <criterion/criterion.h>
 #include <ctype.h>
-#include "cargs.h"
-#include "cargs/regex.h"
+#include "argus.h"
+#include "argus/regex.h"
 
 // Test function for even numbers
-int test_even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int test_even_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     (void)data;
     int number = option->value.as_int;
     if (number % 2 != 0) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Value must be an even number");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be an even number");
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Test function for positive numbers
-int test_positive_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int test_positive_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     (void)data;
     int number = option->value.as_int;
     if (number <= 0) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Value must be a positive number");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be a positive number");
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Test function for alphanumeric validation
-int test_alphanumeric_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int test_alphanumeric_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     (void)data;
     const char *str = option->value.as_string;
-    if (!str) return CARGS_SUCCESS;
+    if (!str) return ARGUS_SUCCESS;
     
     for (const char* p = str; *p; p++) {
         if (!isalnum(*p)) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                               "String must contain only alphanumeric characters");
         }
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Define test options with validators
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     test_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_INT('p', "port", HELP("Port number"), 
@@ -79,13 +79,13 @@ Test(validators_integration, range_validation_success)
     char *argv[] = {"test", "-p", "8000"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Valid port should pass validation");
-    cr_assert_eq(cargs_get(cargs, "port").as_int, 8000);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Valid port should pass validation");
+    cr_assert_eq(argus_get(argus, "port").as_int, 8000);
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, range_validation_failure)
@@ -94,12 +94,12 @@ Test(validators_integration, range_validation_failure)
     char *argv[] = {"test", "-p", "90000"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Out of range port should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Out of range port should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Test for choices validation
@@ -109,13 +109,13 @@ Test(validators_integration, choices_validation_success)
     char *argv[] = {"test", "-l", "warning"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Valid log level should pass validation");
-    cr_assert_str_eq(cargs_get(cargs, "level").as_string, "warning");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Valid log level should pass validation");
+    cr_assert_str_eq(argus_get(argus, "level").as_string, "warning");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, choices_validation_failure)
@@ -124,12 +124,12 @@ Test(validators_integration, choices_validation_failure)
     char *argv[] = {"test", "-l", "critical"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Invalid log level should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Invalid log level should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Test for regex validation
@@ -139,13 +139,13 @@ Test(validators_integration, regex_validation_success)
     char *argv[] = {"test", "-e", "test@example.com"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Valid email should pass validation");
-    cr_assert_str_eq(cargs_get(cargs, "email").as_string, "test@example.com");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Valid email should pass validation");
+    cr_assert_str_eq(argus_get(argus, "email").as_string, "test@example.com");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, regex_validation_failure)
@@ -154,12 +154,12 @@ Test(validators_integration, regex_validation_failure)
     char *argv[] = {"test", "-e", "invalid-email"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Invalid email should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Invalid email should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Test for length validation
@@ -169,13 +169,13 @@ Test(validators_integration, length_validation_success)
     char *argv[] = {"test", "-u", "johndoe"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Valid username length should pass validation");
-    cr_assert_str_eq(cargs_get(cargs, "username").as_string, "johndoe");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Valid username length should pass validation");
+    cr_assert_str_eq(argus_get(argus, "username").as_string, "johndoe");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, length_validation_failure_too_short)
@@ -184,12 +184,12 @@ Test(validators_integration, length_validation_failure_too_short)
     char *argv[] = {"test", "-u", "jo"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Too short username should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Too short username should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, length_validation_failure_too_long)
@@ -198,12 +198,12 @@ Test(validators_integration, length_validation_failure_too_long)
     char *argv[] = {"test", "-u", "johndoethisiswaytoolong"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Too long username should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Too long username should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Test for count validation
@@ -213,13 +213,13 @@ Test(validators_integration, count_validation_success)
     char *argv[] = {"test", "-t", "tag1", "-t", "tag2", "-t", "tag3"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Valid number of tags should pass validation");
-    cr_assert_eq(cargs_count(cargs, "tags"), 3, "Should have 3 tags");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Valid number of tags should pass validation");
+    cr_assert_eq(argus_count(argus, "tags"), 3, "Should have 3 tags");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, count_validation_failure_too_few)
@@ -228,12 +228,12 @@ Test(validators_integration, count_validation_failure_too_few)
     char *argv[] = {"test", "-t", "tag1"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Too few tags should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Too few tags should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, count_validation_failure_too_many)
@@ -243,12 +243,12 @@ Test(validators_integration, count_validation_failure_too_many)
                     "-t", "tag4", "-t", "tag5", "-t", "tag6"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Too many tags should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Too many tags should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Tests for multiple validators
@@ -258,13 +258,13 @@ Test(validators_integration, multiple_validators_all_pass)
     char *argv[] = {"test", "-n", "42"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Valid even positive number should pass all validators");
-    cr_assert_eq(cargs_get(cargs, "even-positive").as_int, 42);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Valid even positive number should pass all validators");
+    cr_assert_eq(argus_get(argus, "even-positive").as_int, 42);
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, multiple_validators_first_fails)
@@ -273,12 +273,12 @@ Test(validators_integration, multiple_validators_first_fails)
     char *argv[] = {"test", "-n", "43"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Non-even positive number should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Non-even positive number should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, multiple_validators_second_fails)
@@ -287,12 +287,12 @@ Test(validators_integration, multiple_validators_second_fails)
     char *argv[] = {"test", "-n", "-2"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Negative even number should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Negative even number should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, string_multiple_validators_all_pass)
@@ -301,13 +301,13 @@ Test(validators_integration, string_multiple_validators_all_pass)
     char *argv[] = {"test", "-a", "user123"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Valid alphanumeric username should pass all validators");
-    cr_assert_str_eq(cargs_get(cargs, "alphanum").as_string, "user123");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Valid alphanumeric username should pass all validators");
+    cr_assert_str_eq(argus_get(argus, "alphanum").as_string, "user123");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, string_multiple_validators_first_fails)
@@ -316,12 +316,12 @@ Test(validators_integration, string_multiple_validators_first_fails)
     char *argv[] = {"test", "-a", "ab"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Too short username should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Too short username should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, string_multiple_validators_second_fails)
@@ -330,12 +330,12 @@ Test(validators_integration, string_multiple_validators_second_fails)
     char *argv[] = {"test", "-a", "user@12"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Non-alphanumeric username should fail validation");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Non-alphanumeric username should fail validation");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 Test(validators_integration, string_multiple_validators_both_fail)
@@ -344,10 +344,10 @@ Test(validators_integration, string_multiple_validators_both_fail)
     char *argv[] = {"test", "-a", "user@12345678"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(test_options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_neq(status, CARGS_SUCCESS, "Username that violates both validators should fail");
+    cr_assert_neq(status, ARGUS_SUCCESS, "Username that violates both validators should fail");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }

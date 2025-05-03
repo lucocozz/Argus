@@ -1,6 +1,6 @@
 # Subcommands
 
-cargs supports Git/Docker-style subcommands, allowing you to create command-line interfaces with distinct commands.
+argus supports Git/Docker-style subcommands, allowing you to create command-line interfaces with distinct commands.
 
 !!! abstract "Overview"
     Subcommands let you organize your program's functionality into separate commands, each with its own options and behavior. Examples include:
@@ -8,7 +8,7 @@ cargs supports Git/Docker-style subcommands, allowing you to create command-line
     - `git commit`, `git push`, `git pull`
     - `docker run`, `docker build`, `docker pull`
     
-    This guide covers the basics of implementing subcommands in cargs. For advanced usage including nested subcommands, see the [Nested Commands](../advanced/nested-commands.md) guide.
+    This guide covers the basics of implementing subcommands in argus. For advanced usage including nested subcommands, see the [Nested Commands](../advanced/nested-commands.md) guide.
 
 ## Basic Concept
 
@@ -22,7 +22,7 @@ Each command can have its own set of options and behavior while sharing common g
 
 ## Implementing Subcommands
 
-To implement subcommands in cargs, you need to:
+To implement subcommands in argus, you need to:
 
 1. Define options for each subcommand
 2. Define actions for each subcommand
@@ -34,7 +34,7 @@ First, define the options for each of your subcommands:
 
 ```c
 // Options for the "add" subcommand
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('f', "force", HELP("Force add operation")),
@@ -42,7 +42,7 @@ CARGS_OPTIONS(
 )
 
 // Options for the "remove" subcommand
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     remove_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('r', "recursive", HELP("Recursively remove directories")),
@@ -56,11 +56,11 @@ Next, define action functions that will be called when each subcommand is execut
 
 ```c
 // Action for the "add" subcommand
-int add_command(cargs_t *cargs, void *data)
+int add_command(argus_t *argus, void *data)
 {
     // Access subcommand options
-    const char* file = cargs_get(*cargs, "add.file").as_string;
-    bool force = cargs_get(*cargs, "add.force").as_bool;
+    const char* file = argus_get(*argus, "add.file").as_string;
+    bool force = argus_get(*argus, "add.force").as_bool;
     
     printf("Adding file: %s\n", file);
     if (force) printf("  with force option\n");
@@ -69,11 +69,11 @@ int add_command(cargs_t *cargs, void *data)
 }
 
 // Action for the "remove" subcommand
-int remove_command(cargs_t *cargs, void *data)
+int remove_command(argus_t *argus, void *data)
 {
     // Access subcommand options
-    const char* file = cargs_get(*cargs, "remove.file").as_string;
-    bool recursive = cargs_get(*cargs, "remove.recursive").as_bool;
+    const char* file = argus_get(*argus, "remove.file").as_string;
+    bool recursive = argus_get(*argus, "remove.recursive").as_bool;
     
     printf("Removing file: %s\n", file);
     if (recursive) printf("  recursively\n");
@@ -88,7 +88,7 @@ Finally, define your main options and include the subcommands:
 
 ```c
 // Main options with subcommands
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -114,23 +114,23 @@ In your main function, you need to check if a subcommand was specified and execu
 ```c
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "subcommands_example", "1.0.0");
-    cargs.description = "Example of subcommands";
+    argus_t argus = argus_init(options, "subcommands_example", "1.0.0");
+    argus.description = "Example of subcommands";
 
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
 
     // Check if a subcommand was specified
-    if (cargs_has_command(cargs)) {
+    if (argus_has_command(argus)) {
         // Execute the subcommand's action
-        status = cargs_exec(&cargs, NULL);
+        status = argus_exec(&argus, NULL);
     } else {
         printf("No command specified. Use --help to see available commands.\n");
     }
 
-    cargs_free(&cargs);
+    argus_free(&argus);
     return status;
 }
 ```
@@ -144,15 +144,15 @@ Within a subcommand action function, you can access options in two ways:
 === "Using Absolute Path"
     ```c
     // Access with full path 
-    const char* file = cargs_get(*cargs, "add.file").as_string;
-    bool force = cargs_get(*cargs, "add.force").as_bool;
+    const char* file = argus_get(*argus, "add.file").as_string;
+    bool force = argus_get(*argus, "add.force").as_bool;
     ```
 
 === "Using Relative Path"
     ```c
     // Within the add_command function, you can use relative paths
-    const char* file = cargs_get(*cargs, "file").as_string;
-    bool force = cargs_get(*cargs, "force").as_bool;
+    const char* file = argus_get(*argus, "file").as_string;
+    bool force = argus_get(*argus, "force").as_bool;
     ```
 
 ### Accessing Global Options
@@ -161,14 +161,14 @@ Global options are accessible from within subcommand actions:
 
 ```c
 // Access global options
-bool verbose = cargs_get(*cargs, ".verbose").as_bool;
+bool verbose = argus_get(*argus, ".verbose").as_bool;
 ```
 
 The leading dot (`.`) indicates the option is defined at the root level.
 
 ## Help Integration
 
-cargs automatically integrates subcommands into the help display:
+argus automatically integrates subcommands into the help display:
 
 ```
 subcommands_example v1.0.0
@@ -211,16 +211,16 @@ Options:
 Here's a complete example of implementing basic subcommands:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 // Subcommand action handlers
-int add_command(cargs_t *cargs, void *data);
-int remove_command(cargs_t *cargs, void *data);
+int add_command(argus_t *argus, void *data);
+int remove_command(argus_t *argus, void *data);
 
 // Define options for "add" subcommand
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('f', "force", HELP("Force add operation")),
@@ -228,7 +228,7 @@ CARGS_OPTIONS(
 )
 
 // Define options for "remove" subcommand
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     remove_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('r', "recursive", HELP("Recursively remove directories")),
@@ -236,7 +236,7 @@ CARGS_OPTIONS(
 )
 
 // Define main options with subcommands
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -255,16 +255,16 @@ CARGS_OPTIONS(
 )
 
 // Implementation of the "add" command
-int add_command(cargs_t *cargs, void *data)
+int add_command(argus_t *argus, void *data)
 {
     (void)data; // Unused parameter
     
     // Get the global option
-    bool verbose = cargs_get(*cargs, ".verbose").as_bool;
+    bool verbose = argus_get(*argus, ".verbose").as_bool;
     
     // Get command-specific options
-    const char* file = cargs_get(*cargs, "file").as_string;
-    bool force = cargs_get(*cargs, "force").as_bool;
+    const char* file = argus_get(*argus, "file").as_string;
+    bool force = argus_get(*argus, "force").as_bool;
 
     printf("Adding file: %s\n", file);
     if (verbose) printf("  verbose mode enabled\n");
@@ -274,16 +274,16 @@ int add_command(cargs_t *cargs, void *data)
 }
 
 // Implementation of the "remove" command
-int remove_command(cargs_t *cargs, void *data)
+int remove_command(argus_t *argus, void *data)
 {
     (void)data; // Unused parameter
     
     // Get the global option
-    bool verbose = cargs_get(*cargs, ".verbose").as_bool;
+    bool verbose = argus_get(*argus, ".verbose").as_bool;
     
     // Get command-specific options
-    const char* file = cargs_get(*cargs, "file").as_string;
-    bool recursive = cargs_get(*cargs, "recursive").as_bool;
+    const char* file = argus_get(*argus, "file").as_string;
+    bool recursive = argus_get(*argus, "recursive").as_bool;
 
     printf("Removing file: %s\n", file);
     if (verbose) printf("  verbose mode enabled\n");
@@ -294,22 +294,22 @@ int remove_command(cargs_t *cargs, void *data)
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "subcommands_example", "1.0.0");
-    cargs.description = "Example of subcommands";
+    argus_t argus = argus_init(options, "subcommands_example", "1.0.0");
+    argus.description = "Example of subcommands";
 
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
 
-    if (cargs_has_command(cargs)) {
+    if (argus_has_command(argus)) {
         // Execute the subcommand handler
-        status = cargs_exec(&cargs, NULL);
+        status = argus_exec(&argus, NULL);
     } else {
         printf("No command specified. Use --help to see available commands.\n");
     }
 
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```

@@ -1,11 +1,11 @@
 # Types Reference
 
-This page documents the core data types and structures provided by the cargs library. Understanding these types is essential for advanced usage and custom extensions.
+This page documents the core data types and structures provided by the argus library. Understanding these types is essential for advanced usage and custom extensions.
 
 !!! abstract "Overview"
-    cargs defines several key data types and structures that form the foundation of the library:
+    argus defines several key data types and structures that form the foundation of the library:
     
-    - **Core Structures** - Main data structures like `cargs_t` and `cargs_option_t`
+    - **Core Structures** - Main data structures like `argus_t` and `argus_option_t`
     - **Value Types** - Types for storing and accessing different kinds of values
     - **Enumerations** - Type classifiers and flag definitions
     - **Collections** - Array and map data structures and iterators
@@ -13,12 +13,12 @@ This page documents the core data types and structures provided by the cargs lib
 
 ## Core Structures
 
-### cargs_t
+### argus_t
 
 The main context structure that holds all parsing state and configuration.
 
 ```c
-typedef struct cargs_s {
+typedef struct argus_s {
     /* Public fields */
     const char *program_name;    // Program name
     const char *version;         // Program version
@@ -26,31 +26,31 @@ typedef struct cargs_s {
     const char *env_prefix;      // Prefix for environment variables
     
     /* Internal fields - do not access directly */
-    cargs_option_t     *options;      // Defined options
-    cargs_error_stack_t error_stack;  // Error stack
+    argus_option_t     *options;      // Defined options
+    argus_error_stack_t error_stack;  // Error stack
     struct { /* ... */ } context;     // Internal context
-} cargs_t;
+} argus_t;
 ```
 
-The public fields can be accessed and modified directly after initializing with `cargs_init()`:
+The public fields can be accessed and modified directly after initializing with `argus_init()`:
 
 ```c
-cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
-cargs.description = "My awesome program";
-cargs.env_prefix = "MYAPP";  // Optional: prefix for environment variables
+argus_t argus = argus_init(options, "my_program", "1.0.0");
+argus.description = "My awesome program";
+argus.env_prefix = "MYAPP";  // Optional: prefix for environment variables
 ```
 
 !!! warning "Internal Fields"
     The internal fields should not be accessed directly. Use the provided API functions to interact with them.
 
-### cargs_option_t
+### argus_option_t
 
 Defines a command-line option with all its properties and behavior.
 
 ```c
-typedef struct cargs_option_s {
+typedef struct argus_option_s {
     /* Base metadata */
-    cargs_optype_t type;        // Type of option (flag, positional, etc.)
+    argus_optype_t type;        // Type of option (flag, positional, etc.)
     const char *name;          // Internal name for references
     char sname;                // Short name (e.g., 'v' for -v)
     const char *lname;         // Long name (e.g., "verbose" for --verbose)
@@ -58,16 +58,16 @@ typedef struct cargs_option_s {
     const char *hint;          // Value hint for help display
     
     /* Value metadata */
-    cargs_valtype_t value_type;   // Type of value
-    cargs_value_t value;             // Current value
-    cargs_value_t default_value;     // Default value
+    argus_valtype_t value_type;   // Type of value
+    argus_value_t value;             // Current value
+    argus_value_t default_value;     // Default value
     bool have_default;         // Whether a default is set
     /* Additional value fields... */
     
     /* Callbacks */
-    cargs_handler_t handler;       // Value handler function
-    cargs_free_handler_t free_handler;  // Resource cleanup function
-    cargs_validator_t validator;    // Value validator
+    argus_handler_t handler;       // Value handler function
+    argus_free_handler_t free_handler;  // Resource cleanup function
+    argus_validator_t validator;    // Value validator
     /* Additional callback fields... */
     
     /* Dependencies */
@@ -75,26 +75,26 @@ typedef struct cargs_option_s {
     const char **conflicts;    // Options that cannot be used with this one
     
     /* State */
-    cargs_optflags_t flags;      // Option behavior flags
+    argus_optflags_t flags;      // Option behavior flags
     bool is_set;               // Whether the option was set on command line
     
     /* Subcommand fields */
-    cargs_action_t action;     // Action for subcommands
-    struct cargs_option_s *sub_options;  // Options for subcommands
-} cargs_option_t;
+    argus_action_t action;     // Action for subcommands
+    struct argus_option_s *sub_options;  // Options for subcommands
+} argus_option_t;
 ```
 
 !!! note
-    You typically don't create `cargs_option_t` structures directly. Instead, use the provided macros like `OPTION_STRING`, `OPTION_INT`, etc.
+    You typically don't create `argus_option_t` structures directly. Instead, use the provided macros like `OPTION_STRING`, `OPTION_INT`, etc.
 
 ## Value Types
 
-### cargs_value_t
+### argus_value_t
 
 A union type that can hold values of different types:
 
 ```c
-typedef union cargs_value_u {
+typedef union argus_value_u {
     uintptr_t raw;          // Raw value as integer
     void     *as_ptr;       // Generic pointer
     
@@ -107,44 +107,44 @@ typedef union cargs_value_u {
     bool   as_bool;         // Boolean
     
     // Collection types
-    cargs_value_t      *as_array;  // Array of values
-    cargs_pair_t *as_map;    // Key-value map
-} cargs_value_t;
+    argus_value_t      *as_array;  // Array of values
+    argus_pair_t *as_map;    // Key-value map
+} argus_value_t;
 ```
 
-### cargs_pair_t
+### argus_pair_t
 
 A key-value pair used in map collections:
 
 ```c
-typedef struct cargs_pair_s {
+typedef struct argus_pair_s {
     const char *key;    // String key
-    cargs_value_t     value;  // Value of any supported type
-} cargs_pair_t;
+    argus_value_t     value;  // Value of any supported type
+} argus_pair_t;
 ```
 
 ## Enumerations
 
-### cargs_optype_t
+### argus_optype_t
 
 Defines the different types of command-line elements:
 
 ```c
-typedef enum cargs_optype_e {
+typedef enum argus_optype_e {
     TYPE_NONE = 0,        // Terminator for option arrays
     TYPE_OPTION,          // Standard option with - or -- prefix
     TYPE_GROUP,           // Logical grouping of options
     TYPE_POSITIONAL,      // Positional argument
     TYPE_SUBCOMMAND,      // Subcommand with its own options
-} cargs_optype_t;
+} argus_optype_t;
 ```
 
-### cargs_valtype_t
+### argus_valtype_t
 
 Defines the types of values an option can hold:
 
 ```c
-typedef enum cargs_valtype_e {
+typedef enum argus_valtype_e {
     VALUE_TYPE_NONE = 0,        // No value
     
     // Primitive types
@@ -166,15 +166,15 @@ typedef enum cargs_valtype_e {
     VALUE_TYPE_MAP_BOOL   = 1 << 11,   // Boolean map
     
     VALUE_TYPE_CUSTOM = 1 << 12,       // Custom type
-} cargs_valtype_t;
+} argus_valtype_t;
 ```
 
-### cargs_optflags_t
+### argus_optflags_t
 
 Defines flags that modify option behavior:
 
 ```c
-typedef enum cargs_optflags_e {
+typedef enum argus_optflags_e {
     FLAG_NONE = 0,
     /* Option flags */
     FLAG_REQUIRED      = 1 << 0,  // Option must be specified
@@ -196,102 +196,102 @@ typedef enum cargs_optflags_e {
     
     /* Group flags */
     FLAG_EXCLUSIVE = 1 << 14,     // Only one option in group can be set
-} cargs_optflags_t;
+} argus_optflags_t;
 ```
 
 ## Collection Iterators
 
-### cargs_array_it_t
+### argus_array_it_t
 
 Iterator for array collections:
 
 ```c
-typedef struct cargs_array_iterator_s {
-    cargs_value_t *_array;      // Internal array pointer
+typedef struct argus_array_iterator_s {
+    argus_value_t *_array;      // Internal array pointer
     size_t   _count;      // Number of elements
     size_t   _position;   // Current position
-    cargs_value_t  value;       // Current value
-} cargs_array_it_t;
+    argus_value_t  value;       // Current value
+} argus_array_it_t;
 ```
 
 Example usage:
 ```c
-cargs_array_it_t it = cargs_array_it(cargs, "names");
-while (cargs_array_next(&it)) {
+argus_array_it_t it = argus_array_it(argus, "names");
+while (argus_array_next(&it)) {
     printf("Name: %s\n", it.value.as_string);
 }
 ```
 
-### cargs_map_it_t
+### argus_map_it_t
 
 Iterator for map collections:
 
 ```c
-typedef struct cargs_map_iterator_s {
-    cargs_pair_t *_map;    // Internal map pointer
+typedef struct argus_map_iterator_s {
+    argus_pair_t *_map;    // Internal map pointer
     size_t        _count;  // Number of elements
     size_t        _position; // Current position
     const char   *key;     // Current key
-    cargs_value_t       value;   // Current value
-} cargs_map_it_t;
+    argus_value_t       value;   // Current value
+} argus_map_it_t;
 ```
 
 Example usage:
 ```c
-cargs_map_it_t it = cargs_map_it(cargs, "env");
-while (cargs_map_next(&it)) {
+argus_map_it_t it = argus_map_it(argus, "env");
+while (argus_map_next(&it)) {
     printf("%s = %s\n", it.key, it.value.as_string);
 }
 ```
 
 ## Callback Types
 
-### cargs_handler_t
+### argus_handler_t
 
 Handler function for processing option values:
 
 ```c
-typedef int (*cargs_handler_t)(cargs_t *, cargs_option_t *, char *);
+typedef int (*argus_handler_t)(argus_t *, argus_option_t *, char *);
 ```
 
 Custom handlers process the raw string value and store it in the option structure.
 
-### cargs_free_handler_t
+### argus_free_handler_t
 
 Handler function for freeing option resources:
 
 ```c
-typedef int (*cargs_free_handler_t)(cargs_option_t *);
+typedef int (*argus_free_handler_t)(argus_option_t *);
 ```
 
 Custom free handlers clean up resources allocated by a handler function.
 
-### cargs_validator_t
+### argus_validator_t
 
 Validator function for checking option values:
 
 ```c
-typedef int (*cargs_validator_t)(cargs_t *, cargs_value_t, validator_data_t);
+typedef int (*argus_validator_t)(argus_t *, argus_value_t, validator_data_t);
 ```
 
 Validators ensure values meet certain criteria after processing.
 
-### cargs_pre_validator_t
+### argus_pre_validator_t
 
 Pre-validator function for checking raw string values:
 
 ```c
-typedef int (*cargs_pre_validator_t)(cargs_t *, const char *, validator_data_t);
+typedef int (*argus_pre_validator_t)(argus_t *, const char *, validator_data_t);
 ```
 
 Pre-validators check input strings before they're processed.
 
-### cargs_action_t
+### argus_action_t
 
 Action function for subcommands:
 
 ```c
-typedef int (*cargs_action_t)(cargs_t *, void *);
+typedef int (*argus_action_t)(argus_t *, void *);
 ```
 
 Actions are executed when a subcommand is invoked.
@@ -334,53 +334,53 @@ typedef struct regex_data_s {
 
 ## Error Handling Types
 
-### cargs_error_type_t
+### argus_error_type_t
 
-Error codes returned by cargs functions:
+Error codes returned by argus functions:
 
 ```c
-typedef enum cargs_error_type_e {
-    CARGS_SUCCESS = 0,             // No error
-    CARGS_SOULD_EXIT,              // Normal exit after option handling
+typedef enum argus_error_type_e {
+    ARGUS_SUCCESS = 0,             // No error
+    ARGUS_SOULD_EXIT,              // Normal exit after option handling
     
     /* Structure errors */
-    CARGS_ERROR_DUPLICATE_OPTION,  // Option name collision
-    CARGS_ERROR_INVALID_HANDLER,   // Invalid handler function
+    ARGUS_ERROR_DUPLICATE_OPTION,  // Option name collision
+    ARGUS_ERROR_INVALID_HANDLER,   // Invalid handler function
     /* More error codes... */
     
     /* Parsing errors */
-    CARGS_ERROR_INVALID_ARGUMENT,  // Invalid argument
-    CARGS_ERROR_MISSING_VALUE,     // Required value not provided
+    ARGUS_ERROR_INVALID_ARGUMENT,  // Invalid argument
+    ARGUS_ERROR_MISSING_VALUE,     // Required value not provided
     /* More error codes... */
-} cargs_error_type_t;
+} argus_error_type_t;
 ```
 
-### cargs_error_t
+### argus_error_t
 
 Structure for storing detailed error information:
 
 ```c
-typedef struct cargs_error_s {
-    cargs_error_context_t context;  // Error context
+typedef struct argus_error_s {
+    argus_error_context_t context;  // Error context
     int code;                       // Error code
-    char message[CARGS_MAX_ERROR_MESSAGE_SIZE];  // Error message
-} cargs_error_t;
+    char message[ARGUS_MAX_ERROR_MESSAGE_SIZE];  // Error message
+} argus_error_t;
 ```
 
 ## Constants and Limits
 
-Cargs defines several constants that control its behavior:
+Argus defines several constants that control its behavior:
 
 ```c
 #define MAX_SUBCOMMAND_DEPTH 8  // Maximum depth of nested subcommands
-#define CARGS_MAX_ERROR_MESSAGE_SIZE 256  // Maximum error message length
-#define CARGS_MAX_ERRORS_STACK 16  // Maximum number of errors in stack
+#define ARGUS_MAX_ERROR_MESSAGE_SIZE 256  // Maximum error message length
+#define ARGUS_MAX_ERRORS_STACK 16  // Maximum number of errors in stack
 #define MULTI_VALUE_INITIAL_CAPACITY 8  // Initial capacity for collections
 ```
 
 ## Type Macros and Categories
 
-Cargs provides several helper macros for working with value types:
+Argus provides several helper macros for working with value types:
 
 ```c
 // Type category macros
@@ -408,20 +408,20 @@ Cargs provides several helper macros for working with value types:
 The library also includes several utility types for error tracking and context management:
 
 ```c
-typedef struct cargs_error_context_s {
+typedef struct argus_error_context_s {
     const char *option_name;     // Current option name
     const char *group_name;      // Current group name 
     const char *subcommand_name; // Current subcommand name
-} cargs_error_context_t;
+} argus_error_context_t;
 
-typedef struct cargs_error_stack_s {
-    cargs_error_t errors[CARGS_MAX_ERRORS_STACK];  // Error array
+typedef struct argus_error_stack_s {
+    argus_error_t errors[ARGUS_MAX_ERRORS_STACK];  // Error array
     size_t count;                                  // Number of errors
-} cargs_error_stack_t;
+} argus_error_stack_t;
 ```
 
 ## Related Documentation
 
 - [Macros Reference](macros.md) - Complete list of option definition macros
 - [Functions Reference](functions.md) - Comprehensive API function reference
-- [Overview](overview.md) - High-level overview of the cargs API
+- [Overview](overview.md) - High-level overview of the argus API

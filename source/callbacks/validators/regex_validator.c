@@ -1,34 +1,34 @@
 #include <stddef.h>
-#ifndef CARGS_NO_REGEX
+#ifndef ARGUS_NO_REGEX
     #define PCRE2_CODE_UNIT_WIDTH 8
     #include <pcre2.h>
 #endif
-#include "cargs/errors.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/types.h"
 
 /**
  * regex_validator - Validate a string value against a regular expression
  *
- * @param cargs  Cargs context
+ * @param argus  Argus context
  * @param value  String value to validate
  * @param data   Validator data containing regex pattern
  *
  * @return Status code (0 for success, non-zero for error)
  */
-int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
+int regex_validator(argus_t *argus, const char *value, validator_data_t data)
 {
-#ifdef CARGS_NO_REGEX
+#ifdef ARGUS_NO_REGEX
     // Regex support is disabled
     (void)(value);
     (void)(data);
-    CARGS_REPORT_ERROR(
-        cargs, CARGS_ERROR_INVALID_VALUE,
-        "Regex validation is not supported in this build (compiled with CARGS_NO_REGEX)");
-    return CARGS_ERROR_INVALID_VALUE;
+    ARGUS_REPORT_ERROR(
+        argus, ARGUS_ERROR_INVALID_VALUE,
+        "Regex validation is not supported in this build (compiled with ARGUS_NO_REGEX)");
+    return ARGUS_ERROR_INVALID_VALUE;
 #else
     const char *pattern = data.regex.pattern;
     if (!pattern) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Regular expression pattern is NULL");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Regular expression pattern is NULL");
     }
 
     // Compile the regular expression
@@ -41,7 +41,7 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
         // Failed to compile the regex
         PCRE2_UCHAR buffer[256];
         pcre2_get_error_message(errorcode, buffer, sizeof(buffer));
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT, "Failed to compile regex '%s': %s",
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Failed to compile regex '%s': %s",
                            pattern, buffer);
     }
 
@@ -57,17 +57,17 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
         switch (rc) {
             case PCRE2_ERROR_NOMATCH:
                 if (data.regex.hint && data.regex.hint[0] != '\0') {
-                    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Invalid value '%s': %s",
+                    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Invalid value '%s': %s",
                                        value, data.regex.hint);
                 } else {
-                    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                                        "Value '%s' does not match the expected format", value);
                 }
             default:
-                CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT,
+                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
                                    "Internal error: Regex match failed with error code %d", rc);
         }
     }
-    return (CARGS_SUCCESS);
+    return (ARGUS_SUCCESS);
 #endif
 }

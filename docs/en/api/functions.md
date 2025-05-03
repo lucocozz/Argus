@@ -1,9 +1,9 @@
 # Functions Reference
 
-This page provides a comprehensive reference for all the functions in the cargs API. These functions allow you to initialize the library, parse arguments, access values, and manage resources.
+This page provides a comprehensive reference for all the functions in the argus API. These functions allow you to initialize the library, parse arguments, access values, and manage resources.
 
 !!! abstract "Overview"
-    The cargs API is organized into several function groups:
+    The argus API is organized into several function groups:
     
     - **Initialization and Parsing** - Core functions for setup and parsing
     - **Value Access** - Functions for retrieving option values
@@ -14,109 +14,109 @@ This page provides a comprehensive reference for all the functions in the cargs 
 
 ## Initialization and Parsing
 
-### cargs_init
+### argus_init
 
-Initializes a cargs context with program information and options.
+Initializes a argus context with program information and options.
 
 ```c
-cargs_t cargs_init(cargs_option_t *options, const char *program_name, const char *version);
+argus_t argus_init(argus_option_t *options, const char *program_name, const char *version);
 ```
 
 **Parameters:**
-- `options`: Array of command-line options defined with `CARGS_OPTIONS`
+- `options`: Array of command-line options defined with `ARGUS_OPTIONS`
 - `program_name`: Name of the program (used in help/error messages)
 - `version`: Version string
 
 **Returns:**
-- An initialized `cargs_t` structure
+- An initialized `argus_t` structure
 
 **Example:**
 ```c
-cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
-cargs.description = "My awesome program description";
+argus_t argus = argus_init(options, "my_program", "1.0.0");
+argus.description = "My awesome program description";
 ```
 
 !!! tip
     After initialization, you can set additional fields like `description` and `env_prefix` before parsing.
 
-### cargs_parse
+### argus_parse
 
 Parses command-line arguments according to the defined options.
 
 ```c
-int cargs_parse(cargs_t *cargs, int argc, char **argv);
+int argus_parse(argus_t *argus, int argc, char **argv);
 ```
 
 **Parameters:**
-- `cargs`: Pointer to the initialized cargs context
+- `argus`: Pointer to the initialized argus context
 - `argc`: Argument count (from `main`)
 - `argv`: Argument values (from `main`)
 
 **Returns:**
-- `CARGS_SUCCESS` (0) on success
+- `ARGUS_SUCCESS` (0) on success
 - A non-zero error code on failure
 
 **Example:**
 ```c
-int status = cargs_parse(&cargs, argc, argv);
-if (status != CARGS_SUCCESS) {
+int status = argus_parse(&argus, argc, argv);
+if (status != ARGUS_SUCCESS) {
     return status;
 }
 ```
 
-### cargs_free
+### argus_free
 
 Frees resources allocated during parsing.
 
 ```c
-void cargs_free(cargs_t *cargs);
+void argus_free(argus_t *argus);
 ```
 
 **Parameters:**
-- `cargs`: Pointer to the cargs context to free
+- `argus`: Pointer to the argus context to free
 
 **Example:**
 ```c
-cargs_free(&cargs);
+argus_free(&argus);
 ```
 
 !!! warning
-    Always call `cargs_free()` when you're done with a cargs context to avoid memory leaks.
+    Always call `argus_free()` when you're done with a argus context to avoid memory leaks.
 
 ## Value Access
 
-### cargs_get
+### argus_get
 
 Retrieves the value of an option.
 
 ```c
-cargs_value_t cargs_get(cargs_t cargs, const char *option_path);
+argus_value_t argus_get(argus_t argus, const char *option_path);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 - `option_path`: Path to the option (name or `subcommand.name` format)
 
 **Returns:**
-- The option's value as a `cargs_value_t` union, or `{.raw = 0}` if not found
+- The option's value as a `argus_value_t` union, or `{.raw = 0}` if not found
 
 **Example:**
 ```c
-const char *output = cargs_get(cargs, "output").as_string;
-int port = cargs_get(cargs, "port").as_int;
-bool verbose = cargs_get(cargs, "verbose").as_bool;
+const char *output = argus_get(argus, "output").as_string;
+int port = argus_get(argus, "port").as_int;
+bool verbose = argus_get(argus, "verbose").as_bool;
 ```
 
-### cargs_is_set
+### argus_is_set
 
 Checks if an option was explicitly set on the command line.
 
 ```c
-bool cargs_is_set(cargs_t cargs, const char *option_path);
+bool argus_is_set(argus_t argus, const char *option_path);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 - `option_path`: Path to the option (name or `subcommand.name` format)
 
 **Returns:**
@@ -124,21 +124,21 @@ bool cargs_is_set(cargs_t cargs, const char *option_path);
 
 **Example:**
 ```c
-if (cargs_is_set(cargs, "verbose")) {
+if (argus_is_set(argus, "verbose")) {
     // Verbose mode enabled
 }
 ```
 
-### cargs_count
+### argus_count
 
 Gets the number of values for an option (for collections).
 
 ```c
-size_t cargs_count(cargs_t cargs, const char *option_path);
+size_t argus_count(argus_t argus, const char *option_path);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 - `option_path`: Path to the option (name or `subcommand.name` format)
 
 **Returns:**
@@ -146,22 +146,22 @@ size_t cargs_count(cargs_t cargs, const char *option_path);
 
 **Example:**
 ```c
-size_t tags_count = cargs_count(cargs, "tags");
+size_t tags_count = argus_count(argus, "tags");
 printf("Tags: %zu\n", tags_count);
 ```
 
 ## Collection Access
 
-### cargs_array_get
+### argus_array_get
 
 Retrieves an element from an array option at the specified index.
 
 ```c
-cargs_value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t index);
+argus_value_t argus_array_get(argus_t argus, const char *option_path, size_t index);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 - `option_path`: Path to the array option
 - `index`: Index of the element to retrieve
 
@@ -170,19 +170,19 @@ cargs_value_t cargs_array_get(cargs_t cargs, const char *option_path, size_t ind
 
 **Example:**
 ```c
-const char *first_tag = cargs_array_get(cargs, "tags", 0).as_string;
+const char *first_tag = argus_array_get(argus, "tags", 0).as_string;
 ```
 
-### cargs_map_get
+### argus_map_get
 
 Retrieves a value from a map option with the specified key.
 
 ```c
-cargs_value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *key);
+argus_value_t argus_map_get(argus_t argus, const char *option_path, const char *key);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 - `option_path`: Path to the map option
 - `key`: Key to look up in the map
 
@@ -191,20 +191,20 @@ cargs_value_t cargs_map_get(cargs_t cargs, const char *option_path, const char *
 
 **Example:**
 ```c
-const char *user = cargs_map_get(cargs, "env", "USER").as_string;
-int http_port = cargs_map_get(cargs, "ports", "http").as_int;
+const char *user = argus_map_get(argus, "env", "USER").as_string;
+int http_port = argus_map_get(argus, "ports", "http").as_int;
 ```
 
-### cargs_array_it
+### argus_array_it
 
 Creates an iterator for efficiently traversing an array option.
 
 ```c
-cargs_array_it_t cargs_array_it(cargs_t cargs, const char *option_path);
+argus_array_it_t argus_array_it(argus_t argus, const char *option_path);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 - `option_path`: Path to the array option
 
 **Returns:**
@@ -212,15 +212,15 @@ cargs_array_it_t cargs_array_it(cargs_t cargs, const char *option_path);
 
 **Example:**
 ```c
-cargs_array_it_t it = cargs_array_it(cargs, "tags");
+argus_array_it_t it = argus_array_it(argus, "tags");
 ```
 
-### cargs_array_next
+### argus_array_next
 
 Gets the next element from an array iterator.
 
 ```c
-bool cargs_array_next(cargs_array_it_t *it);
+bool argus_array_next(argus_array_it_t *it);
 ```
 
 **Parameters:**
@@ -231,18 +231,18 @@ bool cargs_array_next(cargs_array_it_t *it);
 
 **Example:**
 ```c
-cargs_array_it_t it = cargs_array_it(cargs, "tags");
-while (cargs_array_next(&it)) {
+argus_array_it_t it = argus_array_it(argus, "tags");
+while (argus_array_next(&it)) {
     printf("Tag: %s\n", it.value.as_string);
 }
 ```
 
-### cargs_array_reset
+### argus_array_reset
 
 Resets an array iterator to the beginning.
 
 ```c
-void cargs_array_reset(cargs_array_it_t *it);
+void argus_array_reset(argus_array_it_t *it);
 ```
 
 **Parameters:**
@@ -250,19 +250,19 @@ void cargs_array_reset(cargs_array_it_t *it);
 
 **Example:**
 ```c
-cargs_array_reset(&it);  // Reset to start a new iteration
+argus_array_reset(&it);  // Reset to start a new iteration
 ```
 
-### cargs_map_it
+### argus_map_it
 
 Creates an iterator for efficiently traversing a map option.
 
 ```c
-cargs_map_it_t cargs_map_it(cargs_t cargs, const char *option_path);
+argus_map_it_t argus_map_it(argus_t argus, const char *option_path);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 - `option_path`: Path to the map option
 
 **Returns:**
@@ -270,15 +270,15 @@ cargs_map_it_t cargs_map_it(cargs_t cargs, const char *option_path);
 
 **Example:**
 ```c
-cargs_map_it_t it = cargs_map_it(cargs, "env");
+argus_map_it_t it = argus_map_it(argus, "env");
 ```
 
-### cargs_map_next
+### argus_map_next
 
 Gets the next key-value pair from a map iterator.
 
 ```c
-bool cargs_map_next(cargs_map_it_t *it);
+bool argus_map_next(argus_map_it_t *it);
 ```
 
 **Parameters:**
@@ -289,18 +289,18 @@ bool cargs_map_next(cargs_map_it_t *it);
 
 **Example:**
 ```c
-cargs_map_it_t it = cargs_map_it(cargs, "env");
-while (cargs_map_next(&it)) {
+argus_map_it_t it = argus_map_it(argus, "env");
+while (argus_map_next(&it)) {
     printf("%s = %s\n", it.key, it.value.as_string);
 }
 ```
 
-### cargs_map_reset
+### argus_map_reset
 
 Resets a map iterator to the beginning.
 
 ```c
-void cargs_map_reset(cargs_map_it_t *it);
+void argus_map_reset(argus_map_it_t *it);
 ```
 
 **Parameters:**
@@ -308,135 +308,135 @@ void cargs_map_reset(cargs_map_it_t *it);
 
 **Example:**
 ```c
-cargs_map_reset(&it);  // Reset to start a new iteration
+argus_map_reset(&it);  // Reset to start a new iteration
 ```
 
 ## Subcommand Management
 
-### cargs_has_command
+### argus_has_command
 
 Checks if a subcommand was specified on the command line.
 
 ```c
-bool cargs_has_command(cargs_t cargs);
+bool argus_has_command(argus_t argus);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 
 **Returns:**
 - `true` if a subcommand was specified, `false` otherwise
 
 **Example:**
 ```c
-if (cargs_has_command(cargs)) {
+if (argus_has_command(argus)) {
     // A subcommand was specified
 } else {
     printf("No command specified. Use --help to see available commands.\n");
 }
 ```
 
-### cargs_exec
+### argus_exec
 
 Executes the action associated with the specified subcommand.
 
 ```c
-int cargs_exec(cargs_t *cargs, void *data);
+int argus_exec(argus_t *argus, void *data);
 ```
 
 **Parameters:**
-- `cargs`: Pointer to the cargs context
+- `argus`: Pointer to the argus context
 - `data`: Optional data to pass to the subcommand action
 
 **Returns:**
 - Status code returned by the subcommand action
-- `CARGS_ERROR_NO_COMMAND` if no command was specified
-- `CARGS_ERROR_INVALID_HANDLER` if the command has no action
+- `ARGUS_ERROR_NO_COMMAND` if no command was specified
+- `ARGUS_ERROR_INVALID_HANDLER` if the command has no action
 
 **Example:**
 ```c
-if (cargs_has_command(cargs)) {
-    status = cargs_exec(&cargs, NULL);
+if (argus_has_command(argus)) {
+    status = argus_exec(&argus, NULL);
 }
 ```
 
 ## Display Functions
 
-### cargs_print_help
+### argus_print_help
 
 Prints a formatted help message based on the defined options.
 
 ```c
-void cargs_print_help(cargs_t cargs);
+void argus_print_help(argus_t argus);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 
 **Example:**
 ```c
-cargs_print_help(cargs);
+argus_print_help(argus);
 ```
 
-### cargs_print_usage
+### argus_print_usage
 
 Prints a short usage summary.
 
 ```c
-void cargs_print_usage(cargs_t cargs);
+void argus_print_usage(argus_t argus);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 
 **Example:**
 ```c
-cargs_print_usage(cargs);
+argus_print_usage(argus);
 ```
 
-### cargs_print_version
+### argus_print_version
 
 Prints version information.
 
 ```c
-void cargs_print_version(cargs_t cargs);
+void argus_print_version(argus_t argus);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 
 **Example:**
 ```c
-cargs_print_version(cargs);
+argus_print_version(argus);
 ```
 
 ## Error Handling
 
-### cargs_print_error_stack
+### argus_print_error_stack
 
 Prints all errors in the error stack.
 
 ```c
-void cargs_print_error_stack(const cargs_t *cargs);
+void argus_print_error_stack(const argus_t *argus);
 ```
 
 **Parameters:**
-- `cargs`: The cargs context
+- `argus`: The argus context
 
 **Example:**
 ```c
-if (status != CARGS_SUCCESS) {
-    cargs_print_error_stack(&cargs);
+if (status != ARGUS_SUCCESS) {
+    argus_print_error_stack(&argus);
     return status;
 }
 ```
 
-### cargs_strerror
+### argus_strerror
 
 Gets a string description of an error code.
 
 ```c
-const char *cargs_strerror(cargs_error_type_t error);
+const char *argus_strerror(argus_error_type_t error);
 ```
 
 **Parameters:**
@@ -447,7 +447,7 @@ const char *cargs_strerror(cargs_error_type_t error);
 
 **Example:**
 ```c
-printf("Error: %s\n", cargs_strerror(status));
+printf("Error: %s\n", argus_strerror(status));
 ```
 
 ## Complete Example
@@ -455,11 +455,11 @@ printf("Error: %s\n", cargs_strerror(status));
 Here's a complete example showing the main function usage pattern:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
 // Define options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -470,21 +470,21 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    // Initialize cargs
-    cargs_t cargs = cargs_init(options, "example", "1.0.0");
-    cargs.description = "Example program using cargs";
+    // Initialize argus
+    argus_t argus = argus_init(options, "example", "1.0.0");
+    argus.description = "Example program using argus";
     
     // Parse arguments
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
-        cargs_print_error_stack(&cargs);
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
+        argus_print_error_stack(&argus);
         return status;
     }
     
     // Access values
-    const char *input = cargs_get(cargs, "input").as_string;
-    const char *output = cargs_get(cargs, "output").as_string;
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    const char *input = argus_get(argus, "input").as_string;
+    const char *output = argus_get(argus, "output").as_string;
+    bool verbose = argus_get(argus, "verbose").as_bool;
     
     // Application logic
     if (verbose) {
@@ -493,7 +493,7 @@ int main(int argc, char **argv)
     }
     
     // Free resources
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
@@ -504,16 +504,16 @@ For ease of reference, here's a summary of the function categories:
 
 | Category | Functions |
 |----------|-----------|
-| **Initialization** | `cargs_init`, `cargs_parse`, `cargs_free` |
-| **Value Access** | `cargs_get`, `cargs_is_set`, `cargs_count` |
-| **Array Functions** | `cargs_array_get`, `cargs_array_it`, `cargs_array_next`, `cargs_array_reset` |
-| **Map Functions** | `cargs_map_get`, `cargs_map_it`, `cargs_map_next`, `cargs_map_reset` |
-| **Subcommand Functions** | `cargs_has_command`, `cargs_exec` |
-| **Display Functions** | `cargs_print_help`, `cargs_print_usage`, `cargs_print_version` |
-| **Error Functions** | `cargs_print_error_stack`, `cargs_strerror` |
+| **Initialization** | `argus_init`, `argus_parse`, `argus_free` |
+| **Value Access** | `argus_get`, `argus_is_set`, `argus_count` |
+| **Array Functions** | `argus_array_get`, `argus_array_it`, `argus_array_next`, `argus_array_reset` |
+| **Map Functions** | `argus_map_get`, `argus_map_it`, `argus_map_next`, `argus_map_reset` |
+| **Subcommand Functions** | `argus_has_command`, `argus_exec` |
+| **Display Functions** | `argus_print_help`, `argus_print_usage`, `argus_print_version` |
+| **Error Functions** | `argus_print_error_stack`, `argus_strerror` |
 
 ## Related Documentation
 
 - [Types Reference](types.md) - Detailed information about data types
 - [Macros Reference](macros.md) - Complete list of option definition macros
-- [API Overview](overview.md) - High-level overview of the cargs API
+- [API Overview](overview.md) - High-level overview of the argus API

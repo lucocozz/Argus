@@ -1,6 +1,6 @@
 # Custom Handlers
 
-Custom handlers extend cargs' capabilities by allowing you to transform and validate input data according to your specific needs.
+Custom handlers extend argus' capabilities by allowing you to transform and validate input data according to your specific needs.
 
 !!! abstract "Overview"
     This guide covers advanced input processing with custom handlers:
@@ -15,7 +15,7 @@ Custom handlers extend cargs' capabilities by allowing you to transform and vali
 
 ## Understanding Handlers
 
-While cargs provides standard handlers for common types (string, int, float, boolean), custom handlers enable more advanced processing:
+While argus provides standard handlers for common types (string, int, float, boolean), custom handlers enable more advanced processing:
 
 - Transforming inputs into complex data structures
 - Parsing specialized formats (host:port, coordinates, colors)
@@ -29,16 +29,16 @@ Unlike validators that simply check values, custom handlers can transform input 
 All handler functions must follow this signature:
 
 ```c
-int handler_function(cargs_t *cargs, cargs_option_t *option, char *arg);
+int handler_function(argus_t *argus, argus_option_t *option, char *arg);
 ```
 
 Parameters:
-- `cargs`: The cargs context, used for error reporting
+- `argus`: The argus context, used for error reporting
 - `option`: The option being processed, where to store the value
 - `arg`: The raw string value to process (NULL for boolean flags)
 
 Return value:
-- `CARGS_SUCCESS` (0) on success
+- `ARGUS_SUCCESS` (0) on success
 - Any error code (non-zero) on failure
 
 ## Creating a Custom Handler
@@ -51,23 +51,23 @@ typedef struct {
     int port;
 } endpoint_t;
 
-int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+int endpoint_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     if (arg == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MISSING_VALUE, "Endpoint is required");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MISSING_VALUE, "Endpoint is required");
     }
     
     // Allocate the endpoint structure
     endpoint_t *endpoint = calloc(1, sizeof(endpoint_t));
     if (!endpoint) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
     }
     
     // Find the separator
     char *colon = strchr(arg, ':');
     if (!colon) {
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT, 
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, 
                           "Invalid endpoint format: %s (expected host:port)", arg);
     }
     
@@ -76,7 +76,7 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     endpoint->host = strndup(arg, host_len);
     if (!endpoint->host) {
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
     }
     
     // Extract port
@@ -84,7 +84,7 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     if (port <= 0 || port > 65535) {
         free(endpoint->host);
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, 
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, 
                           "Invalid port: %ld (must be between 1 and 65535)", port);
     }
     
@@ -93,7 +93,7 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     // Store the endpoint structure
     option->value.as_ptr = endpoint;
     option->is_allocated = true;  // Important: mark as allocated for proper cleanup
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -102,14 +102,14 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
 When your handler allocates memory, you must provide a custom free handler:
 
 ```c
-int endpoint_free_handler(cargs_option_t *option)
+int endpoint_free_handler(argus_option_t *option)
 {
     endpoint_t *endpoint = (endpoint_t*)option->value.as_ptr;
     if (endpoint) {
         free(endpoint->host);
         free(endpoint);
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -118,7 +118,7 @@ int endpoint_free_handler(cargs_option_t *option)
 To use a custom handler, define an option with the `OPTION_BASE` macro:
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -143,7 +143,7 @@ For reusability and cleaner code, you can create your own macro:
                 ##__VA_ARGS__)
 
 // Usage in option definitions
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     
@@ -157,9 +157,9 @@ CARGS_OPTIONS(
 To access values processed by custom handlers:
 
 ```c
-if (cargs_is_set(cargs, "endpoint")) {
+if (argus_is_set(argus, "endpoint")) {
     // Get and cast the value to the correct type
-    endpoint_t *endpoint = (endpoint_t*)cargs_get(cargs, "endpoint").as_ptr;
+    endpoint_t *endpoint = (endpoint_t*)argus_get(argus, "endpoint").as_ptr;
     
     // Use the structured data
     printf("Host: %s\n", endpoint->host);
@@ -194,7 +194,7 @@ For more complex types, you can implement specialized processing:
         unsigned char b;
     } rgb_color_t;
     
-    int color_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+    int color_handler(argus_t *argus, argus_option_t *option, char *arg)
     {
         // Allocate and initialize color structure
         rgb_color_t *color = calloc(1, sizeof(rgb_color_t));
@@ -207,7 +207,7 @@ For more complex types, you can implement specialized processing:
         // Store the color structure
         option->value.as_ptr = color;
         option->is_allocated = true;
-        return CARGS_SUCCESS;
+        return ARGUS_SUCCESS;
     }
     ```
 
@@ -218,7 +218,7 @@ For more complex types, you can implement specialized processing:
         double lon;
     } geo_coord_t;
     
-    int coordinate_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+    int coordinate_handler(argus_t *argus, argus_option_t *option, char *arg)
     {
         // Allocate coordinate structure
         geo_coord_t *coord = calloc(1, sizeof(geo_coord_t));
@@ -230,16 +230,16 @@ For more complex types, you can implement specialized processing:
         // Store the coordinate structure
         option->value.as_ptr = coord;
         option->is_allocated = true;
-        return CARGS_SUCCESS;
+        return ARGUS_SUCCESS;
     }
     ```
 
 ## Error Reporting
 
-Custom handlers should use the `CARGS_REPORT_ERROR` macro to report errors:
+Custom handlers should use the `ARGUS_REPORT_ERROR` macro to report errors:
 
 ```c
-CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
+ARGUS_REPORT_ERROR(argus, error_code, format_string, ...);
 ```
 
 This macro:
@@ -248,10 +248,10 @@ This macro:
 3. Returns the specified error code from your function
 
 Common error codes:
-- `CARGS_ERROR_MISSING_VALUE`: Value was required but not provided
-- `CARGS_ERROR_INVALID_FORMAT`: Value has incorrect format
-- `CARGS_ERROR_INVALID_VALUE`: Value is semantically invalid
-- `CARGS_ERROR_MEMORY`: Memory allocation failed
+- `ARGUS_ERROR_MISSING_VALUE`: Value was required but not provided
+- `ARGUS_ERROR_INVALID_FORMAT`: Value has incorrect format
+- `ARGUS_ERROR_INVALID_VALUE`: Value is semantically invalid
+- `ARGUS_ERROR_MEMORY`: Memory allocation failed
 
 ## Memory Management Key Points
 
@@ -272,14 +272,14 @@ Always implement comprehensive error handling:
 // Allocate memory
 endpoint_t *endpoint = calloc(1, sizeof(endpoint_t));
 if (!endpoint) {
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
 }
 
 // Check for format errors
 char *colon = strchr(arg, ':');
 if (!colon) {
     free(endpoint);  // Clean up on error
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT, 
+    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, 
                        "Invalid format: expected host:port");
 }
 ```
@@ -290,13 +290,13 @@ Provide informative error messages that help users:
 
 === "Good Message"
     ```c
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT,
+    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
                      "Invalid endpoint format: %s (expected host:port)", arg);
     ```
 
 === "Bad Message"
     ```c
-    CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT, "Bad input");
+    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Bad input");
     ```
 
 ### 3. Consistent Memory Management
@@ -304,7 +304,7 @@ Provide informative error messages that help users:
 Follow consistent memory management patterns:
 
 ```c
-int my_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+int my_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     // 1. Validate input
     if (arg == NULL) { ... }
@@ -322,7 +322,7 @@ int my_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     // 5. On success, store result and mark as allocated
     option->value.as_ptr = obj;
     option->is_allocated = true;
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -349,7 +349,7 @@ Create helper macros for custom types:
 Here's a complete example implementing a custom endpoint handler:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -361,23 +361,23 @@ typedef struct {
 } endpoint_t;
 
 // Custom handler for endpoint "host:port"
-int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
+int endpoint_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     if (arg == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MISSING_VALUE, "Endpoint is required");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MISSING_VALUE, "Endpoint is required");
     }
     
     // Allocate the endpoint structure
     endpoint_t *endpoint = calloc(1, sizeof(endpoint_t));
     if (!endpoint) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
     }
     
     // Find the separator
     char *colon = strchr(arg, ':');
     if (!colon) {
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_FORMAT, 
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, 
                           "Invalid endpoint format: %s (expected host:port)", arg);
     }
     
@@ -386,7 +386,7 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     endpoint->host = strndup(arg, host_len);
     if (!endpoint->host) {
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_MEMORY, "Memory allocation failed");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
     }
     
     // Extract port
@@ -394,7 +394,7 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     if (port <= 0 || port > 65535) {
         free(endpoint->host);
         free(endpoint);
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, 
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, 
                           "Invalid port: %ld (must be between 1 and 65535)", port);
     }
     
@@ -403,18 +403,18 @@ int endpoint_handler(cargs_t *cargs, cargs_option_t *option, char *arg)
     // Store the endpoint structure
     option->value.as_ptr = endpoint;
     option->is_allocated = true;
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Free handler for endpoint structure
-int endpoint_free_handler(cargs_option_t *option)
+int endpoint_free_handler(argus_option_t *option)
 {
     endpoint_t *endpoint = (endpoint_t*)option->value.as_ptr;
     if (endpoint) {
         free(endpoint->host);
         free(endpoint);
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Helper macro for endpoint options
@@ -425,7 +425,7 @@ int endpoint_free_handler(cargs_option_t *option)
                 ##__VA_ARGS__)
 
 // Option definitions
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -440,17 +440,17 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "custom_handlers_example", "1.0.0");
-    cargs.description = "Example of custom handlers";
+    argus_t argus = argus_init(options, "custom_handlers_example", "1.0.0");
+    argus.description = "Example of custom handlers";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Process server endpoint if provided
-    if (cargs_is_set(cargs, "server")) {
-        endpoint_t *server = cargs_get(cargs, "server").as_ptr;
+    if (argus_is_set(argus, "server")) {
+        endpoint_t *server = argus_get(argus, "server").as_ptr;
         
         printf("Server information:\n");
         printf("  Host: %s\n", server->host);
@@ -459,8 +459,8 @@ int main(int argc, char **argv)
     }
     
     // Process database endpoint if provided
-    if (cargs_is_set(cargs, "database")) {
-        endpoint_t *db = cargs_get(cargs, "database").as_ptr;
+    if (argus_is_set(argus, "database")) {
+        endpoint_t *db = argus_get(argus, "database").as_ptr;
         
         printf("Database information:\n");
         printf("  Host: %s\n", db->host);
@@ -468,7 +468,7 @@ int main(int argc, char **argv)
         printf("\n");
     }
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```

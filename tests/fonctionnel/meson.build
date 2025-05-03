@@ -11,7 +11,7 @@ foreach test : functional_tests
   test_exe = executable(
     'test_' + test[0],
     test[1],
-    dependencies: [criterion_dep, cargs_dep],
+    dependencies: [criterion_dep, argus_dep],
     include_directories: test_includes,
     c_args: test_args
   )

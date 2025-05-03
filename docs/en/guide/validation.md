@@ -1,9 +1,9 @@
 # Validation
 
-cargs offers robust validation capabilities to ensure that command-line inputs meet your application's requirements.
+argus offers robust validation capabilities to ensure that command-line inputs meet your application's requirements.
 
 !!! abstract "Overview"
-    Validation in cargs is organized into several categories:
+    Validation in argus is organized into several categories:
     
     - **Built-in Validators** - Simple validation with `RANGE` and `CHOICES`
     - **Regular Expression Validation** - String pattern validation with PCRE2
@@ -13,7 +13,7 @@ cargs offers robust validation capabilities to ensure that command-line inputs m
 
 ## Built-in Validators
 
-cargs provides several built-in validators to simplify common validation scenarios. These can be applied directly to option definitions.
+argus provides several built-in validators to simplify common validation scenarios. These can be applied directly to option definitions.
 
 ### Range Validation
 
@@ -72,12 +72,12 @@ The `CHOICES` validator ensures the value is one of a specific set:
 
 ## Regular Expression Validation
 
-cargs uses PCRE2 for powerful regular expression validation:
+argus uses PCRE2 for powerful regular expression validation:
 
 === "Basic Usage"
     ```c
     OPTION_STRING('e', "email", HELP("Email address"),
-                  REGEX(CARGS_RE_EMAIL))  // Must be a valid email
+                  REGEX(ARGUS_RE_EMAIL))  // Must be a valid email
     ```
 
 === "Custom Pattern"
@@ -87,14 +87,14 @@ cargs uses PCRE2 for powerful regular expression validation:
     ```
 
 !!! tip "Predefined Patterns"
-    cargs includes many predefined patterns in `cargs/regex.h`:
+    argus includes many predefined patterns in `argus/regex.h`:
     
     | Constant | Validates | Example |
     |----------|-----------|---------|
-    | `CARGS_RE_EMAIL` | Email addresses | user@example.com |
-    | `CARGS_RE_IPV4` | IPv4 addresses | 192.168.1.1 |
-    | `CARGS_RE_URL` | URLs | https://example.com |
-    | `CARGS_RE_ISO_DATE` | ISO format dates | 2023-01-31 |
+    | `ARGUS_RE_EMAIL` | Email addresses | user@example.com |
+    | `ARGUS_RE_IPV4` | IPv4 addresses | 192.168.1.1 |
+    | `ARGUS_RE_URL` | URLs | https://example.com |
+    | `ARGUS_RE_ISO_DATE` | ISO format dates | 2023-01-31 |
     
     For a complete list, see the [Regular Expressions API reference](../api/regex.md).
     
@@ -106,13 +106,13 @@ For more complex validation logic, you can create your own validators:
 
 === "Simple Validator"
     ```c
-    int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+    int even_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
     {
         if (option->value.as_int % 2 != 0) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                              "Value must be an even number");
         }
-        return CARGS_SUCCESS;
+        return ARGUS_SUCCESS;
     }
     
     // Usage
@@ -122,15 +122,15 @@ For more complex validation logic, you can create your own validators:
 
 === "Basic Pre-Validator"
     ```c
-    int length_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
+    int length_pre_validator(argus_t *argus, const char *value, validator_data_t data)
     {
         size_t min_length = *(size_t *)data.custom;
         
         if (strlen(value) < min_length) {
-            CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                               "String must be at least %zu characters long", min_length);
         }
-        return CARGS_SUCCESS;
+        return ARGUS_SUCCESS;
     }
     
     // Usage
@@ -140,7 +140,7 @@ For more complex validation logic, you can create your own validators:
     ```
 
 !!! info "Validator Types"
-    cargs supports two types of custom validators:
+    argus supports two types of custom validators:
     
     1. **Validators** - Validate the **processed** value after conversion to its final type
     2. **Pre-Validators** - Validate the **raw string** before any processing
@@ -161,10 +161,10 @@ OPTION_INT('p', "port", HELP("Port number"),
 
 ## Error Reporting
 
-Validators should use `CARGS_REPORT_ERROR` to provide clear error messages:
+Validators should use `ARGUS_REPORT_ERROR` to provide clear error messages:
 
 ```c
-CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
+ARGUS_REPORT_ERROR(argus, error_code, format_string, ...);
 ```
 
 !!! example "Error Message Example"
@@ -173,9 +173,9 @@ CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
     ```
 
 Common error codes include:
-- `CARGS_ERROR_INVALID_VALUE`: Value doesn't meet requirements
-- `CARGS_ERROR_INVALID_RANGE`: Value outside allowed range
-- `CARGS_ERROR_INVALID_FORMAT`: Value has incorrect format
+- `ARGUS_ERROR_INVALID_VALUE`: Value doesn't meet requirements
+- `ARGUS_ERROR_INVALID_RANGE`: Value outside allowed range
+- `ARGUS_ERROR_INVALID_FORMAT`: Value has incorrect format
 
 ## Complete Examples
 
@@ -191,4 +191,4 @@ For more in-depth coverage of validation topics, refer to these advanced guides:
 
 - [Custom Validators](../advanced/custom-validators.md) - Creating custom validators with specialized logic
 - [Regular Expressions](../advanced/regex.md) - Detailed guide to regex pattern validation
-- [Predefined Regex Patterns](../api/regex_patterns.md) - List of predefined regex patterns in cargs
+- [Predefined Regex Patterns](../api/regex_patterns.md) - List of predefined regex patterns in argus

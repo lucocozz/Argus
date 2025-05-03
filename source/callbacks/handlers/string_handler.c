@@ -1,10 +1,10 @@
-#include "cargs/errors.h"
-#include "cargs/internal/utils.h"
-#include "cargs/types.h"
+#include "argus/errors.h"
+#include "argus/internal/utils.h"
+#include "argus/types.h"
 
-int string_handler(cargs_t *cargs, cargs_option_t *option, char *value)
+int string_handler(argus_t *argus, argus_option_t *option, char *value)
 {
-    UNUSED(cargs);
-    option->value = (cargs_value_t){.as_string = value};
-    return (CARGS_SUCCESS);
+    UNUSED(argus);
+    option->value = (argus_value_t){.as_string = value};
+    return (ARGUS_SUCCESS);
 }

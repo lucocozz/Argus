@@ -1,12 +1,12 @@
-# cargs
+# argus
 
-![CI/CD Pipeline](https://github.com/lucocozz/cargs/actions/workflows/ci.yml/badge.svg)
-![CodeQL Analysis](https://github.com/lucocozz/cargs/actions/workflows/codeql.yml/badge.svg)
+![CI/CD Pipeline](https://github.com/lucocozz/argus/actions/workflows/ci.yml/badge.svg)
+![CodeQL Analysis](https://github.com/lucocozz/argus/actions/workflows/codeql.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 > Modern C library for command-line argument parsing with an elegant, macro-based API.
 
-**cargs** is a powerful C library for handling command-line arguments, designed to be both simple to use and flexible enough for advanced usage scenarios.
+**argus** is a powerful C library for handling command-line arguments, designed to be both simple to use and flexible enough for advanced usage scenarios.
 
 ## ✨ Features
 
@@ -28,11 +28,11 @@
 ## Quick Example
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
 // Define options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -44,20 +44,20 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    // Initialize cargs
-    cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
-    cargs.description = "cargs demonstrator";
+    // Initialize argus
+    argus_t argus = argus_init(options, "my_program", "1.0.0");
+    argus.description = "argus demonstrator";
 
     // Parse arguments
-    if (cargs_parse(&cargs, argc, argv) != CARGS_SUCCESS) {
+    if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS) {
         return 1;
     }
 
     // Access parsed values
-    const char *input = cargs_get(cargs, "input").as_string;
-    const char *output = cargs_get(cargs, "output").as_string;
-    int port = cargs_get(cargs, "port").as_int;
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    const char *input = argus_get(argus, "input").as_string;
+    const char *output = argus_get(argus, "output").as_string;
+    int port = argus_get(argus, "port").as_int;
+    bool verbose = argus_get(argus, "verbose").as_bool;
 
     printf("Configuration:\n");
     printf("  Input: %s\n", input);
@@ -66,22 +66,22 @@ int main(int argc, char **argv)
     printf("  Verbose: %s\n", verbose ? "yes" : "no");
 
     // Free resources
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
 
 ## 🚀 Getting Started
 
-- [Installation](guide/installation.md) - How to install the cargs library
-- [Quick Start](guide/quickstart.md) - Create your first application with cargs
+- [Installation](guide/installation.md) - How to install the argus library
+- [Quick Start](guide/quickstart.md) - Create your first application with argus
 - [Examples](examples/basic.md) - Explore usage examples
 
 ## 📚 Documentation
 
 The documentation is organized as follows:
 
-- **[User Guide](guide/installation.md)** - Detailed instructions for using cargs
-- **[API Reference](api/overview.md)** - Complete reference of the cargs API
+- **[User Guide](guide/installation.md)** - Detailed instructions for using argus
+- **[API Reference](api/overview.md)** - Complete reference of the argus API
 - **[Examples](examples/basic.md)** - Practical code examples
 - **[Advanced Features](advanced/custom-handlers.md)** - Using advanced features

@@ -1,11 +1,11 @@
 # API Overview
 
 !!! abstract "Overview"
-    This page provides a comprehensive overview of the cargs API architecture and its key components. cargs is designed to be both simple for basic usage and powerful enough for complex command-line interfaces.
+    This page provides a comprehensive overview of the argus API architecture and its key components. argus is designed to be both simple for basic usage and powerful enough for complex command-line interfaces.
 
 ## Architecture
 
-cargs is organized around several key components:
+argus is organized around several key components:
 
 ```mermaid
 graph TD
@@ -29,10 +29,10 @@ graph TD
 
 ### Main Structure
 
-The `cargs_t` structure is the core of cargs, containing all necessary data:
+The `argus_t` structure is the core of argus, containing all necessary data:
 
 ```c
-typedef struct cargs_s {
+typedef struct argus_s {
     /* Public fields */
     const char *program_name;    // Program name
     const char *version;         // Program version
@@ -40,10 +40,10 @@ typedef struct cargs_s {
     const char *env_prefix;      // Prefix for environment variables
     
     /* Internal fields - do not access directly */
-    cargs_option_t     *options;      // Defined options
-    cargs_error_stack_t error_stack;  // Error stack
+    argus_option_t     *options;      // Defined options
+    argus_error_stack_t error_stack;  // Error stack
     // Other internal fields...
-} cargs_t;
+} argus_t;
 ```
 
 !!! warning "Internal Fields"
@@ -51,10 +51,10 @@ typedef struct cargs_s {
 
 ### Option Definition
 
-Options are defined using the `CARGS_OPTIONS` macro along with option-specific macros:
+Options are defined using the `ARGUS_OPTIONS` macro along with option-specific macros:
 
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
@@ -64,11 +64,11 @@ CARGS_OPTIONS(
 )
 ```
 
-The `cargs_option_t` structure represents an individual option with all its properties.
+The `argus_option_t` structure represents an individual option with all its properties.
 
 ### Value Types
 
-cargs supports various value types for options:
+argus supports various value types for options:
 
 | Category | Types | Description |
 |----------|-------|-------------|
@@ -77,10 +77,10 @@ cargs supports various value types for options:
 | **Map** | `VALUE_TYPE_MAP_STRING`<br>`VALUE_TYPE_MAP_INT`<br>`VALUE_TYPE_MAP_FLOAT`<br>`VALUE_TYPE_MAP_BOOL` | Key-value pairs |
 | **Custom** | `VALUE_TYPE_CUSTOM` | User-defined types |
 
-Values are stored in a `cargs_value_t` union that can contain different types:
+Values are stored in a `argus_value_t` union that can contain different types:
 
 ```c
-union cargs_value_u {
+union argus_value_u {
     uintptr_t raw;
     void     *as_ptr;
     
@@ -90,8 +90,8 @@ union cargs_value_u {
     bool      as_bool;
     
     // Collection types
-    cargs_value_t      *as_array;
-    cargs_pair_t *as_map;
+    argus_value_t      *as_array;
+    argus_pair_t *as_map;
     // ...
 };
 ```
@@ -111,11 +111,11 @@ Options are categorized into several types:
 
 ## API Lifecycle
 
-Typical cargs usage follows this lifecycle:
+Typical argus usage follows this lifecycle:
 
 ```mermaid
 graph TD
-    A[Define options] --> B[Initialize cargs]
+    A[Define options] --> B[Initialize argus]
     B --> C[Parse arguments]
     C --> D{Success?}
     D -- No --> E[Handle error]
@@ -124,98 +124,98 @@ graph TD
     G --> H[Free resources]
 ```
 
-1. **Define options** with `CARGS_OPTIONS`
-2. **Initialize** with `cargs_init()`
-3. **Parse arguments** with `cargs_parse()`
-4. **Access values** with `cargs_get()`, `cargs_is_set()`, etc.
-5. **Free resources** with `cargs_free()`
+1. **Define options** with `ARGUS_OPTIONS`
+2. **Initialize** with `argus_init()`
+3. **Parse arguments** with `argus_parse()`
+4. **Access values** with `argus_get()`, `argus_is_set()`, etc.
+5. **Free resources** with `argus_free()`
 
 ```c
 // 1. Define options
-CARGS_OPTIONS(options, /* ... */)
+ARGUS_OPTIONS(options, /* ... */)
 
 int main(int argc, char **argv)
 {
     // 2. Initialize
-    cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
-    cargs.description = "My program description";
+    argus_t argus = argus_init(options, "my_program", "1.0.0");
+    argus.description = "My program description";
     
     // 3. Parse arguments
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // 4. Access values
-    const char *output = cargs_get(cargs, "output").as_string;
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    const char *output = argus_get(argus, "output").as_string;
+    bool verbose = argus_get(argus, "verbose").as_bool;
     
     // Application logic...
     
     // 5. Free resources
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
 
 ## Function Families
 
-The cargs API is organized into several function families:
+The argus API is organized into several function families:
 
 ### Initialization and Parsing Functions
 
 | Function | Description | Example |
 |----------|-------------|---------|
-| `cargs_init()` | Initializes the cargs context | `cargs_t cargs = cargs_init(options, "my_program", "1.0.0");` |
-| `cargs_parse()` | Parses command-line arguments | `int status = cargs_parse(&cargs, argc, argv);` |
-| `cargs_free()` | Frees resources | `cargs_free(&cargs);` |
+| `argus_init()` | Initializes the argus context | `argus_t argus = argus_init(options, "my_program", "1.0.0");` |
+| `argus_parse()` | Parses command-line arguments | `int status = argus_parse(&argus, argc, argv);` |
+| `argus_free()` | Frees resources | `argus_free(&argus);` |
 
 ### Value Access Functions
 
 | Function | Description | Example |
 |----------|-------------|---------|
-| `cargs_get()` | Retrieves an option's value | `int port = cargs_get(cargs, "port").as_int;` |
-| `cargs_is_set()` | Checks if an option was set | `if (cargs_is_set(cargs, "verbose")) { ... }` |
-| `cargs_count()` | Gets the number of values for an option | `size_t count = cargs_count(cargs, "names");` |
-| `cargs_array_get()` | Retrieves an element from an array | `const char* name = cargs_array_get(cargs, "names", 0).as_string;` |
-| `cargs_map_get()` | Retrieves a value from a map | `int port = cargs_map_get(cargs, "ports", "http").as_int;` |
+| `argus_get()` | Retrieves an option's value | `int port = argus_get(argus, "port").as_int;` |
+| `argus_is_set()` | Checks if an option was set | `if (argus_is_set(argus, "verbose")) { ... }` |
+| `argus_count()` | Gets the number of values for an option | `size_t count = argus_count(argus, "names");` |
+| `argus_array_get()` | Retrieves an element from an array | `const char* name = argus_array_get(argus, "names", 0).as_string;` |
+| `argus_map_get()` | Retrieves a value from a map | `int port = argus_map_get(argus, "ports", "http").as_int;` |
 
 ### Iteration Functions
 
 | Function | Description | Example |
 |----------|-------------|---------|
-| `cargs_array_it()` | Creates an array iterator | `cargs_array_it_t it = cargs_array_it(cargs, "names");` |
-| `cargs_array_next()` | Advances to the next array element | `while (cargs_array_next(&it)) { ... }` |
-| `cargs_array_reset()` | Resets an array iterator | `cargs_array_reset(&it);` |
-| `cargs_map_it()` | Creates a map iterator | `cargs_map_it_t it = cargs_map_it(cargs, "env");` |
-| `cargs_map_next()` | Advances to the next map entry | `while (cargs_map_next(&it)) { ... }` |
-| `cargs_map_reset()` | Resets a map iterator | `cargs_map_reset(&it);` |
+| `argus_array_it()` | Creates an array iterator | `argus_array_it_t it = argus_array_it(argus, "names");` |
+| `argus_array_next()` | Advances to the next array element | `while (argus_array_next(&it)) { ... }` |
+| `argus_array_reset()` | Resets an array iterator | `argus_array_reset(&it);` |
+| `argus_map_it()` | Creates a map iterator | `argus_map_it_t it = argus_map_it(argus, "env");` |
+| `argus_map_next()` | Advances to the next map entry | `while (argus_map_next(&it)) { ... }` |
+| `argus_map_reset()` | Resets a map iterator | `argus_map_reset(&it);` |
 
 ### Subcommand Functions
 
 | Function | Description | Example |
 |----------|-------------|---------|
-| `cargs_has_command()` | Checks if a subcommand was specified | `if (cargs_has_command(cargs)) { ... }` |
-| `cargs_exec()` | Executes the action associated with a subcommand | `status = cargs_exec(&cargs, data);` |
+| `argus_has_command()` | Checks if a subcommand was specified | `if (argus_has_command(argus)) { ... }` |
+| `argus_exec()` | Executes the action associated with a subcommand | `status = argus_exec(&argus, data);` |
 
 ### Display Functions
 
 | Function | Description | Example |
 |----------|-------------|---------|
-| `cargs_print_help()` | Displays a formatted help message | `cargs_print_help(cargs);` |
-| `cargs_print_usage()` | Displays a short usage message | `cargs_print_usage(cargs);` |
-| `cargs_print_version()` | Displays version information | `cargs_print_version(cargs);` |
+| `argus_print_help()` | Displays a formatted help message | `argus_print_help(argus);` |
+| `argus_print_usage()` | Displays a short usage message | `argus_print_usage(argus);` |
+| `argus_print_version()` | Displays version information | `argus_print_version(argus);` |
 
 ## Error Handling
 
-cargs uses an error code system and an error stack for comprehensive error handling:
+argus uses an error code system and an error stack for comprehensive error handling:
 
 ```c
 // Parse arguments with error handling
-int status = cargs_parse(&cargs, argc, argv);
-if (status != CARGS_SUCCESS) {
+int status = argus_parse(&argus, argc, argv);
+if (status != ARGUS_SUCCESS) {
     // An error occurred during parsing
-    cargs_print_error_stack(&cargs);  // Display detailed errors
+    argus_print_error_stack(&argus);  // Display detailed errors
     return status;
 }
 ```
@@ -224,14 +224,14 @@ Common error codes:
 
 | Error Code | Description |
 |------------|-------------|
-| `CARGS_SUCCESS` | Operation successful |
-| `CARGS_ERROR_INVALID_ARGUMENT` | Invalid argument |
-| `CARGS_ERROR_MISSING_VALUE` | Value required but not provided |
-| `CARGS_ERROR_MISSING_REQUIRED` | Required option not provided |
-| `CARGS_ERROR_INVALID_FORMAT` | Value format is incorrect |
-| `CARGS_ERROR_INVALID_RANGE` | Value outside allowed range |
-| `CARGS_ERROR_INVALID_CHOICE` | Value not in allowed choices |
-| `CARGS_ERROR_CONFLICTING_OPTIONS` | Mutually exclusive options specified |
+| `ARGUS_SUCCESS` | Operation successful |
+| `ARGUS_ERROR_INVALID_ARGUMENT` | Invalid argument |
+| `ARGUS_ERROR_MISSING_VALUE` | Value required but not provided |
+| `ARGUS_ERROR_MISSING_REQUIRED` | Required option not provided |
+| `ARGUS_ERROR_INVALID_FORMAT` | Value format is incorrect |
+| `ARGUS_ERROR_INVALID_RANGE` | Value outside allowed range |
+| `ARGUS_ERROR_INVALID_CHOICE` | Value not in allowed choices |
+| `ARGUS_ERROR_CONFLICTING_OPTIONS` | Mutually exclusive options specified |
 
 ## Advanced Components
 
@@ -248,7 +248,7 @@ Validators check that input values meet certain criteria:
 === "Regular Expression Validator"
     ```c
     // Ensure email is valid
-    OPTION_STRING('e', "email", HELP("Email address"), REGEX(CARGS_RE_EMAIL))
+    OPTION_STRING('e', "email", HELP("Email address"), REGEX(ARGUS_RE_EMAIL))
     ```
 
 === "Custom Validator"
@@ -264,7 +264,7 @@ Handlers process input values and convert them to internal representations:
 
 ```c
 // Custom handler for IPv4 addresses
-int ipv4_handler(cargs_t *cargs, cargs_option_t *option, char *arg);
+int ipv4_handler(argus_t *argus, argus_option_t *option, char *arg);
 
 // Usage
 OPTION_BASE('i', "ip", HELP("IP address"), VALUE_TYPE_CUSTOM,
@@ -278,7 +278,7 @@ Options can be configured to read from environment variables:
 
 ```c
 // Define options with environment variable support
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     OPTION_STRING('H', "host", HELP("Hostname"), 
                   ENV_VAR("HOST")),  // Will use APP_HOST
@@ -287,56 +287,56 @@ CARGS_OPTIONS(
 )
 
 // Set the environment prefix
-cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
-cargs.env_prefix = "APP";
+argus_t argus = argus_init(options, "my_program", "1.0.0");
+argus.env_prefix = "APP";
 ```
 
 ## Header Organization
 
-The cargs public API is distributed across several header files:
+The argus public API is distributed across several header files:
 
 | Header | Content | Include When You Need |
 |--------|---------|----------------------|
-| `cargs.h` | Main entry point, includes all other headers | Always |
-| `cargs/types.h` | Type and data structure definitions | Rarely needed directly |
-| `cargs/options.h` | Macros for defining options | Rarely needed directly |
-| `cargs/api.h` | Public API functions | Rarely needed directly |
-| `cargs/errors.h` | Error codes and error handling functions | When handling specific errors |
-| `cargs/regex.h` | Predefined regular expression patterns | When using regex validation |
+| `argus.h` | Main entry point, includes all other headers | Always |
+| `argus/types.h` | Type and data structure definitions | Rarely needed directly |
+| `argus/options.h` | Macros for defining options | Rarely needed directly |
+| `argus/api.h` | Public API functions | Rarely needed directly |
+| `argus/errors.h` | Error codes and error handling functions | When handling specific errors |
+| `argus/regex.h` | Predefined regular expression patterns | When using regex validation |
 
 In most cases, you'll only need to include the main header:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 ```
 
 ## Performance Considerations
 
 ### Development vs. Release Mode
 
-cargs offers a release mode for optimal performance in production. This mode skips the comprehensive validation of option structures during initialization.
+argus offers a release mode for optimal performance in production. This mode skips the comprehensive validation of option structures during initialization.
 
 ```c
 // In development mode (default): full validation
-cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
+argus_t argus = argus_init(options, "my_program", "1.0.0");
 
 // In release mode: faster initialization
-// (enabled by compiling with -DCARGS_RELEASE)
-cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
+// (enabled by compiling with -DARGUS_RELEASE)
+argus_t argus = argus_init(options, "my_program", "1.0.0");
 ```
-To enable release mode, compile with the `-DCARGS_RELEASE` flag.
+To enable release mode, compile with the `-DARGUS_RELEASE` flag.
 
 ## Example Code
 
-Here's a complete example demonstrating key features of cargs:
+Here's a complete example demonstrating key features of argus:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 // Define options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -361,31 +361,31 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    // Initialize cargs
-    cargs_t cargs = cargs_init(options, "example", "1.0.0");
-    cargs.description = "Example program demonstrating cargs";
+    // Initialize argus
+    argus_t argus = argus_init(options, "example", "1.0.0");
+    argus.description = "Example program demonstrating argus";
     
     // Parse arguments
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Access values
-    const char *input = cargs_get(cargs, "input").as_string;
-    const char *output = cargs_get(cargs, "output").as_string;
-    int port = cargs_get(cargs, "port").as_int;
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
-    bool force = cargs_get(cargs, "force").as_bool;
-    bool recursive = cargs_get(cargs, "recursive").as_bool;
+    const char *input = argus_get(argus, "input").as_string;
+    const char *output = argus_get(argus, "output").as_string;
+    int port = argus_get(argus, "port").as_int;
+    bool verbose = argus_get(argus, "verbose").as_bool;
+    bool force = argus_get(argus, "force").as_bool;
+    bool recursive = argus_get(argus, "recursive").as_bool;
     
     // Process array values if set
-    if (cargs_is_set(cargs, "tag")) {
-        size_t count = cargs_count(cargs, "tag");
+    if (argus_is_set(argus, "tag")) {
+        size_t count = argus_count(argus, "tag");
         printf("Tags (%zu):\n", count);
         
-        cargs_array_it_t it = cargs_array_it(cargs, "tag");
-        while (cargs_array_next(&it)) {
+        argus_array_it_t it = argus_array_it(argus, "tag");
+        while (argus_array_next(&it)) {
             printf("  - %s\n", it.value.as_string);
         }
     }
@@ -393,7 +393,7 @@ int main(int argc, char **argv)
     // Application logic...
     
     // Free resources
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```

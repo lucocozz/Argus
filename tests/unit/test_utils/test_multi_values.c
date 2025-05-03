@@ -1,22 +1,22 @@
 #include <criterion/criterion.h>
-#include "cargs/internal/utils.h"
-#include "cargs/types.h"
+#include "argus/internal/utils.h"
+#include "argus/types.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // Declare functions from source/utils/multi_values.c
-extern void sort_int_array(cargs_value_t *array, size_t count);
-extern void sort_string_array(cargs_value_t *array, size_t count);
-extern size_t make_int_array_unique(cargs_value_t *array, size_t count);
-extern void sort_map_by_keys(cargs_pair_t *map, size_t count);
-extern void apply_array_flags(cargs_option_t *option);
-extern void apply_map_flags(cargs_option_t *option);
+extern void sort_int_array(argus_value_t *array, size_t count);
+extern void sort_string_array(argus_value_t *array, size_t count);
+extern size_t make_int_array_unique(argus_value_t *array, size_t count);
+extern void sort_map_by_keys(argus_pair_t *map, size_t count);
+extern void apply_array_flags(argus_option_t *option);
+extern void apply_map_flags(argus_option_t *option);
 
 // Setup function for array tests
-void setup_array_option(cargs_option_t *option, cargs_valtype_t type)
+void setup_array_option(argus_option_t *option, argus_valtype_t type)
 {
-    memset(option, 0, sizeof(cargs_option_t));
+    memset(option, 0, sizeof(argus_option_t));
     option->value_type = type;
     option->value.as_array = NULL;
     option->value_count = 0;
@@ -24,9 +24,9 @@ void setup_array_option(cargs_option_t *option, cargs_valtype_t type)
 }
 
 // Setup function for map tests
-void setup_map_option(cargs_option_t *option, cargs_valtype_t type)
+void setup_map_option(argus_option_t *option, argus_valtype_t type)
 {
-    memset(option, 0, sizeof(cargs_option_t));
+    memset(option, 0, sizeof(argus_option_t));
     option->value_type = type;
     option->value.as_map = NULL;
     option->value_count = 0;
@@ -35,7 +35,7 @@ void setup_map_option(cargs_option_t *option, cargs_valtype_t type)
 
 Test(multi_values, adjust_array_size)
 {
-    cargs_option_t option;
+    argus_option_t option;
     setup_array_option(&option, VALUE_TYPE_ARRAY_INT);
     
     // First call should allocate initial capacity
@@ -56,7 +56,7 @@ Test(multi_values, adjust_array_size)
 
 Test(multi_values, adjust_map_size)
 {
-    cargs_option_t option;
+    argus_option_t option;
     setup_map_option(&option, VALUE_TYPE_MAP_STRING);
     
     // First call should allocate initial capacity
@@ -78,7 +78,7 @@ Test(multi_values, adjust_map_size)
 Test(multi_values, sort_int_array)
 {
     // Create an unsorted array
-    cargs_value_t array[5] = {
+    argus_value_t array[5] = {
         {.as_int = 42},
         {.as_int = 10},
         {.as_int = 30},
@@ -100,7 +100,7 @@ Test(multi_values, sort_int_array)
 Test(multi_values, sort_string_array)
 {
     // Create an unsorted array
-    cargs_value_t array[4] = {
+    argus_value_t array[4] = {
         {.as_string = "delta"},
         {.as_string = "alpha"},
         {.as_string = "charlie"},
@@ -120,7 +120,7 @@ Test(multi_values, sort_string_array)
 Test(multi_values, make_int_array_unique)
 {
     // Create an array with duplicates
-    cargs_value_t array[6] = {
+    argus_value_t array[6] = {
         {.as_int = 10},
         {.as_int = 20},
         {.as_int = 10},  // Duplicate
@@ -142,12 +142,12 @@ Test(multi_values, make_int_array_unique)
 
 Test(multi_values, apply_array_flags)
 {
-    cargs_option_t option;
+    argus_option_t option;
     setup_array_option(&option, VALUE_TYPE_ARRAY_INT);
     
     // Allocate array with duplicates and unsorted values
     option.value_capacity = 6;
-    option.value.as_array = malloc(option.value_capacity * sizeof(cargs_value_t));
+    option.value.as_array = malloc(option.value_capacity * sizeof(argus_value_t));
     
     option.value.as_array[0].as_int = 30;
     option.value.as_array[1].as_int = 10;
@@ -171,7 +171,7 @@ Test(multi_values, apply_array_flags)
     
     // Reset array
     free(option.value.as_array);
-    option.value.as_array = malloc(option.value_capacity * sizeof(cargs_value_t));
+    option.value.as_array = malloc(option.value_capacity * sizeof(argus_value_t));
     
     option.value.as_array[0].as_int = 30;
     option.value.as_array[1].as_int = 10;
@@ -194,7 +194,7 @@ Test(multi_values, apply_array_flags)
     
     // Reset array
     free(option.value.as_array);
-    option.value.as_array = malloc(option.value_capacity * sizeof(cargs_value_t));
+    option.value.as_array = malloc(option.value_capacity * sizeof(argus_value_t));
     
     option.value.as_array[0].as_int = 30;
     option.value.as_array[1].as_int = 10;
@@ -219,12 +219,12 @@ Test(multi_values, apply_array_flags)
 
 Test(multi_values, map_find_key)
 {
-    cargs_option_t option;
+    argus_option_t option;
     setup_map_option(&option, VALUE_TYPE_MAP_STRING);
     
     // Allocate and populate map
     option.value_capacity = 3;
-    option.value.as_map = malloc(option.value_capacity * sizeof(cargs_pair_t));
+    option.value.as_map = malloc(option.value_capacity * sizeof(argus_pair_t));
     
     option.value.as_map[0].key = strdup("key1");
     option.value.as_map[0].value.as_string = strdup("value1");
@@ -260,12 +260,12 @@ Test(multi_values, map_find_key)
 
 Test(multi_values, sort_map_by_keys)
 {
-    cargs_option_t option;
+    argus_option_t option;
     setup_map_option(&option, VALUE_TYPE_MAP_STRING);
     
     // Allocate and populate map in unsorted order
     option.value_capacity = 3;
-    option.value.as_map = malloc(option.value_capacity * sizeof(cargs_pair_t));
+    option.value.as_map = malloc(option.value_capacity * sizeof(argus_pair_t));
     
     option.value.as_map[0].key = strdup("charlie");
     option.value.as_map[0].value.as_string = strdup("value3");

@@ -1,17 +1,17 @@
 // tests/integration/test_subcommands.c
 #include <criterion/criterion.h>
-#include "cargs.h"
+#include "argus.h"
 
 // Define action handlers
-int add_command(cargs_t *cargs, void *data);
-int remove_command(cargs_t *cargs, void *data);
+int add_command(argus_t *argus, void *data);
+int remove_command(argus_t *argus, void *data);
 
 // Track if commands were executed
 static bool add_executed = false;
 static bool remove_executed = false;
 
 // Define options for "add" subcommand
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     add_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('f', "force", HELP("Force add operation")),
@@ -19,7 +19,7 @@ CARGS_OPTIONS(
 )
 
 // Define options for "remove" subcommand
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     remove_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_FLAG('r', "recursive", HELP("Recursively remove directories")),
@@ -27,7 +27,7 @@ CARGS_OPTIONS(
 )
 
 // Define main options with subcommands
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -46,19 +46,19 @@ CARGS_OPTIONS(
 )
 
 // Implementation of the "add" command
-int add_command(cargs_t *cargs, void *data)
+int add_command(argus_t *argus, void *data)
 {
     (void)data;
-	(void)cargs;
+	(void)argus;
     add_executed = true;
     return 0;
 }
 
 // Implementation of the "remove" command
-int remove_command(cargs_t *cargs, void *data)
+int remove_command(argus_t *argus, void *data)
 {
     (void)data;
-	(void)cargs;
+	(void)argus;
     remove_executed = true;
     return 0;
 }
@@ -77,20 +77,20 @@ Test(subcommands, basic_parsing, .init = reset)
     char *argv[] = {"test", "add", "file.txt"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Valid subcommand should parse successfully");
-    cr_assert(cargs_has_command(cargs), "cargs_has_command should return true");
-    cr_assert(cargs_is_set(cargs, "add"), "add subcommand should be set");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Valid subcommand should parse successfully");
+    cr_assert(argus_has_command(argus), "argus_has_command should return true");
+    cr_assert(argus_is_set(argus, "add"), "add subcommand should be set");
     
     // Execute the command
-    status = cargs_exec(&cargs, NULL);
+    status = argus_exec(&argus, NULL);
     cr_assert_eq(status, 0, "Command execution should succeed");
     cr_assert(add_executed, "Add command should have been executed");
     cr_assert_not(remove_executed, "Remove command should not have been executed");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Test subcommand with options
@@ -100,14 +100,14 @@ Test(subcommands, with_options, .init = reset)
     char *argv[] = {"test", "add", "--force", "file.txt"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Subcommand with options should parse successfully");
-    cr_assert(cargs_is_set(cargs, "add.force"), "Force option should be set");
-    cr_assert_str_eq(cargs_get(cargs, "add.file").as_string, "file.txt", "File argument should be parsed");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Subcommand with options should parse successfully");
+    cr_assert(argus_is_set(argus, "add.force"), "Force option should be set");
+    cr_assert_str_eq(argus_get(argus, "add.file").as_string, "file.txt", "File argument should be parsed");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Test global options with subcommands
@@ -117,12 +117,12 @@ Test(subcommands, global_options, .init = reset)
     char *argv[] = {"test", "--verbose", "add", "file.txt"};
     int argc = sizeof(argv) / sizeof(char*);
 
-    cargs_t cargs = cargs_init(options, "test", "1.0.0");
-    int status = cargs_parse(&cargs, argc, argv);
+    argus_t argus = argus_init(options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
     
-    cr_assert_eq(status, CARGS_SUCCESS, "Global option with subcommand should parse successfully");
-    cr_assert(cargs_is_set(cargs, "verbose"), "Global verbose option should be set");
-    cr_assert(cargs_is_set(cargs, "add"), "Add subcommand should be set");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Global option with subcommand should parse successfully");
+    cr_assert(argus_is_set(argus, "verbose"), "Global verbose option should be set");
+    cr_assert(argus_is_set(argus, "add"), "Add subcommand should be set");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
 }

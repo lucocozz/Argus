@@ -4,13 +4,13 @@ from conan.tools.files import get, copy
 from conan.tools.layout import basic_layout
 import os
 
-class LibcargsConan(ConanFile):
-    name = "libcargs"
+class LibargusConan(ConanFile):
+    name = "libargus"
     version = "1.0.1"
     description = "Modern C library for command-line argument parsing with an elegant, macro-based API"
-    topics = ("conan", "cargs", "libcargs", "command-line", "arguments", "parser", "cli", "argparse")
-    url = "https://github.com/lucocozz/cargs"
-    homepage = "https://github.com/lucocozz/cargs"
+    topics = ("conan", "argus", "libargus", "command-line", "arguments", "parser", "cli", "argparse")
+    url = "https://github.com/lucocozz/argus"
+    homepage = "https://github.com/lucocozz/argus"
     license = "MIT"
     settings = "os", "arch", "compiler", "build_type"
     options = {
@@ -70,12 +70,12 @@ class LibcargsConan(ConanFile):
         meson.install()
 
     def package_info(self):
-        self.cpp_info.set_property("cmake_file_name", "libcargs")
-        self.cpp_info.set_property("cmake_target_name", "libcargs::libcargs")
-        self.cpp_info.libs = ["cargs"]
+        self.cpp_info.set_property("cmake_file_name", "libargus")
+        self.cpp_info.set_property("cmake_target_name", "libargus::libargus")
+        self.cpp_info.libs = ["argus"]
         if self.options.disable_regex:
-            self.cpp_info.defines.append("CARGS_NO_REGEX")
+            self.cpp_info.defines.append("ARGUS_NO_REGEX")
         if self.settings.os == "Linux":
             self.cpp_info.system_libs.append("m")
         self.cpp_info.set_property("cmake_find_mode", "both")
-        self.cpp_info.set_property("pkg_config_name", "cargs")
+        self.cpp_info.set_property("pkg_config_name", "argus")

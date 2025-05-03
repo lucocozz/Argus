@@ -1,12 +1,12 @@
 #include <criterion/criterion.h>
-#include "cargs.h"
-#include "cargs/internal/parsing.h"
-#include "cargs/internal/utils.h"
+#include "argus.h"
+#include "argus/internal/parsing.h"
+#include "argus/internal/utils.h"
 #include <stdlib.h>
 #include <string.h>
 
 // Test options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     env_options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     OPTION_STRING('H', "host", HELP("Server hostname"), ENV_VAR("HOST")),
@@ -37,14 +37,14 @@ void teardown_env(void)
 // Test load_env_vars function
 Test(env_vars, load_env_vars, .init = setup_env, .fini = teardown_env)
 {
-    cargs_t cargs = cargs_init(env_options, "test_program", "1.0.0");
-    cargs.env_prefix = "TEST";
+    argus_t argus = argus_init(env_options, "test_program", "1.0.0");
+    argus.env_prefix = "TEST";
     
     // Options should not be set initially
-    cargs_option_t *host_option = find_option_by_name(env_options, "host");
-    cargs_option_t *port_option = find_option_by_name(env_options, "port");
-    cargs_option_t *db_option = find_option_by_name(env_options, "database");
-    cargs_option_t *timeout_option = find_option_by_name(env_options, "timeout");
+    argus_option_t *host_option = find_option_by_name(env_options, "host");
+    argus_option_t *port_option = find_option_by_name(env_options, "port");
+    argus_option_t *db_option = find_option_by_name(env_options, "database");
+    argus_option_t *timeout_option = find_option_by_name(env_options, "timeout");
     
     cr_assert_eq(host_option->is_set, false, "Host option should not be set initially");
     cr_assert_eq(port_option->is_set, false, "Port option should not be set initially");
@@ -53,10 +53,10 @@ Test(env_vars, load_env_vars, .init = setup_env, .fini = teardown_env)
     cr_assert_eq(timeout_option->value.as_int, 30, "Timeout should have default value initially");
     
     // Load environment variables
-    int status = load_env_vars(&cargs);
+    int status = load_env_vars(&argus);
     
     // Check that env vars were loaded successfully
-    cr_assert_eq(status, CARGS_SUCCESS, "Environment variables should load successfully");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Environment variables should load successfully");
     
     // Check that options were set from environment variables
     cr_assert_eq(host_option->is_set, true, "Host option should be set from env var");
@@ -72,7 +72,7 @@ Test(env_vars, load_env_vars, .init = setup_env, .fini = teardown_env)
     cr_assert_eq(timeout_option->value.as_int, 60, "Timeout value should be from env var");
     
     // Clean up
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Test FLAG_ENV_OVERRIDE behavior
@@ -88,83 +88,83 @@ Test(env_vars, env_override_flag, .init = setup_env, .fini = teardown_env)
     };
     int argc = sizeof(argv) / sizeof(char *);
     
-    cargs_t cargs = cargs_init(env_options, "test_program", "1.0.0");
-    cargs.env_prefix = "TEST";
+    argus_t argus = argus_init(env_options, "test_program", "1.0.0");
+    argus.env_prefix = "TEST";
     
     // Parse command line arguments
-    int status = cargs_parse(&cargs, argc, argv);
+    int status = argus_parse(&argus, argc, argv);
     
     // Check that parsing succeeded
-    cr_assert_eq(status, CARGS_SUCCESS, "Command line arguments should parse successfully");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Command line arguments should parse successfully");
     
     // Check option values
-    cr_assert_str_eq(cargs_get(cargs, "host").as_string, "cli-server.example.com", 
+    cr_assert_str_eq(argus_get(argus, "host").as_string, "cli-server.example.com", 
                      "Host should be from command line");
     
-    cr_assert_eq(cargs_get(cargs, "port").as_int, 8080, 
+    cr_assert_eq(argus_get(argus, "port").as_int, 8080, 
                  "Port should be from command line");
     
-    cr_assert_str_eq(cargs_get(cargs, "database").as_string, "mysql://localhost/db", 
+    cr_assert_str_eq(argus_get(argus, "database").as_string, "mysql://localhost/db", 
                      "Database should be from command line");
     
     // Check that FLAG_ENV_OVERRIDE made env var override command line
-    cr_assert_eq(cargs_get(cargs, "timeout").as_int, 60, 
+    cr_assert_eq(argus_get(argus, "timeout").as_int, 60, 
                  "Timeout should be from env var despite command line value");
     
     // Clean up
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Test FLAG_AUTO_ENV behavior
 Test(env_vars, auto_env_flag, .init = setup_env, .fini = teardown_env)
 {
     // Test with a custom prefix
-    cargs_t cargs = cargs_init(env_options, "test_program", "1.0.0");
-    cargs.env_prefix = "CUSTOM";
+    argus_t argus = argus_init(env_options, "test_program", "1.0.0");
+    argus.env_prefix = "CUSTOM";
     
     // Manually set up the environment with the custom prefix
     setenv("CUSTOM_PORT", "7777", 1);
     
     // Load environment variables
-    int status = load_env_vars(&cargs);
+    int status = load_env_vars(&argus);
     
     // Check that env vars were loaded successfully
-    cr_assert_eq(status, CARGS_SUCCESS, "Environment variables should load successfully");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Environment variables should load successfully");
     
     // Check that auto-env option got the value from the custom prefix
-    cargs_option_t *port_option = find_option_by_name(env_options, "port");
+    argus_option_t *port_option = find_option_by_name(env_options, "port");
     cr_assert_eq(port_option->is_set, true, "Port option should be set from auto-env");
     cr_assert_eq(port_option->value.as_int, 7777, "Port value should be from CUSTOM_PORT env var");
     
     // Clean up
     unsetenv("CUSTOM_PORT");
-    cargs_free(&cargs);
+    argus_free(&argus);
 }
 
 // Test FLAG_NO_ENV_PREFIX behavior
 Test(env_vars, no_env_prefix_flag, .init = setup_env, .fini = teardown_env)
 {
     // Test with a non-prefixed variable
-    cargs_t cargs = cargs_init(env_options, "test_program", "1.0.0");
-    cargs.env_prefix = "TEST";
+    argus_t argus = argus_init(env_options, "test_program", "1.0.0");
+    argus.env_prefix = "TEST";
     
     // Manually set up the environment with and without prefix
     setenv("DATABASE_URL", "sqlite:///data.db", 1);  // No prefix
     setenv("TEST_DATABASE_URL", "mysql://wrong/db", 1);  // With prefix - should be ignored
     
     // Load environment variables
-    int status = load_env_vars(&cargs);
+    int status = load_env_vars(&argus);
     
     // Check that env vars were loaded successfully
-    cr_assert_eq(status, CARGS_SUCCESS, "Environment variables should load successfully");
+    cr_assert_eq(status, ARGUS_SUCCESS, "Environment variables should load successfully");
     
     // Check that NO_ENV_PREFIX option got the value from the unprefixed variable
-    cargs_option_t *db_option = find_option_by_name(env_options, "database");
+    argus_option_t *db_option = find_option_by_name(env_options, "database");
     cr_assert_eq(db_option->is_set, true, "Database option should be set from env var");
     cr_assert_str_eq(db_option->value.as_string, "sqlite:///data.db", 
                      "Database value should be from unprefixed env var");
     
     // Clean up
     unsetenv("TEST_DATABASE_URL");
-    cargs_free(&cargs);
+    argus_free(&argus);
 }

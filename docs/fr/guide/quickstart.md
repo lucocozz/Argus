@@ -1,17 +1,17 @@
 # Démarrage rapide
 
-Ce guide vous aidera à créer rapidement une application simple utilisant cargs pour traiter les arguments de ligne de commande.
+Ce guide vous aidera à créer rapidement une application simple utilisant argus pour traiter les arguments de ligne de commande.
 
 ## Exemple minimal
 
-Voici un exemple minimal d'utilisation de cargs :
+Voici un exemple minimal d'utilisation de argus :
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 
 // Définir les options
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -20,17 +20,17 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    // Initialiser cargs
-    cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
+    // Initialiser argus
+    argus_t argus = argus_init(options, "my_program", "1.0.0");
     
     // Analyser les arguments
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Accéder aux valeurs analysées
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
+    bool verbose = argus_get(argus, "verbose").as_bool;
     
     // Logique de l'application
     if (verbose) {
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     }
     
     // Libérer les ressources
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
@@ -46,18 +46,18 @@ int main(int argc, char **argv)
 ## Étapes fondamentales
 
 !!! abstract "Processus"
-    Voici les étapes essentielles pour utiliser cargs dans votre application :
+    Voici les étapes essentielles pour utiliser argus dans votre application :
 
-    1. **Inclure l'en-tête** : Commencez par inclure l'en-tête `cargs.h`.
-    2. **Définir les options** : Utilisez la macro `CARGS_OPTIONS` pour définir les options acceptées par votre programme.
-    3. **Initialiser cargs** : Appelez `cargs_init()` pour initialiser le contexte cargs.
-    4. **Analyser les arguments** : Utilisez `cargs_parse()` pour analyser les arguments de ligne de commande.
-    5. **Accéder aux valeurs** : Utilisez `cargs_get()`, `cargs_is_set()` et d'autres fonctions pour accéder aux valeurs des options.
-    6. **Libérer les ressources** : Appelez `cargs_free()` avant de quitter pour libérer les ressources allouées.
+    1. **Inclure l'en-tête** : Commencez par inclure l'en-tête `argus.h`.
+    2. **Définir les options** : Utilisez la macro `ARGUS_OPTIONS` pour définir les options acceptées par votre programme.
+    3. **Initialiser argus** : Appelez `argus_init()` pour initialiser le contexte argus.
+    4. **Analyser les arguments** : Utilisez `argus_parse()` pour analyser les arguments de ligne de commande.
+    5. **Accéder aux valeurs** : Utilisez `argus_get()`, `argus_is_set()` et d'autres fonctions pour accéder aux valeurs des options.
+    6. **Libérer les ressources** : Appelez `argus_free()` avant de quitter pour libérer les ressources allouées.
 
 ## Types d'options
 
-Cargs prend en charge plusieurs types d'options que vous pouvez utiliser dans votre application :
+Argus prend en charge plusieurs types d'options que vous pouvez utiliser dans votre application :
 
 | Type | Macro | Description | Exemple |
 |------|-------|-------------|---------|
@@ -77,7 +77,7 @@ Voici un exemple plus complet incluant différents types d'options :
 
 === "Définition des options"
     ```c
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -91,7 +91,7 @@ Voici un exemple plus complet incluant différents types d'options :
 
 === "Code principal"
     ```c
-    #include "cargs.h"
+    #include "argus.h"
     #include <stdio.h>
     #include <stdlib.h>
 
@@ -99,22 +99,22 @@ Voici un exemple plus complet incluant différents types d'options :
 
     int main(int argc, char **argv)
     {
-        // Initialiser cargs
-        cargs_t cargs = cargs_init(options, "complete_example", "1.0.0");
-        cargs.description = "Exemple complet de cargs";
+        // Initialiser argus
+        argus_t argus = argus_init(options, "complete_example", "1.0.0");
+        argus.description = "Exemple complet de argus";
         
         // Analyser les arguments
-        int status = cargs_parse(&cargs, argc, argv);
-        if (status != CARGS_SUCCESS) {
+        int status = argus_parse(&argus, argc, argv);
+        if (status != ARGUS_SUCCESS) {
             return status;
         }
         
         // Accéder aux valeurs analysées
-        const char *input = cargs_get(cargs, "input").as_string;
-        const char *output = cargs_get(cargs, "output").as_string;
-        int count = cargs_get(cargs, "count").as_int;
-        double factor = cargs_get(cargs, "factor").as_float;
-        bool verbose = cargs_get(cargs, "verbose").as_bool;
+        const char *input = argus_get(argus, "input").as_string;
+        const char *output = argus_get(argus, "output").as_string;
+        int count = argus_get(argus, "count").as_int;
+        double factor = argus_get(argus, "factor").as_float;
+        bool verbose = argus_get(argus, "verbose").as_bool;
         
         // Afficher la configuration
         printf("Configuration :\n");
@@ -125,25 +125,25 @@ Voici un exemple plus complet incluant différents types d'options :
         printf("  Verbeux : %s\n", verbose ? "oui" : "non");
         
         // Libérer les ressources
-        cargs_free(&cargs);
+        argus_free(&argus);
         return 0;
     }
     ```
 
 === "Compilation"
     ```bash
-    gcc -o complete_example complete_example.c -lcargs
+    gcc -o complete_example complete_example.c -largus
     ```
 
 ## Aide générée automatiquement
 
-Avec les options `HELP_OPTION` et `VERSION_OPTION`, cargs génère automatiquement des informations d'aide et de version formatées lorsque l'utilisateur spécifie `--help` ou `--version`.
+Avec les options `HELP_OPTION` et `VERSION_OPTION`, argus génère automatiquement des informations d'aide et de version formatées lorsque l'utilisateur spécifie `--help` ou `--version`.
 
 !!! example "Exemple d'aide générée"
     ```
     complete_example v1.0.0
 
-    Exemple complet de cargs
+    Exemple complet de argus
 
     Usage: complete_example [OPTIONS] <input>
 
@@ -161,11 +161,11 @@ Avec les options `HELP_OPTION` et `VERSION_OPTION`, cargs génère automatiqueme
 
 ## Flux de développement typique
 
-Le développement d'une application avec cargs suit généralement ce processus :
+Le développement d'une application avec argus suit généralement ce processus :
 
 ```mermaid
 graph LR
-    A[Définir les options] --> B[Initialiser cargs]
+    A[Définir les options] --> B[Initialiser argus]
     B --> C[Analyser les arguments]
     C --> D{Succès?}
     D -- Non --> E[Gérer l'erreur]
@@ -176,7 +176,7 @@ graph LR
 
 ## Prochaines étapes
 
-Maintenant que vous avez créé une application de base avec cargs, vous pouvez explorer des fonctionnalités plus avancées :
+Maintenant que vous avez créé une application de base avec argus, vous pouvez explorer des fonctionnalités plus avancées :
 
 - [Options de base](basic-options.md) - En savoir plus sur les différents types d'options
 - [Sous-commandes](subcommands.md) - Créer des applications avec des sous-commandes comme Git ou Docker

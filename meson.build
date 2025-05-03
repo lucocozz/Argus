@@ -1,6 +1,6 @@
 project(
-    'cargs', 'c',
-    version: '1.0.2',
+    'argus', 'c',
+    version: '1.0.0',
     license: 'MIT',
     default_options: [
         'warning_level=3',
@@ -27,7 +27,7 @@ subdir('source')
 # Handle regex dependency
 disable_regex = get_option('disable_regex')
 if disable_regex
-  add_project_arguments('-DCARGS_NO_REGEX', language: 'c')
+  add_project_arguments('-DARGUS_NO_REGEX', language: 'c')
   pcre2_dep = dependency('', required: false)
 else
   pcre2_dep = dependency('libpcre2-8', required: true, version: '>=10.00')
@@ -38,9 +38,9 @@ endif
 
 
 # Create both static and shared libraries from sources
-cargs_lib = both_libraries(
-    'cargs',
-    cargs_sources,
+argus_lib = both_libraries(
+    'argus',
+    argus_sources,
     include_directories: inc_dirs,
     dependencies: disable_regex ? [] : [pcre2_dep],
     version: meson.project_version(),
@@ -49,16 +49,16 @@ cargs_lib = both_libraries(
 )
 
 # Create dependency object for internal usage
-cargs_dep = declare_dependency(
-    link_with: cargs_lib,
+argus_dep = declare_dependency(
+    link_with: argus_lib,
     include_directories: inc_dirs,
     dependencies: disable_regex ? [] : [pcre2_dep],
 )
 
 # Install headers (public API only)
-install_headers('includes/cargs.h')
+install_headers('includes/argus.h')
 install_subdir(
-    'includes/cargs',
+    'includes/argus',
     install_dir: get_option('includedir'),
     exclude_directories: ['internal']
 )

@@ -1,5 +1,5 @@
 /**
- * cargs/internal/compiler.h - Compiler-specific macros and utilities
+ * argus/internal/compiler.h - Compiler-specific macros and utilities
  *
  * INTERNAL HEADER - NOT PART OF THE PUBLIC API
  * This header defines macros for handling compiler-specific behavior.
@@ -7,8 +7,8 @@
  * MIT License - Copyright (c) 2024 lucocozz
  */
 
-#ifndef CARGS_INTERNAL_COMPILER_H
-#define CARGS_INTERNAL_COMPILER_H
+#ifndef ARGUS_INTERNAL_COMPILER_H
+#define ARGUS_INTERNAL_COMPILER_H
 
 /**
  * Macros to disable and restore specific warnings
@@ -49,4 +49,4 @@
     #define PRAGMA_RESTORE()
 #endif
 
-#endif /* CARGS_INTERNAL_COMPILER_H */
+#endif /* ARGUS_INTERNAL_COMPILER_H */

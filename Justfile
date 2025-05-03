@@ -1,4 +1,4 @@
-name := "cargs"
+name := "argus"
 build_dir := ".build"
 static_lib := "lib" + name + ".a"
 shared_lib := "lib" + name + ".so"
@@ -104,7 +104,7 @@ test-list:
 benchmark:
     @just benchmarks="true" reconfigure compile
     @echo "\n\033[1;34m═══════════════════════════════════════════════════════\033[0m"
-    @echo "\033[1;33m          CARGS PERFORMANCE BENCHMARKS\033[0m"
+    @echo "\033[1;33m          ARGUS PERFORMANCE BENCHMARKS\033[0m"
     @echo "\033[1;34m═══════════════════════════════════════════════════════\033[0m"
     
     @bash -c '\

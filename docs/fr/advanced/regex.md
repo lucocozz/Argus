@@ -1,9 +1,9 @@
 # Expressions régulières
 
-cargs offre un support puissant pour les expressions régulières via PCRE2 (Perl Compatible Regular Expressions) afin de valider les entrées utilisateur avec une correspondance de motifs sophistiquée.
+argus offre un support puissant pour les expressions régulières via PCRE2 (Perl Compatible Regular Expressions) afin de valider les entrées utilisateur avec une correspondance de motifs sophistiquée.
 
 !!! abstract "Aperçu"
-    Ce guide couvre l'utilisation avancée des expressions régulières dans cargs :
+    Ce guide couvre l'utilisation avancée des expressions régulières dans argus :
     
     - Utilisation des motifs prédéfinis
     - Création de motifs personnalisés
@@ -14,50 +14,50 @@ cargs offre un support puissant pour les expressions régulières via PCRE2 (Per
 
 ## Utilisation des motifs prédéfinis
 
-cargs fournit une large gamme de motifs prédéfinis dans `cargs/regex.h` qui couvrent des scénarios de validation courants.
+argus fournit une large gamme de motifs prédéfinis dans `argus/regex.h` qui couvrent des scénarios de validation courants.
 
 === "Utilisation de base"
     ```c
-    #include "cargs/regex.h"
+    #include "argus/regex.h"
     
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Validation d'email
         OPTION_STRING('e', "email", HELP("Adresse email"),
-                    REGEX(CARGS_RE_EMAIL)),
+                    REGEX(ARGUS_RE_EMAIL)),
         
         // Validation d'adresse IP
         OPTION_STRING('i', "ip", HELP("Adresse IP"),
-                    REGEX(CARGS_RE_IPV4)),
+                    REGEX(ARGUS_RE_IPV4)),
         
         // Validation d'URL
         OPTION_STRING('u', "url", HELP("URL"),
-                    REGEX(CARGS_RE_URL))
+                    REGEX(ARGUS_RE_URL))
     )
     ```
 
 === "Motifs multiples"
     ```c
     // Options avec différents types de validation
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
         // Date au format ISO (AAAA-MM-JJ)
         OPTION_STRING('d', "date", HELP("Date (AAAA-MM-JJ)"),
-                    REGEX(CARGS_RE_ISO_DATE),
+                    REGEX(ARGUS_RE_ISO_DATE),
                     HINT("AAAA-MM-JJ")),
         
         // Mot de passe avec validation forte
         OPTION_STRING('p', "password", HELP("Mot de passe (8+ caractères, casse mixte, chiffres, symboles)"),
-                    REGEX(CARGS_RE_PASSWD_STRONG),
+                    REGEX(ARGUS_RE_PASSWD_STRONG),
                     HINT("MotDePasse1@")),
         
         // Numéro de version sémantique
         OPTION_STRING('v', "version", HELP("Version sémantique"),
-                    REGEX(CARGS_RE_SEMVER),
+                    REGEX(ARGUS_RE_SEMVER),
                     HINT("X.Y.Z"),
                     FLAGS(FLAG_REQUIRED))
     )
@@ -82,7 +82,7 @@ La macro `MAKE_REGEX` crée un nouveau motif d'expression régulière avec une i
 
 === "Utilisation des motifs personnalisés"
     ```c
-    CARGS_OPTIONS(
+    ARGUS_OPTIONS(
         options,
         HELP_OPTION(FLAGS(FLAG_EXIT)),
         
@@ -124,7 +124,7 @@ Pour des exigences de validation plus complexes, vous pouvez créer des motifs c
 
 ## Messages d'erreur
 
-Un avantage clé de l'implémentation des expressions régulières de cargs est la possibilité de fournir des messages d'erreur utiles :
+Un avantage clé de l'implémentation des expressions régulières de argus est la possibilité de fournir des messages d'erreur utiles :
 
 === "Motif avec erreur détaillée"
     ```c
@@ -142,7 +142,7 @@ Un avantage clé de l'implémentation des expressions régulières de cargs est 
 
 ## Syntaxe des motifs
 
-Puisque cargs utilise PCRE2, vous avez accès à des fonctionnalités puissantes de correspondance de motifs :
+Puisque argus utilise PCRE2, vous avez accès à des fonctionnalités puissantes de correspondance de motifs :
 
 ### Éléments courants des motifs
 
@@ -198,10 +198,10 @@ La validation par expressions régulières peut être puissante, mais des motifs
 
 ## Détails d'implémentation
 
-cargs implémente la validation par expressions régulières grâce à la bibliothèque PCRE2 :
+argus implémente la validation par expressions régulières grâce à la bibliothèque PCRE2 :
 
 ```c
-int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
+int regex_validator(argus_t *argus, const char *value, validator_data_t data)
 {
     const char *pattern = data.regex.pattern;
     
@@ -213,16 +213,16 @@ int regex_validator(cargs_t *cargs, const char *value, validator_data_t data)
     
     // Retourner le résultat de validation
     if (rc < 0) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, 
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, 
                           "Valeur invalide '%s' : %s", value, data.regex.hint);
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
 ## Bonnes pratiques
 
-Lorsque vous utilisez la validation par expressions régulières avec cargs :
+Lorsque vous utilisez la validation par expressions régulières avec argus :
 
 1. **Utilisez des motifs prédéfinis** quand c'est possible pour les validations courantes
 2. **Créez des messages d'erreur descriptifs** qui aident l'utilisateur à comprendre ce qui est requis
@@ -235,28 +235,28 @@ Lorsque vous utilisez la validation par expressions régulières avec cargs :
 Voici un exemple complet démontrant plusieurs techniques de validation par expressions régulières :
 
 ```c
-#include "cargs.h"
-#include "cargs/regex.h"
+#include "argus.h"
+#include "argus/regex.h"
 #include <stdio.h>
 
 /* Motifs d'expressions régulières personnalisés */
 #define RE_PRODUCT_ID MAKE_REGEX("^[A-Z]{2}\\d{4}-[A-Z0-9]{6}$", "Format : XX0000-XXXXXX")
 #define RE_SIMPLE_NAME MAKE_REGEX("^[a-zA-Z][a-zA-Z0-9_-]{2,29}$", "Lettres, chiffres, underscore, tiret")
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
 
     // Utilisation de motifs prédéfinis
     GROUP_START("Réseau et Communication", GROUP_DESC("Options liées au réseau")),
        OPTION_STRING('i', "ip", HELP("Adresse IPv4"),
-                    REGEX(CARGS_RE_IPV4)),
+                    REGEX(ARGUS_RE_IPV4)),
 
        OPTION_STRING('e', "email", HELP("Adresse email"),
-                    REGEX(CARGS_RE_EMAIL)),
+                    REGEX(ARGUS_RE_EMAIL)),
 
         OPTION_STRING('u', "url", HELP("URL avec n'importe quel protocole"),
-                    REGEX(CARGS_RE_URL)),
+                    REGEX(ARGUS_RE_URL)),
     GROUP_END(),
 
     // Motifs personnalisés définis ci-dessus
@@ -280,37 +280,37 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "regex_example", "1.0.0");
-    cargs.description = "Exemple d'utilisation de la validation par expressions régulières avec des motifs prédéfinis et personnalisés";
+    argus_t argus = argus_init(options, "regex_example", "1.0.0");
+    argus.description = "Exemple d'utilisation de la validation par expressions régulières avec des motifs prédéfinis et personnalisés";
 
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS)
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS)
         return status;
 
     printf("Validation réussie ! Toutes les valeurs fournies correspondent aux motifs attendus.\n\n");
 
     // Afficher les valeurs validées
     printf("Réseau & Communication :\n");
-    printf("  Adresse IP : %s\n", cargs_is_set(cargs, "ip") ?
-           cargs_get(cargs, "ip").as_string : "(non fournie)");
-    printf("  Email : %s\n", cargs_is_set(cargs, "email") ?
-           cargs_get(cargs, "email").as_string : "(non fourni)");
-    printf("  URL : %s\n", cargs_is_set(cargs, "url") ?
-           cargs_get(cargs, "url").as_string : "(non fournie)");
+    printf("  Adresse IP : %s\n", argus_is_set(argus, "ip") ?
+           argus_get(argus, "ip").as_string : "(non fournie)");
+    printf("  Email : %s\n", argus_is_set(argus, "email") ?
+           argus_get(argus, "email").as_string : "(non fourni)");
+    printf("  URL : %s\n", argus_is_set(argus, "url") ?
+           argus_get(argus, "url").as_string : "(non fournie)");
 
     printf("\nFormats personnalisés :\n");
-    printf("  ID de produit : %s\n", cargs_is_set(cargs, "product") ?
-           cargs_get(cargs, "product").as_string : "(non fourni)");
-    printf("  Nom d'utilisateur : %s\n", cargs_is_set(cargs, "name") ?
-           cargs_get(cargs, "name").as_string : "(non fourni)");
+    printf("  ID de produit : %s\n", argus_is_set(argus, "product") ?
+           argus_get(argus, "product").as_string : "(non fourni)");
+    printf("  Nom d'utilisateur : %s\n", argus_is_set(argus, "name") ?
+           argus_get(argus, "name").as_string : "(non fourni)");
 
     printf("\nMotifs en ligne :\n");
-    printf("  Code postal : %s\n", cargs_is_set(cargs, "zipcode") ?
-           cargs_get(cargs, "zipcode").as_string : "(non fourni)");
-    printf("  Heure : %s\n", cargs_is_set(cargs, "time") ?
-           cargs_get(cargs, "time").as_string : "(non fournie)");
+    printf("  Code postal : %s\n", argus_is_set(argus, "zipcode") ?
+           argus_get(argus, "zipcode").as_string : "(non fourni)");
+    printf("  Heure : %s\n", argus_is_set(argus, "time") ?
+           argus_get(argus, "time").as_string : "(non fournie)");
 
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```

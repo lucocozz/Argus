@@ -1,34 +1,22 @@
-site_name: cargs
+site_name: Argus
 site_description: Modern C library for command-line argument parsing
-site_url: https://cargs.readthedocs.io
+site_url: https://argus.readthedocs.io
 site_author: lucocozz
-repo_name: lucocozz/cargs
-repo_url: https://github.com/lucocozz/cargs
+repo_name: lucocozz/Argus
+repo_url: https://github.com/lucocozz/Argus
 edit_uri: edit/main/docs/
 
 copyright: Copyright &copy; 2024 lucocozz
 
 theme:
   name: material
-  logo: assets/cargs-logo.webp
-  favicon: assets/cargs-logo.webp
+  logo: assets/argus-title.webp
+  favicon: assets/argus-logo.webp
   palette:
-    # Light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: purple
-      accent: purple
-      toggle:
-        icon: material/lightbulb
-        name: Switch to dark mode
-    # Dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: deep purple
-      accent: deep purple
-      toggle:
-        icon: material/lightbulb-outline
-        name: Switch to light mode
+      primary: black
+      accent: green
   features:
     - navigation.instant
     - navigation.tracking
@@ -58,11 +46,11 @@ plugins:
           default: true
           name: English
           build: true
-          site_name: "cargs"
+          site_name: ""
         - locale: fr
           name: Français
           build: true
-          site_name: "cargs"
+          site_name: ""
       default_language: en
       no_translation: "This page is not available in your language."
       languages_dirs:
@@ -130,7 +118,7 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/lucocozz/cargs
+      link: https://github.com/lucocozz/argus
   generator: false
 
 docs_dir: docs

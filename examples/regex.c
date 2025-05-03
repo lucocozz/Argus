@@ -1,11 +1,11 @@
 /**
- * Example demonstrating regex validation for cargs
+ * Example demonstrating regex validation for argus
  *
  * Shows a mix of predefined patterns and custom patterns
  */
 
-#include "cargs.h"
-#include "cargs/regex.h"  /* Import predefined patterns */
+#include "argus.h"
+#include "argus/regex.h"  /* Import predefined patterns */
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -14,23 +14,23 @@
 #define RE_PRODUCT_ID MAKE_REGEX("^[A-Z]{2}\\d{4}-[A-Z0-9]{6}$", "Format: XX0000-XXXXXX")
 #define RE_SIMPLE_NAME MAKE_REGEX("^[a-zA-Z][a-zA-Z0-9_-]{2,29}$", "Letters, numbers, underscore, dash")
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
 
     // SECTION 1: Using predefined patterns from header
     GROUP_START("Network and Communication", GROUP_DESC("Network-related options")),
        OPTION_STRING('i', "ip", HELP("IPv4 address"),
-                    REGEX(CARGS_RE_IPV4)),
+                    REGEX(ARGUS_RE_IPV4)),
 
        OPTION_STRING('m', "mac", HELP("MAC address"),
-                    REGEX(CARGS_RE_MAC)),
+                    REGEX(ARGUS_RE_MAC)),
 
         OPTION_STRING('e', "email", HELP("Email address"),
-                    REGEX(CARGS_RE_EMAIL)),
+                    REGEX(ARGUS_RE_EMAIL)),
 
         OPTION_STRING('u', "url", HELP("URL with any protocol"),
-                    REGEX(CARGS_RE_URL)),
+                    REGEX(ARGUS_RE_URL)),
     GROUP_END(),
 
     // SECTION 2: Custom patterns defined in this file
@@ -59,17 +59,17 @@ CARGS_OPTIONS(
     GROUP_START("Combined Patterns", GROUP_DESC("Options with combined validation")),
         // Date with custom error message
         OPTION_STRING('d', "date", HELP("Date (YYYY-MM-DD)"),
-                    REGEX(CARGS_RE_ISO_DATE),
+                    REGEX(ARGUS_RE_ISO_DATE),
                     HINT("YYYY-MM-DD")),
 
         // Password with predefined pattern and custom error message
         OPTION_STRING('P', "password", HELP("Password (8+ chars, mixed case, numbers, symbols)"),
-                    REGEX(CARGS_RE_PASSWD_STRONG),
+                    REGEX(ARGUS_RE_PASSWD_STRONG),
                     HINT("StrongP@ss1")),
 
         // Version number with additional flags
         OPTION_STRING('v', "version", HELP("Semantic version"),
-                    REGEX(CARGS_RE_SEMVER),
+                    REGEX(ARGUS_RE_SEMVER),
                     HINT("X.Y.Z"),
                     FLAGS(FLAG_REQUIRED)),
     GROUP_END()
@@ -77,49 +77,49 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    cargs_t cargs = cargs_init(options, "regex_example", "1.0.0");
-    cargs.description = "Example of using regex validation with both predefined and custom patterns";
+    argus_t argus = argus_init(options, "regex_example", "1.0.0");
+    argus.description = "Example of using regex validation with both predefined and custom patterns";
 
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS)
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS)
         return status;
 
     printf("Validation successful! All provided values match the expected patterns.\n\n");
 
     // Display validated values grouped by category
     printf("Network & Communication:\n");
-    printf("  IP Address: %s\n", cargs_is_set(cargs, "ip") ?
-           cargs_get(cargs, "ip").as_string : "(not provided)");
-    printf("  MAC Address: %s\n", cargs_is_set(cargs, "mac") ?
-           cargs_get(cargs, "mac").as_string : "(not provided)");
-    printf("  Email: %s\n", cargs_is_set(cargs, "email") ?
-           cargs_get(cargs, "email").as_string : "(not provided)");
-    printf("  URL: %s\n", cargs_is_set(cargs, "url") ?
-           cargs_get(cargs, "url").as_string : "(not provided)");
+    printf("  IP Address: %s\n", argus_is_set(argus, "ip") ?
+           argus_get(argus, "ip").as_string : "(not provided)");
+    printf("  MAC Address: %s\n", argus_is_set(argus, "mac") ?
+           argus_get(argus, "mac").as_string : "(not provided)");
+    printf("  Email: %s\n", argus_is_set(argus, "email") ?
+           argus_get(argus, "email").as_string : "(not provided)");
+    printf("  URL: %s\n", argus_is_set(argus, "url") ?
+           argus_get(argus, "url").as_string : "(not provided)");
 
     printf("\nCustom Formats:\n");
-    printf("  Product ID: %s\n", cargs_is_set(cargs, "product") ?
-           cargs_get(cargs, "product").as_string : "(not provided)");
-    printf("  RGB Color: %s\n", cargs_is_set(cargs, "color") ?
-           cargs_get(cargs, "color").as_string : "(not provided)");
-    printf("  Username: %s\n", cargs_is_set(cargs, "name") ?
-           cargs_get(cargs, "name").as_string : "(not provided)");
+    printf("  Product ID: %s\n", argus_is_set(argus, "product") ?
+           argus_get(argus, "product").as_string : "(not provided)");
+    printf("  RGB Color: %s\n", argus_is_set(argus, "color") ?
+           argus_get(argus, "color").as_string : "(not provided)");
+    printf("  Username: %s\n", argus_is_set(argus, "name") ?
+           argus_get(argus, "name").as_string : "(not provided)");
 
     printf("\nInline Patterns:\n");
-    printf("  Zip Code: %s\n", cargs_is_set(cargs, "zipcode") ?
-           cargs_get(cargs, "zipcode").as_string : "(not provided)");
-    printf("  Time: %s\n", cargs_is_set(cargs, "time") ?
-           cargs_get(cargs, "time").as_string : "(not provided)");
-    printf("  Float: %s\n", cargs_is_set(cargs, "float") ?
-           cargs_get(cargs, "float").as_string : "(not provided)");
+    printf("  Zip Code: %s\n", argus_is_set(argus, "zipcode") ?
+           argus_get(argus, "zipcode").as_string : "(not provided)");
+    printf("  Time: %s\n", argus_is_set(argus, "time") ?
+           argus_get(argus, "time").as_string : "(not provided)");
+    printf("  Float: %s\n", argus_is_set(argus, "float") ?
+           argus_get(argus, "float").as_string : "(not provided)");
 
     printf("\nCombined Patterns:\n");
-    printf("  Date: %s\n", cargs_is_set(cargs, "date") ?
-           cargs_get(cargs, "date").as_string : "(not provided)");
-    printf("  Password: %s\n", cargs_is_set(cargs, "password") ?
+    printf("  Date: %s\n", argus_is_set(argus, "date") ?
+           argus_get(argus, "date").as_string : "(not provided)");
+    printf("  Password: %s\n", argus_is_set(argus, "password") ?
            "[HIDDEN]" : "(not provided)");
-    printf("  Version: %s\n", cargs_get(cargs, "version").as_string);
+    printf("  Version: %s\n", argus_get(argus, "version").as_string);
 
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }

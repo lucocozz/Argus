@@ -1,10 +1,10 @@
 # Custom Validators
 
-This guide explains how to create and use custom validators with cargs to implement specialized validation logic for command-line options.
+This guide explains how to create and use custom validators with argus to implement specialized validation logic for command-line options.
 
 ## Overview
 
-Validation is essential for ensuring that command-line inputs meet your application's requirements. While cargs provides built-in validators like `RANGE()` and `REGEX()`, custom validators allow you to implement application-specific validation logic.
+Validation is essential for ensuring that command-line inputs meet your application's requirements. While argus provides built-in validators like `RANGE()` and `REGEX()`, custom validators allow you to implement application-specific validation logic.
 
 In this guide, you'll learn about:
 
@@ -15,7 +15,7 @@ In this guide, you'll learn about:
 
 ## Understanding Validator Types
 
-Cargs supports two distinct types of custom validation functions, each with a specific purpose:
+Argus supports two distinct types of custom validation functions, each with a specific purpose:
 
 ### Validators
 
@@ -25,7 +25,7 @@ Cargs supports two distinct types of custom validation functions, each with a sp
 
 **Function signature**:
 ```c
-int validator_function(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
+int validator_function(argus_t *argus, argus_option_t *option, validator_data_t data);
 ```
 
 ### Pre-validators
@@ -39,7 +39,7 @@ int validator_function(cargs_t *cargs, cargs_option_t *option, validator_data_t 
 
 **Function signature**:
 ```c
-int pre_validator_function(cargs_t *cargs, const char *value, validator_data_t data);
+int pre_validator_function(argus_t *argus, const char *value, validator_data_t data);
 ```
 
 ## Creating Basic Validators
@@ -51,16 +51,16 @@ Let's start with simple examples of both validator types.
 This validator ensures that integer options have even values:
 
 ```c
-int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int even_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     // Not using custom data in this example
     UNUSED(data);
     
     if (option->value.as_int % 2 != 0) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                          "Value must be an even number, got %d", option->value.as_int);
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -76,16 +76,16 @@ OPTION_INT('n', "number", HELP("An even number"),
 This pre-validator checks if a string meets a minimum length requirement:
 
 ```c
-int string_length_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
+int string_length_pre_validator(argus_t *argus, const char *value, validator_data_t data)
 {
     // Get minimum length from the validator data
     size_t min_length = *(size_t *)data.custom;
     
     if (strlen(value) < min_length) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                           "String must be at least %zu characters long", min_length);
     }
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -114,7 +114,7 @@ typedef struct {
     bool allow_odd;
 } number_constraints_t;
 
-int number_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int number_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     // Get constraints from validator data
     number_constraints_t *constraints = (number_constraints_t *)data.custom;
@@ -122,18 +122,18 @@ int number_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t da
     // Range validation
     if (option->value.as_int < constraints->min_value || 
         option->value.as_int > constraints->max_value) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_RANGE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_RANGE,
                           "Value must be between %d and %d", 
                           constraints->min_value, constraints->max_value);
     }
     
     // Even/odd validation
     if (!constraints->allow_odd && (option->value.as_int % 2 != 0)) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                           "Value must be an even number");
     }
     
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -173,18 +173,18 @@ typedef struct {
     const char *related_option;
 } option_relation_t;
 
-int greater_than_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int greater_than_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     option_relation_t *relation = (option_relation_t *)data.custom;
-    cargs_value_t other_value = cargs_get(*cargs, relation->related_option);
+    argus_value_t other_value = argus_get(*argus, relation->related_option);
     
     if (option->value.as_int <= other_value.as_int) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                           "Value must be greater than '%s' (%d)",
                           relation->related_option, other_value.as_int);
     }
     
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -192,7 +192,7 @@ int greater_than_validator(cargs_t *cargs, cargs_option_t *option, validator_dat
 ```c
 static option_relation_t max_relation = { .related_option = "min" };
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     OPTION_INT('n', "min", HELP("Minimum value")),
     OPTION_INT('x', "max", HELP("Maximum value"), 
@@ -223,7 +223,7 @@ For frequently used validation patterns, create helper macros:
 
 **Usage example**:
 ```c
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     OPTION_INT('n', "number", HELP("An even number"), EVEN_NUMBER()),
     OPTION_STRING('p', "password", HELP("Password"), MIN_LENGTH(8)),
@@ -233,7 +233,7 @@ CARGS_OPTIONS(
 
 ## Combining Multiple Validators
 
-Cargs allows you to apply multiple validators to a single option by using the numbered validator macros:
+Argus allows you to apply multiple validators to a single option by using the numbered validator macros:
 
 ```c
 OPTION_INT('p', "port", HELP("Port number"), 
@@ -242,7 +242,7 @@ OPTION_INT('p', "port", HELP("Port number"),
           VALIDATOR3(port_validator, NULL))        // Third validator
 ```
 
-Cargs has a limit of 4 validators per option, but you can modify the constant `CARGS_MAX_VALIDATORS` to increase this limit.
+Argus has a limit of 4 validators per option, but you can modify the constant `ARGUS_MAX_VALIDATORS` to increase this limit.
 
 Note that built-in validators like `RANGE()`, `LENGTH()`, and `COUNT()` use the first validator slot. You can combine them with custom validators by using the second and subsequent slots:
 
@@ -254,20 +254,20 @@ OPTION_INT('p', "port", HELP("Port number"),
 
 ## Error Reporting
 
-Validators should use `CARGS_REPORT_ERROR` to provide clear error messages:
+Validators should use `ARGUS_REPORT_ERROR` to provide clear error messages:
 
 ```c
-CARGS_REPORT_ERROR(cargs, error_code, format_string, ...);
+ARGUS_REPORT_ERROR(argus, error_code, format_string, ...);
 ```
 
 **Common error codes**:
 
 | Error Code | Description | Typical Use |
 |------------|-------------|-------------|
-| `CARGS_ERROR_INVALID_VALUE` | Value doesn't meet requirements | General validation failures |
-| `CARGS_ERROR_INVALID_RANGE` | Value outside allowed range | Range validation |
-| `CARGS_ERROR_INVALID_FORMAT` | Value has incorrect format | Format validation |
-| `CARGS_ERROR_MEMORY` | Memory allocation failed | During validation processing |
+| `ARGUS_ERROR_INVALID_VALUE` | Value doesn't meet requirements | General validation failures |
+| `ARGUS_ERROR_INVALID_RANGE` | Value outside allowed range | Range validation |
+| `ARGUS_ERROR_INVALID_FORMAT` | Value has incorrect format | Format validation |
+| `ARGUS_ERROR_MEMORY` | Memory allocation failed | During validation processing |
 
 ## Best Practices
 
@@ -277,8 +277,8 @@ Each validator should focus on one validation concern:
 
 ```c
 // Good: Two focused validators
-int is_even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
-int in_range_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data);
+int is_even_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
+int in_range_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
 
 // Use them together
 OPTION_INT('n', "number", HELP("Number"), 
@@ -292,11 +292,11 @@ Provide clear, actionable error messages:
 
 ```c
 // Good: Clear and specific message
-CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                   "Username must be 3-20 characters with only letters, numbers, and underscores");
 
 // Bad: Vague message
-CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Invalid input");
+ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Invalid input");
 ```
 
 ### 3. Parameter Safety
@@ -304,15 +304,15 @@ CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "Invalid input");
 Always validate parameters and handle edge cases:
 
 ```c
-int string_length_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int string_length_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     // Check if value is NULL before using it
     if (option->value.as_string == NULL) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE, "String cannot be NULL");
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "String cannot be NULL");
     }
     
     // Rest of the validation logic...
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -321,14 +321,14 @@ int string_length_validator(cargs_t *cargs, cargs_option_t *option, validator_da
 Avoid unnecessary heap allocations in validators:
 
 ```c
-int efficient_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int efficient_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     // Use stack-based buffers for temporary operations
     char buffer[256];
     
     // Process value without heap allocations
     
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 ```
 
@@ -338,16 +338,16 @@ Design validators to be reusable across options:
 
 ```c
 // Generic validator for checking if a number is divisible by n
-int divisible_by_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int divisible_by_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     int divisor = *(int *)data.custom;
     
     if (option->value.as_int % divisor != 0) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                           "Value must be divisible by %d", divisor);
     }
     
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Reuse with different configurations
@@ -363,56 +363,56 @@ OPTION_INT('m', "multiple", HELP("Multiple of 5"),
 Here's a complete example demonstrating various custom validator techniques:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
 // Custom validator for email addresses
-int email_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int email_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     (void)data; // Unused parameter
     
     const char* email = option->value.as_string;
     if (!email) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                           "Email address cannot be NULL");
     }
     
     // Check for @ character
     const char* at = strchr(email, '@');
     if (!at) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                           "Email address must contain an '@' character");
     }
     
     // Check for domain
     const char* dot = strchr(at, '.');
     if (!dot) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                           "Email domain must contain a '.' character");
     }
     
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Custom validator for even numbers
-int even_validator(cargs_t *cargs, cargs_option_t *option, validator_data_t data)
+int even_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
 {
     (void)data; // Unused parameter
     
     int number = option->value.as_int;
     if (number % 2 != 0) {
-        CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                           "Value must be an even number");
     }
     
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Custom pre-validator for string case requirements
-int case_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
+int case_pre_validator(argus_t *argus, const char *value, validator_data_t data)
 {
     typedef enum { LOWERCASE, UPPERCASE, MIXED } case_requirement_t;
     case_requirement_t req = *(case_requirement_t *)data.custom;
@@ -428,27 +428,27 @@ int case_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
     switch (req) {
         case LOWERCASE:
             if (has_upper) {
-                CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                                  "Value must be lowercase only");
             }
             break;
             
         case UPPERCASE:
             if (has_lower) {
-                CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                                  "Value must be uppercase only");
             }
             break;
             
         case MIXED:
             if (!has_upper || !has_lower) {
-                CARGS_REPORT_ERROR(cargs, CARGS_ERROR_INVALID_VALUE,
+                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                                  "Value must contain both uppercase and lowercase letters");
             }
             break;
     }
     
-    return CARGS_SUCCESS;
+    return ARGUS_SUCCESS;
 }
 
 // Helper macros for common validations
@@ -458,7 +458,7 @@ int case_pre_validator(cargs_t *cargs, const char *value, validator_data_t data)
 #define UPPERCASE_ONLY() PRE_VALIDATOR(case_pre_validator, &((int){UPPERCASE}))
 #define MIXED_CASE() PRE_VALIDATOR(case_pre_validator, &((int){MIXED}))
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -491,27 +491,27 @@ CARGS_OPTIONS(
 )
 
 int main(int argc, char **argv) {
-    cargs_t cargs = cargs_init(options, "validators_example", "1.0.0");
-    cargs.description = "Example of custom validators";
+    argus_t argus = argus_init(options, "validators_example", "1.0.0");
+    argus.description = "Example of custom validators";
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS) {
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS) {
         return status;
     }
     
     // Access parsed values
-    int port = cargs_get(cargs, "port").as_int;
-    const char* log_level = cargs_get(cargs, "log-level").as_string;
-    int number = cargs_get(cargs, "number").as_int;
+    int port = argus_get(argus, "port").as_int;
+    const char* log_level = argus_get(argus, "log-level").as_string;
+    int number = argus_get(argus, "number").as_int;
     
-    const char* email = cargs_is_set(cargs, "email") ? 
-                        cargs_get(cargs, "email").as_string : "not set";
+    const char* email = argus_is_set(argus, "email") ? 
+                        argus_get(argus, "email").as_string : "not set";
     
-    const char* username = cargs_is_set(cargs, "username") ?
-                          cargs_get(cargs, "username").as_string : "not set";
+    const char* username = argus_is_set(argus, "username") ?
+                          argus_get(argus, "username").as_string : "not set";
     
-    const char* password = cargs_is_set(cargs, "password") ?
-                          cargs_get(cargs, "password").as_string : "not set";
+    const char* password = argus_is_set(argus, "password") ?
+                          argus_get(argus, "password").as_string : "not set";
     
     printf("Validated values:\n");
     printf("  Port: %d (range: 1-65535)\n", port);
@@ -521,7 +521,7 @@ int main(int argc, char **argv) {
     printf("  Username: %s (must be lowercase)\n", username);
     printf("  Password: %s (must contain mixed case)\n", password);
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```

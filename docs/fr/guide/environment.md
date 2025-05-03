@@ -1,11 +1,11 @@
 # Environment Variables
 
-cargs can configure options through environment variables, providing flexibility for containerized applications, CI/CD pipelines, and system-wide configurations.
+argus can configure options through environment variables, providing flexibility for containerized applications, CI/CD pipelines, and system-wide configurations.
 
 ## Basic Concepts
 
 !!! abstract "Overview"
-    Environment variables support in cargs allows you to:
+    Environment variables support in argus allows you to:
     
     1. Associate options with environment variables
     2. Optionally use a prefix for variable namespacing
@@ -16,17 +16,17 @@ cargs can configure options through environment variables, providing flexibility
 
 ### Setting the Application Prefix (Optional)
 
-You can configure an environment variable prefix in your cargs context:
+You can configure an environment variable prefix in your argus context:
 
 ```c
-cargs_t cargs = cargs_init(options, "my_program", "1.0.0");
-cargs.env_prefix = "APP";  // Optional: prefix env vars with APP_
+argus_t argus = argus_init(options, "my_program", "1.0.0");
+argus.env_prefix = "APP";  // Optional: prefix env vars with APP_
 ```
 
-This prefix helps namespace your environment variables to avoid conflicts with other applications. If you don't set a prefix, cargs will use the environment variable names exactly as specified.
+This prefix helps namespace your environment variables to avoid conflicts with other applications. If you don't set a prefix, argus will use the environment variable names exactly as specified.
 
 !!! note "Prefix is Optional"
-    The environment prefix is completely optional. If you don't set `cargs.env_prefix`, cargs will still work with environment variables but won't add any prefix.
+    The environment prefix is completely optional. If you don't set `argus.env_prefix`, argus will still work with environment variables but won't add any prefix.
 
 ## Associating Options with Environment Variables
 
@@ -72,7 +72,7 @@ This prefix helps namespace your environment variables to avoid conflicts with o
     ./my_program  # Will use PORT=9000 from environment
     ```
 
-When using `FLAG_AUTO_ENV`, cargs automatically generates a variable name:
+When using `FLAG_AUTO_ENV`, argus automatically generates a variable name:
 - Converts the option name to uppercase
 - Replaces dashes with underscores
 - Adds the environment prefix (if set)
@@ -89,7 +89,7 @@ When using `FLAG_AUTO_ENV`, cargs automatically generates a variable name:
 
 === "Environment Variable"
     ```bash
-    # System variable without prefix, regardless of cargs.env_prefix setting
+    # System variable without prefix, regardless of argus.env_prefix setting
     export DATABASE_URL=postgres://user:pass@localhost/db
     
     # Run without command-line argument
@@ -155,7 +155,7 @@ This is useful for system-wide configurations that should not be overridden by i
 
 ## Type Conversion
 
-Environment variables are always strings, but cargs automatically converts them to the appropriate type:
+Environment variables are always strings, but argus automatically converts them to the appropriate type:
 
 | Option Type | Environment Value | Conversion |
 |-------------|------------------|------------|
@@ -198,11 +198,11 @@ OPTION_STRING('H', "host", HELP("Server hostname (env: APP_HOST)"),
 Here's a complete example showing various environment variable configurations:
 
 ```c
-#include "cargs.h"
+#include "argus.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-CARGS_OPTIONS(
+ARGUS_OPTIONS(
     options,
     HELP_OPTION(FLAGS(FLAG_EXIT)),
     VERSION_OPTION(FLAGS(FLAG_EXIT)),
@@ -244,22 +244,22 @@ CARGS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    // Initialize cargs and optionally set environment prefix
-    cargs_t cargs = cargs_init(options, "env_variables", "1.0.0");
-    cargs.description = "Example of environment variables usage";
-    cargs.env_prefix = "APP";  // Optional: set a prefix for env vars
+    // Initialize argus and optionally set environment prefix
+    argus_t argus = argus_init(options, "env_variables", "1.0.0");
+    argus.description = "Example of environment variables usage";
+    argus.env_prefix = "APP";  // Optional: set a prefix for env vars
     
-    int status = cargs_parse(&cargs, argc, argv);
-    if (status != CARGS_SUCCESS)
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS)
         return status;
 
     // Access option values as usual
-    const char* host = cargs_get(cargs, "host").as_string;
-    int port = cargs_get(cargs, "port").as_int;
-    const char* database = cargs_get(cargs, "database").as_string;
-    bool verbose = cargs_get(cargs, "verbose").as_bool;
-    int timeout = cargs_get(cargs, "timeout").as_int;
-    bool debug = cargs_get(cargs, "debug").as_bool;
+    const char* host = argus_get(argus, "host").as_string;
+    int port = argus_get(argus, "port").as_int;
+    const char* database = argus_get(argus, "database").as_string;
+    bool verbose = argus_get(argus, "verbose").as_bool;
+    int timeout = argus_get(argus, "timeout").as_int;
+    bool debug = argus_get(argus, "debug").as_bool;
     
     // Display configuration
     printf("Server Configuration:\n");
@@ -281,14 +281,14 @@ int main(int argc, char **argv)
     printf("  APP_FORCE_TIMEOUT - Maps to --timeout (with override)\n");
     printf("  APP_DEBUG         - Maps to --debug\n");
     
-    cargs_free(&cargs);
+    argus_free(&argus);
     return 0;
 }
 ```
 
 ## Implementation Details
 
-Behind the scenes, cargs follows this process for environment variables:
+Behind the scenes, argus follows this process for environment variables:
 
 1. Parse command-line arguments first with `parse_args()`
 2. Load environment variables with `load_env_vars()`
