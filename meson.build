@@ -5,7 +5,7 @@ project(
     default_options: [
         'warning_level=3',
         'werror=true',
-        'c_std=gnu11,c11',
+        'c_std=gnu11',
         'buildtype=debugoptimized',
     ],
     meson_version: '>=1.0.0',
