@@ -19,7 +19,7 @@ int config_get_action(argus_t *argus, void *data);
 // Define options for "service create" command
 ARGUS_OPTIONS(
     service_create_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
     OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED))
 )
@@ -27,14 +27,14 @@ ARGUS_OPTIONS(
 // Define options for "service list" command
 ARGUS_OPTIONS(
     service_list_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('a', "all", HELP("Show all services, including stopped ones"))
 )
 
 // Define options for the "service" parent command
 ARGUS_OPTIONS(
     service_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     SUBCOMMAND("create", service_create_options, 
                HELP("Create a new service"), 
@@ -47,7 +47,7 @@ ARGUS_OPTIONS(
 // Define options for "config set" command
 ARGUS_OPTIONS(
     config_set_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     POSITIONAL_STRING("key", HELP("Configuration key")),
     POSITIONAL_STRING("value", HELP("Configuration value"))
 )
@@ -55,14 +55,14 @@ ARGUS_OPTIONS(
 // Define options for "config get" command
 ARGUS_OPTIONS(
     config_get_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     POSITIONAL_STRING("key", HELP("Configuration key"))
 )
 
 // Define options for the "config" parent command
 ARGUS_OPTIONS(
     config_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     SUBCOMMAND("set", config_set_options, 
                HELP("Set a configuration value"), 
@@ -75,8 +75,8 @@ ARGUS_OPTIONS(
 // Define main options with top-level subcommands
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Global option at root level
     OPTION_FLAG('d', "debug", HELP("Enable debug mode")),

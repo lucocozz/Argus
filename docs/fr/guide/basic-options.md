@@ -121,13 +121,13 @@ argus prend en charge quatre types fondamentaux d'éléments de ligne de command
 
 !!! note "Option d'aide"
     ```c
-    HELP_OPTION(FLAGS(FLAG_EXIT))
+    HELP_OPTION()
     ```
     Crée une option `-h, --help` qui affiche automatiquement un message d'aide et quitte le programme.
 
 !!! tip "Option de version"
     ```c
-    VERSION_OPTION(FLAGS(FLAG_EXIT))
+    VERSION_OPTION()
     ```
     Crée une option `-V, --version` qui affiche la version du programme et quitte.
 
@@ -191,7 +191,7 @@ Les groupes permettent d'organiser visuellement les options dans l'aide :
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     GROUP_START("Connection", GROUP_DESC("Options de connexion")),
         OPTION_STRING('h', "host", HELP("Nom d'hôte"), DEFAULT("localhost")),
@@ -313,8 +313,8 @@ OPTION_FLAG('q', "quiet", HELP("Mode silencieux"),
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Options standard
     OPTION_FLAG('v', "verbose", HELP("Activer le mode verbeux")),

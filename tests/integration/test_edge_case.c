@@ -7,7 +7,7 @@
 // Test options with special characters
 ARGUS_OPTIONS(
     special_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('s', "special-chars", HELP("Option with special characters")),
     POSITIONAL_STRING("arg", HELP("Argument with special characters"))
 )
@@ -15,7 +15,7 @@ ARGUS_OPTIONS(
 // Test options for map edge cases
 ARGUS_OPTIONS(
     map_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_MAP_STRING('m', "map", HELP("String map")),
     OPTION_MAP_INT('n', "numbers", HELP("Integer map")),
     OPTION_MAP_FLOAT('f', "floats", HELP("Float map")),
@@ -25,7 +25,7 @@ ARGUS_OPTIONS(
 // Test options for max/min value edge cases
 ARGUS_OPTIONS(
     min_max_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_INT('i', "int", HELP("Integer option")),
     OPTION_FLOAT('f', "float", HELP("Float option")),
     POSITIONAL_INT("pos-int", HELP("Positional integer"))
@@ -34,7 +34,7 @@ ARGUS_OPTIONS(
 // Test valid positional arguments ordering (required first, then optional)
 ARGUS_OPTIONS(
     valid_positional_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     POSITIONAL_STRING("required1", HELP("First required arg")),
     POSITIONAL_STRING("required2", HELP("Second required arg")),
     POSITIONAL_STRING("optional1", HELP("First optional arg"), FLAGS(FLAG_OPTIONAL)),

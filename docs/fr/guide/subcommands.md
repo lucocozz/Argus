@@ -36,7 +36,7 @@ D'abord, définissez les options pour chacune de vos sous-commandes :
 // Options pour la sous-commande "add"
 ARGUS_OPTIONS(
     add_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('f', "force", HELP("Forcer l'opération d'ajout")),
     POSITIONAL_STRING("file", HELP("Fichier à ajouter"))
 )
@@ -44,7 +44,7 @@ ARGUS_OPTIONS(
 // Options pour la sous-commande "remove"
 ARGUS_OPTIONS(
     remove_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('r', "recursive", HELP("Supprimer récursivement les répertoires")),
     POSITIONAL_STRING("file", HELP("Fichier à supprimer"))
 )
@@ -90,8 +90,8 @@ Enfin, définissez vos options principales et incluez les sous-commandes :
 // Options principales avec sous-commandes
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Option globale applicable à toutes les sous-commandes
     OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse")),
@@ -222,7 +222,7 @@ int remove_command(argus_t *argus, void *data);
 // Définir les options pour la sous-commande "add"
 ARGUS_OPTIONS(
     add_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('f', "force", HELP("Forcer l'opération d'ajout")),
     POSITIONAL_STRING("file", HELP("Fichier à ajouter"))
 )
@@ -230,7 +230,7 @@ ARGUS_OPTIONS(
 // Définir les options pour la sous-commande "remove"
 ARGUS_OPTIONS(
     remove_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('r', "recursive", HELP("Supprimer récursivement les répertoires")),
     POSITIONAL_STRING("file", HELP("Fichier à supprimer"))
 )
@@ -238,8 +238,8 @@ ARGUS_OPTIONS(
 // Définir les options principales avec sous-commandes
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Option globale applicable à toutes les sous-commandes
     OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse")),

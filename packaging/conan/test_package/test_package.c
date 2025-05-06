@@ -3,7 +3,7 @@
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Enable verbose mode")),
     OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt"))
 )

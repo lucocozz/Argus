@@ -15,7 +15,7 @@ int remove_command(argus_t *argus, void *data);
 // Define options for "add" subcommand
 ARGUS_OPTIONS(
     add_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('f', "force", HELP("Force add operation")),
     POSITIONAL_STRING("file", HELP("File to add"))
 )
@@ -23,7 +23,7 @@ ARGUS_OPTIONS(
 // Define options for "remove" subcommand
 ARGUS_OPTIONS(
     remove_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('r', "recursive", HELP("Recursively remove directories")),
     POSITIONAL_STRING("file", HELP("File to remove"))
 )
@@ -31,8 +31,8 @@ ARGUS_OPTIONS(
 // Define main options with subcommands
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Global option applicable to all subcommands
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),

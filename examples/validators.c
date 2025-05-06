@@ -109,8 +109,8 @@ int domain_validator(argus_t *argus, argus_option_t *option, validator_data_t da
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Built-in range validator
     OPTION_INT('p', "port", HELP("Port number"), 

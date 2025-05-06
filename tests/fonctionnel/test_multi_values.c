@@ -6,7 +6,7 @@
 // Test options with array and map values
 ARGUS_OPTIONS(
     multi_value_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_ARRAY_STRING('s', "strings", HELP("Array of strings")),
     OPTION_ARRAY_INT('i', "ints", HELP("Array of integers")),
     OPTION_MAP_STRING('m', "map", HELP("String map")),

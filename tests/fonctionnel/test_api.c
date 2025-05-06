@@ -7,8 +7,8 @@
 // Test options
 ARGUS_OPTIONS(
     api_test_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
     OPTION_INT('n', "number", HELP("A number"), DEFAULT(42)),
@@ -20,7 +20,7 @@ ARGUS_OPTIONS(
 // Subcommand options
 ARGUS_OPTIONS(
     api_sub_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('d', "debug", HELP("Debug mode"))
 )
 
@@ -36,7 +36,7 @@ int test_action(argus_t *argus, void *data) {
 // Options with subcommand
 ARGUS_OPTIONS(
     api_cmd_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     SUBCOMMAND("sub", api_sub_options, HELP("Subcommand"), ACTION(test_action))
 )

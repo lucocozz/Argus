@@ -22,7 +22,7 @@ argus fournit une large gamme de motifs prédéfinis dans `argus/regex.h` qui co
     
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         // Validation d'email
         OPTION_STRING('e', "email", HELP("Adresse email"),
@@ -43,7 +43,7 @@ argus fournit une large gamme de motifs prédéfinis dans `argus/regex.h` qui co
     // Options avec différents types de validation
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         // Date au format ISO (AAAA-MM-JJ)
         OPTION_STRING('d', "date", HELP("Date (AAAA-MM-JJ)"),
@@ -84,7 +84,7 @@ La macro `MAKE_REGEX` crée un nouveau motif d'expression régulière avec une i
     ```c
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         // Utiliser des motifs personnalisés
         OPTION_STRING('p', "product", HELP("ID du produit"),
@@ -245,7 +245,7 @@ Voici un exemple complet démontrant plusieurs techniques de validation par expr
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
 
     // Utilisation de motifs prédéfinis
     GROUP_START("Réseau et Communication", GROUP_DESC("Options liées au réseau")),

@@ -30,7 +30,7 @@ argus prend en charge ces types de tableaux :
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Tableau de chaînes simple sans drapeaux
     OPTION_ARRAY_STRING('n', "names", HELP("Liste de noms")),
@@ -319,7 +319,7 @@ Un exemple complet de gestion de fonctionnalités avec bascules :
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Drapeaux de fonctionnalités avec clés triées pour un affichage cohérent
     OPTION_MAP_BOOL('f', "feature", HELP("Drapeaux de fonctionnalités"),
@@ -454,8 +454,8 @@ Voici un exemple complet démontrant des techniques avancées de gestion de coll
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Options de tableau avec drapeaux
     OPTION_ARRAY_STRING('n', "name", HELP("Noms d'utilisateurs"),

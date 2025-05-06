@@ -15,7 +15,7 @@ int validate_group(argus_t *argus, argus_option_t *option);
 // Mock options for tests
 ARGUS_OPTIONS(
     valid_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     OPTION_STRING('o', "output", HELP("Output file")),
     POSITIONAL_STRING("input", HELP("Input file"))
@@ -29,7 +29,7 @@ ARGUS_OPTIONS(
 
 ARGUS_OPTIONS(
     duplicate_options, // Intentionally invalid, duplicate names
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     OPTION_STRING('v', "verbose", HELP("Duplicate option")) // Same name and same short option
 )

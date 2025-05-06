@@ -32,7 +32,7 @@ To implement nested commands, you create a hierarchy of command definitions:
 // Define options for "service create" command
 ARGUS_OPTIONS(
     service_create_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
     OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED))
 )
@@ -40,7 +40,7 @@ ARGUS_OPTIONS(
 // Define options for "service" command group
 ARGUS_OPTIONS(
     service_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     SUBCOMMAND("create", service_create_options, 
                HELP("Create a new service"), 
@@ -51,8 +51,8 @@ ARGUS_OPTIONS(
 // Define main options with top-level subcommands
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Global options at root level
     OPTION_FLAG('d', "debug", HELP("Enable debug mode")),
@@ -70,7 +70,7 @@ argus supports command name abbreviations, allowing users to type shortened vers
     ```c
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         SUBCOMMAND("install", install_options, 
                    HELP("Install a package")),
@@ -122,7 +122,7 @@ This allows for intuitive command structures where some positional arguments mak
     ```c
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         // Global positional arguments
         POSITIONAL_STRING("source", HELP("Source directory")),
@@ -134,7 +134,7 @@ This allows for intuitive command structures where some positional arguments mak
     
     ARGUS_OPTIONS(
         copy_options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         POSITIONAL_STRING("destination", HELP("Destination directory"))
     )
     ```
@@ -265,8 +265,8 @@ With nested commands, you can create complex command structures like those found
     // Main options
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
-        VERSION_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
+        VERSION_OPTION(),
         
         SUBCOMMAND("remote", remote_options, 
                    HELP("Manage remote repositories")),
@@ -277,7 +277,7 @@ With nested commands, you can create complex command structures like those found
     // Remote subcommands
     ARGUS_OPTIONS(
         remote_options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         SUBCOMMAND("add", remote_add_options,
                    HELP("Add a remote"), 
@@ -293,8 +293,8 @@ With nested commands, you can create complex command structures like those found
     // Main options
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
-        VERSION_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
+        VERSION_OPTION(),
         
         // Global options for all commands
         OPTION_FLAG('q', "quiet", "Suppress output"),
@@ -308,7 +308,7 @@ With nested commands, you can create complex command structures like those found
     // Container subcommands
     ARGUS_OPTIONS(
         container_options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         SUBCOMMAND("run", container_run_options,
                    HELP("Run a container"),
@@ -345,7 +345,7 @@ int config_get_action(argus_t *argus, void *data);
 // Define options for "service create" command
 ARGUS_OPTIONS(
     service_create_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
     OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED))
 )
@@ -353,14 +353,14 @@ ARGUS_OPTIONS(
 // Define options for "service list" command
 ARGUS_OPTIONS(
     service_list_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('a', "all", "Show all services, including stopped ones")
 )
 
 // Define options for the "service" parent command
 ARGUS_OPTIONS(
     service_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     SUBCOMMAND("create", service_create_options, 
                HELP("Create a new service"), 
@@ -373,7 +373,7 @@ ARGUS_OPTIONS(
 // Define options for "config set" command
 ARGUS_OPTIONS(
     config_set_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     POSITIONAL_STRING("key", "Configuration key"),
     POSITIONAL_STRING("value", "Configuration value")
 )
@@ -381,14 +381,14 @@ ARGUS_OPTIONS(
 // Define options for "config get" command
 ARGUS_OPTIONS(
     config_get_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     POSITIONAL_STRING("key", "Configuration key")
 )
 
 // Define options for the "config" parent command
 ARGUS_OPTIONS(
     config_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     SUBCOMMAND("set", config_set_options, 
                HELP("Set a configuration value"), 
@@ -401,8 +401,8 @@ ARGUS_OPTIONS(
 // Define main options with top-level subcommands
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Global option at root level
     OPTION_FLAG('d', "debug", "Enable debug mode"),

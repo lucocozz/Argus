@@ -9,8 +9,8 @@
 // performance difference more noticeable
 ARGUS_OPTIONS(
     complex_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     GROUP_START("Input Options", GROUP_DESC("Options related to input")),
         OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
@@ -52,8 +52,8 @@ ARGUS_OPTIONS(
 // Small options structure for comparison
 ARGUS_OPTIONS(
     simple_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
     OPTION_STRING('o', "output", HELP("Output file")),
     POSITIONAL_STRING("input", HELP("Input file"))

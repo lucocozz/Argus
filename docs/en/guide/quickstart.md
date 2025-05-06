@@ -13,8 +13,8 @@ Here's a minimal example of using argus:
 // Define options
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Enable verbose mode"))
 )
 
@@ -79,8 +79,8 @@ Here's a more complete example including different types of options:
     ```c
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
-        VERSION_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
+        VERSION_OPTION(),
         OPTION_FLAG('v', "verbose", HELP("Enable verbose mode")),
         OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
         OPTION_INT('c', "count", HELP("Number of iterations"), RANGE(1, 100), DEFAULT(10)),

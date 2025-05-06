@@ -26,7 +26,7 @@
 // Define options with a clean, declarative syntax
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
     OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535), DEFAULT(8080))
 )
@@ -59,8 +59,8 @@ sudo meson install -C builddir
 // Define options
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
     OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
     POSITIONAL_STRING("input", HELP("Input file"))

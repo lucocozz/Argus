@@ -8,7 +8,7 @@
 // Test options
 ARGUS_OPTIONS(
     env_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('H', "host", HELP("Server hostname"), ENV_VAR("HOST")),
     OPTION_INT('p', "port", HELP("Server port"), FLAGS(FLAG_AUTO_ENV)),
     OPTION_STRING('d', "database", HELP("Database connection string"),

@@ -121,13 +121,13 @@ argus supports four fundamental types of command-line elements:
 
 !!! note "Help Option"
     ```c
-    HELP_OPTION(FLAGS(FLAG_EXIT))
+    HELP_OPTION()
     ```
     Creates a `-h, --help` option that automatically displays a help message and exits the program.
 
 !!! tip "Version Option"
     ```c
-    VERSION_OPTION(FLAGS(FLAG_EXIT))
+    VERSION_OPTION()
     ```
     Creates a `-V, --version` option that displays the program version and exits.
 
@@ -191,7 +191,7 @@ Groups allow you to visually organize options in the help:
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     GROUP_START("Connection", GROUP_DESC("Connection options")),
         OPTION_STRING('h', "host", HELP("Hostname"), DEFAULT("localhost")),
@@ -313,8 +313,8 @@ OPTION_FLAG('q', "quiet", HELP("Quiet mode"),
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Standard options
     OPTION_FLAG('v', "verbose", HELP("Enable verbose mode")),

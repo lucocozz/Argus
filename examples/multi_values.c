@@ -25,8 +25,8 @@
 ARGUS_OPTIONS(
     options,
     // Standard options
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Demo options to select processing approach
     OPTION_INT('a', "approach", HELP("Processing approach: 1=direct, 2=element, 3=iterator"), 

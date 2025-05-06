@@ -10,8 +10,8 @@
 // Valid options definition for testing
 ARGUS_OPTIONS(
     valid_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
     OPTION_INT('c', "count", HELP("Counter value"), RANGE(1, 100), DEFAULT(1)),
@@ -29,7 +29,7 @@ ARGUS_OPTIONS(
 // Invalid options with duplicated option names
 ARGUS_OPTIONS(
     duplicate_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     OPTION_STRING('v', "verbose", HELP("Duplicate option"))  // Same names
 )

@@ -29,8 +29,8 @@
 
 ARGUS_OPTIONS(
 	options,
-	HELP_OPTION(FLAGS(FLAG_EXIT)),
-	VERSION_OPTION(FLAGS(FLAG_EXIT)),
+	HELP_OPTION(),
+	VERSION_OPTION(),
 
 	// Option 1: Explicit environment variable with prefix
 	// Will look for APP_HOST environment variable

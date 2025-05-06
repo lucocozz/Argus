@@ -120,7 +120,7 @@ Pour utiliser un gestionnaire personnalisé, définissez une option avec la macr
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Option avec gestionnaire personnalisé
     OPTION_BASE('e', "endpoint", HELP("Point de terminaison du serveur (hôte:port)"), 
@@ -145,7 +145,7 @@ Pour la réutilisabilité et un code plus propre, vous pouvez créer votre propr
 // Utilisation dans les définitions d'options
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Beaucoup plus propre avec une macro dédiée
     OPTION_ENDPOINT('e', "endpoint", HELP("Point de terminaison du serveur"))
@@ -427,8 +427,8 @@ int endpoint_free_handler(argus_option_t *option)
 // Définition des options
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Point de terminaison du serveur utilisant le gestionnaire personnalisé
     OPTION_ENDPOINT('s', "server", HELP("Point de terminaison du serveur (hôte:port)")),

@@ -22,7 +22,7 @@ argus provides a wide range of predefined patterns in `argus/regex.h` that cover
     
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         // Email validation
         OPTION_STRING('e', "email", HELP("Email address"),
@@ -43,7 +43,7 @@ argus provides a wide range of predefined patterns in `argus/regex.h` that cover
     // Options with different types of validation
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         // Date in ISO format (YYYY-MM-DD)
         OPTION_STRING('d', "date", HELP("Date (YYYY-MM-DD)"),
@@ -84,7 +84,7 @@ The `MAKE_REGEX` macro creates a new regex pattern with an error hint:
     ```c
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         // Use custom patterns
         OPTION_STRING('p', "product", HELP("Product ID"),
@@ -245,7 +245,7 @@ Here's a comprehensive example demonstrating multiple regex validation technique
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
 
     // Using predefined patterns
     GROUP_START("Network and Communication", GROUP_DESC("Network-related options")),

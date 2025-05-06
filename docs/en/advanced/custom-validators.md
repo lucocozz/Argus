@@ -460,8 +460,8 @@ int case_pre_validator(argus_t *argus, const char *value, validator_data_t data)
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Built-in range validator
     OPTION_INT('p', "port", HELP("Port number"), 

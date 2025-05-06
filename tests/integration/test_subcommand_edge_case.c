@@ -17,7 +17,7 @@ static bool nested_action_called = false;
 // Options for nested subcommand tests
 ARGUS_OPTIONS(
     nested_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output in nested command")),
     POSITIONAL_INT("value", HELP("A numerical value"))
 )
@@ -25,7 +25,7 @@ ARGUS_OPTIONS(
 // Options for remove subcommand
 ARGUS_OPTIONS(
     remove_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('r', "recursive", HELP("Recursive removal")),
     OPTION_FLAG('f', "force", HELP("Force removal")),
     POSITIONAL_STRING("path", HELP("Path to remove"))
@@ -34,7 +34,7 @@ ARGUS_OPTIONS(
 // Options for add subcommand
 ARGUS_OPTIONS(
     add_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('m', "message", HELP("Commit message")),
     SUBCOMMAND("nested", nested_options, HELP("Nested subcommand"), ACTION(test_nested_action)),
     POSITIONAL_STRING("path", HELP("Path to add"), FLAGS(FLAG_OPTIONAL))
@@ -43,8 +43,8 @@ ARGUS_OPTIONS(
 // Root command options
 ARGUS_OPTIONS(
     cmd_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     // Global options
     OPTION_FLAG('v', "verbose", HELP("Global verbose output")),
     // Subcommands
@@ -55,7 +55,7 @@ ARGUS_OPTIONS(
 // Options for option format testing
 ARGUS_OPTIONS(
     format_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('o', "output", HELP("Output file")),
     OPTION_INT('n', "number", HELP("A number")),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),

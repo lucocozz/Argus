@@ -56,7 +56,7 @@ Options are defined using the `ARGUS_OPTIONS` macro along with option-specific m
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
     OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535), DEFAULT(8080)),
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
@@ -338,8 +338,8 @@ Here's a complete example demonstrating key features of argus:
 // Define options
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Regular options
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),

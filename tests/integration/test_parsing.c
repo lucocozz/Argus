@@ -9,7 +9,7 @@
 // Options for tests
 ARGUS_OPTIONS(
     parse_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     OPTION_STRING('o', "output", HELP("Output file")),
     OPTION_INT('c', "count", HELP("Count value")),
@@ -19,13 +19,13 @@ ARGUS_OPTIONS(
 // Options for testing subcommands
 ARGUS_OPTIONS(
     sub_parse_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('d', "debug", HELP("Debug mode"))
 )
 
 ARGUS_OPTIONS(
     cmd_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     SUBCOMMAND("sub", sub_parse_options, 
                HELP("Subcommand"))

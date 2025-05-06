@@ -45,7 +45,7 @@ int test_alphanumeric_validator(argus_t *argus, argus_option_t *option, validato
 // Define test options with validators
 ARGUS_OPTIONS(
     test_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_INT('p', "port", HELP("Port number"), 
                 DEFAULT(8080), RANGE(1, 65535)),
     OPTION_STRING('l', "level", HELP("Log level"), 

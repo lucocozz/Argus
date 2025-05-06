@@ -13,8 +13,8 @@
 ARGUS_OPTIONS(
     options,
     // Standard options
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Flag option with both short and long names
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),

@@ -75,8 +75,8 @@ argus offre une combinaison unique de puissance et de simplicité pour l'analyse
 // Définition des options
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Activer le mode verbeux")),
     OPTION_STRING('o', "output", HELP("Fichier de sortie"), DEFAULT("output.txt")),
     OPTION_INT('p', "port", HELP("Numéro de port"), RANGE(1, 65535), DEFAULT(8080)),

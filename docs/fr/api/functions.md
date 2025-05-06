@@ -461,8 +461,8 @@ Voici un exemple complet montrant le schéma d'utilisation de la fonction princi
 // Définir les options
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Activer la sortie verbeuse")),
     OPTION_STRING('o', "output", HELP("Fichier de sortie"), DEFAULT("output.txt")),
     POSITIONAL_STRING("input", HELP("Fichier d'entrée"))

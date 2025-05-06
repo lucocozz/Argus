@@ -11,8 +11,8 @@
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Required option
     OPTION_STRING('i', "input", HELP("Input file"), FLAGS(FLAG_REQUIRED)),
