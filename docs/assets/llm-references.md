@@ -35,8 +35,8 @@ Using argus follows this pattern:
 // Define options
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Enable verbose mode")),
     OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
     OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535), DEFAULT(8080)),
@@ -187,7 +187,7 @@ Subcommands allow creating interfaces similar to git/docker:
 // Options for the "add" subcommand
 ARGUS_OPTIONS(
     add_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('f', "force", HELP("Force addition")),
     POSITIONAL_STRING("file", HELP("File to add"))
 )
@@ -206,8 +206,8 @@ int add_command(argus_t *argus, void *data) {
 // Define main options with subcommands
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Global option applicable to all subcommands
     OPTION_FLAG('v', "verbose", HELP("Verbose mode")),

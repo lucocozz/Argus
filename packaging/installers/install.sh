@@ -8,6 +8,7 @@ LIBDIR="${PREFIX}/lib"
 INCLUDEDIR="${PREFIX}/include"
 INSTALL_LOCAL=0
 VERBOSE=0
+REGEX=1
 UNINSTALL=0
 
 RED='\033[0;31m'
@@ -26,7 +27,7 @@ show_help() {
     echo "  --libdir=PATH      Library directory (default: \$prefix/lib)"
     echo "  --includedir=PATH  Include directory (default: \$prefix/include)"
     echo "  --local            Install to ~/.local instead of system directories"
-    echo "  --disable-regex    Disable regex support"
+    echo "  --no-regex    Disable regex support"
     echo "  --uninstall        Uninstall the library"
     echo "  --verbose          Show detailed output"
     echo "  --help             Display this help message"
@@ -36,8 +37,8 @@ show_help() {
 
 for arg in "$@"; do
     case $arg in
-        --disable-regex)
-            DISABLE_REGEX=1
+        --no-regex)
+            REGEX=0
             ;;
         --prefix=*)
             PREFIX="${arg#*=}"
@@ -82,7 +83,7 @@ check_dependencies() {
     log "${BLUE}Checking dependencies...${NC}"
 
     # Skip PCRE2 check if regex is disabled
-    if [ "$DISABLE_REGEX" -ne 1 ]; then    
+    if [ "$REGEX" -ne 0 ]; then    
         if ! pkg-config --exists libpcre2-8; then
             echo -e "${RED}Error:${NC} pcre2 library not found"
             echo "Please install pcre2 development files:"
@@ -172,7 +173,7 @@ uninstall_library() {
     log "  Library: $LIBDIR"
     log "  Headers: $INCLUDEDIR"
     
-    rm -f "$LIBDIR/libargus.a" "$LIBDIR/libargus.so"*
+    rm -f "$LIBDIR/argus.a" "$LIBDIR/argus.so"*
     rm -f "$LIBDIR/pkgconfig/argus.pc"
     rm -rf "$INCLUDEDIR/argus"
     rm -f "$INCLUDEDIR/argus.h"

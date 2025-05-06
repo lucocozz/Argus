@@ -29,7 +29,7 @@ argus supports these array types:
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Simple string array
     OPTION_ARRAY_STRING('n', "names", HELP("List of names")),
@@ -94,7 +94,7 @@ argus supports these map types:
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // String map
     OPTION_MAP_STRING('e', "env", HELP("Environment variables")),
@@ -256,8 +256,8 @@ Here's a complete example demonstrating both array and map options:
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Array options
     OPTION_ARRAY_STRING('n', "name", HELP("Names of users")),

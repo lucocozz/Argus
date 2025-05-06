@@ -8,7 +8,7 @@ tests := "false"
 examples := "true"
 benchmarks := "false"
 build_type := "debugoptimized"
-disable_regex := "false"
+regex := "true"
 
 # Set default recipe to run when just is called without arguments
 default: build compile
@@ -17,12 +17,12 @@ default: build compile
 build: configure compile
 
 configure:
-    @meson setup -Dtests={{tests}} -Dexamples={{examples}} -Dbenchmarks={{benchmarks}} -Dbuildtype={{build_type}} -Ddisable_regex={{disable_regex}} {{build_dir}}
+    @meson setup -Dtests={{tests}} -Dexamples={{examples}} -Dbenchmarks={{benchmarks}} -Dbuildtype={{build_type}} -Dregex={{regex}} {{build_dir}}
     @ln -sf {{build_dir}}/{{static_lib}} {{static_lib}} 2>/dev/null || true
     @ln -sf {{build_dir}}/{{shared_lib}} {{shared_lib}} 2>/dev/null || true
 
 reconfigure:
-    @meson setup --reconfigure -Dtests={{tests}} -Dexamples={{examples}} -Dbenchmarks={{benchmarks}} -Dbuildtype={{build_type}} -Ddisable_regex={{disable_regex}} {{build_dir}}
+    @meson setup --reconfigure -Dtests={{tests}} -Dexamples={{examples}} -Dbenchmarks={{benchmarks}} -Dbuildtype={{build_type}} -Dregex={{regex}} {{build_dir}}
 
 compile:
     @meson compile -C {{build_dir}}

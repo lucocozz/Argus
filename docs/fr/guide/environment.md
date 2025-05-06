@@ -204,8 +204,8 @@ Here's a complete example showing various environment variable configurations:
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
 
     // Option 1: Explicit environment variable with optional prefix
     // Will look for APP_HOST if prefix is set, or HOST if no prefix

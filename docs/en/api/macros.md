@@ -63,8 +63,8 @@ Pre-defined options for standard functionality:
 
 | Option | Macro | Description | Example |
 |--------|-------|-------------|---------|
-| **Help** | `HELP_OPTION(...)` | Adds `-h/--help` option | `HELP_OPTION(FLAGS(FLAG_EXIT))` |
-| **Version** | `VERSION_OPTION(...)` | Adds `-V/--version` option | `VERSION_OPTION(FLAGS(FLAG_EXIT))` |
+| **Help** | `HELP_OPTION(...)` | Adds `-h/--help` option | `HELP_OPTION()` |
+| **Version** | `VERSION_OPTION(...)` | Adds `-V/--version` option | `VERSION_OPTION()` |
 
 ### Base Options
 
@@ -142,7 +142,7 @@ Here's a comprehensive example showing various macros in use:
 // Define options for the "add" subcommand
 ARGUS_OPTIONS(
     add_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('f', "force", HELP("Force add operation"), 
                CONFLICTS("dry-run")),
     POSITIONAL_STRING("file", HELP("File to add"))
@@ -151,8 +151,8 @@ ARGUS_OPTIONS(
 // Define main options
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Standard options with validation
     OPTION_STRING('o', "output", HELP("Output file"), 

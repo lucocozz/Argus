@@ -120,7 +120,7 @@ To use a custom handler, define an option with the `OPTION_BASE` macro:
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Option with custom handler
     OPTION_BASE('e', "endpoint", HELP("Server endpoint (host:port)"), 
@@ -145,7 +145,7 @@ For reusability and cleaner code, you can create your own macro:
 // Usage in option definitions
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Much cleaner with a dedicated macro
     OPTION_ENDPOINT('e', "endpoint", HELP("Server endpoint"))
@@ -427,8 +427,8 @@ int endpoint_free_handler(argus_option_t *option)
 // Option definitions
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Server endpoint using the custom handler
     OPTION_ENDPOINT('s', "server", HELP("Server endpoint (host:port)")),

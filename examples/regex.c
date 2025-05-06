@@ -16,7 +16,7 @@
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
 
     // SECTION 1: Using predefined patterns from header
     GROUP_START("Network and Communication", GROUP_DESC("Network-related options")),

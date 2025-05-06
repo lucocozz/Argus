@@ -20,8 +20,8 @@ This example shows how to use argus to create a simple application with differen
 ARGUS_OPTIONS(
     options,
     // Standard options
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Flag type option with short and long name
     OPTION_FLAG('v', "verbose", "Enable verbose output"),

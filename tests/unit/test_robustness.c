@@ -4,7 +4,7 @@
 
 ARGUS_OPTIONS(
     robust_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_INT('i', "int", HELP("Integer option"), RANGE(1, 100)),
     OPTION_STRING('r', "required", HELP("Required option"), FLAGS(FLAG_REQUIRED)),
     OPTION_STRING('c', "choice", HELP("Choice option"), CHOICES_STRING("one", "two", "three")),

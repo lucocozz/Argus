@@ -30,7 +30,7 @@ argus supports these array types:
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Simple string array without flags
     OPTION_ARRAY_STRING('n', "names", HELP("List of names")),
@@ -320,7 +320,7 @@ A complete example of feature management with toggles:
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Feature flags with sorted keys for consistent display
     OPTION_MAP_BOOL('f', "feature", HELP("Feature flags"),
@@ -455,8 +455,8 @@ Here's a complete example demonstrating advanced collection handling techniques:
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Array options with flags
     OPTION_ARRAY_STRING('n', "name", "Names of users",

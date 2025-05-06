@@ -29,7 +29,7 @@ argus prend en charge ces types de tableaux :
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Tableau de chaînes simple
     OPTION_ARRAY_STRING('n', "names", HELP("Liste de noms")),
@@ -94,7 +94,7 @@ argus prend en charge ces types de mappings :
 ```c
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     // Mapping de chaînes
     OPTION_MAP_STRING('e', "env", HELP("Variables d'environnement")),
@@ -256,8 +256,8 @@ Voici un exemple complet démontrant à la fois les options de type tableau et d
 
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Options de type tableau
     OPTION_ARRAY_STRING('n', "name", HELP("Noms d'utilisateurs")),

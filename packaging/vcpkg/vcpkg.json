@@ -1,10 +1,10 @@
 {
-  "name": "libargus",
-  "version": "1.0.1",
+  "name": "Argus",
+  "version": "1.0.0",
   "description": "Modern C library for command-line argument parsing with an elegant, macro-based API",
   "homepage": "https://github.com/lucocozz/argus",
   "license": "MIT",
-  "supports": "linux | osx",
+  "supports": "!windows",
   "dependencies": [
     {
       "name": "vcpkg-tool-meson",

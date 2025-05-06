@@ -191,11 +191,11 @@ int regex_validator(argus_t *argus, const char *value, validator_data_t data);
 /*
  * Common options
  */
-#define HELP_OPTION(...)                                                                           \
-    OPTION_FLAG('h', "help", HELP("Show help message"), HANDLER(help_handler), ##__VA_ARGS__)
-#define VERSION_OPTION(...)                                                                        \
+#define HELP_OPTION()                                                                              \
+    OPTION_FLAG('h', "help", HELP("Show help message"), HANDLER(help_handler), FLAGS(FLAG_EXIT))
+#define VERSION_OPTION()                                                                           \
     OPTION_FLAG('V', "version", HELP("Show version information"), HANDLER(version_handler),        \
-                ##__VA_ARGS__)
+                FLAGS(FLAG_EXIT))
 
 /*
  * Group macros

@@ -6,7 +6,7 @@ This guide explains how to install the argus library in different environments.
 
 | Method | Command | Best For |
 |--------|---------|----------|
-| **Package Managers** | `conan install libargus/1.0.1@` | Production use |
+| **Package Managers** | `conan install argus/1.0.0@` | Production use |
 | **From Source** | `meson setup .build && meson compile -C .build` | Development |
 | **With Just** | `just build` | Development workflow |
 
@@ -40,29 +40,29 @@ argus has only one optional dependency:
 
 ```bash
 # Install from Conan Center
-conan install libargus/1.0.1@
+conan install argus/1.0.0@
 
 # With specific options
-conan install libargus/1.0.1@ -o libargus:disable_regex=true
+conan install argus/1.0.0@ -o argus:regex=false
 ```
 
 In your project's `conanfile.txt`:
 ```
 [requires]
-libargus/1.0.1
+argus/1.0.0
 
 [options]
-libargus:disable_regex=False
+argus:regex=False
 ```
 
 #### vcpkg
 
 ```bash
 # Install from vcpkg registry
-vcpkg install libargus
+vcpkg install argus
 
 # Without regex support
-vcpkg install libargus[core]
+vcpkg install argus[core]
 ```
 
 In your project's `vcpkg.json`:
@@ -70,7 +70,7 @@ In your project's `vcpkg.json`:
 {
   "dependencies": [
     {
-      "name": "libargus",
+      "name": "argus",
       "features": ["regex"]
     }
   ]
@@ -116,19 +116,19 @@ just install
 If you prefer not to install system-wide:
 
 1. Build the project using any method above
-2. Copy `libargus.a` to your project
+2. Copy `argus.a` to your project
 3. Copy the `includes/` directory to your project
 4. Link with the static library:
 
 ```bash
-gcc your_program.c -o your_program -L/path/to/libargus.a -largus
+gcc your_program.c -o your_program -L/path/to/argus.a -largus
 ```
 
 ### As a Meson Dependency
 
 ```meson
 # In your meson.build
-argus_dep = dependency('argus', version: '>=1.0.1', required: false)
+argus_dep = dependency('argus', version: '>=1.0.0', required: false)
 
 # Fallback to subproject if not found system-wide
 if not argus_dep.found()
@@ -145,29 +145,29 @@ If you don't need regex validation, you can build without the PCRE2 dependency:
 
 === "Meson"
     ```bash
-    meson setup -Ddisable_regex=true .build
+    meson setup -Dregex=false .build
     ```
 
 === "Just"
     ```bash
-    just disable_regex=true build
+    just regex=false build
     ```
 
 === "Conan"
     ```bash
-    conan install . -o libargus:disable_regex=true
+    conan install . -o argus:regex=false
     ```
 
 === "vcpkg"
     ```bash
-    vcpkg install libargus --features=""
+    vcpkg install argus --features=""
     ```
 
 When regex support is disabled:
 - No PCRE2 dependency is required
 - The `REGEX()` validator becomes a non-functional stub
 - All predefined patterns in `argus/regex.h` are defined but won't work
-- The `ARGUS_NO_REGEX` macro is defined for conditional compilation
+- The `ARGUS_REGEX` macro isn't defined for conditional compilation
 
 ### Performance Optimization
 
@@ -188,7 +188,7 @@ For production deployments, enable release mode to skip validation during initia
 === "Check Files"
     ```bash
     # Check shared library
-    ls -la /usr/local/lib/libargus.so*
+    ls -la /usr/local/lib/argus.so*
     
     # Check headers
     ls -la /usr/local/include/argus*

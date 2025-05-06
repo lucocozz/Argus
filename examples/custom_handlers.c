@@ -302,8 +302,8 @@ int coordinate_free_handler(argus_option_t *option)
 // Define options with custom handlers
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // URL parsing with custom structure
     OPTION_BASE('u', "url", 

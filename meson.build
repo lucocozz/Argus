@@ -25,14 +25,14 @@ inc_dirs = include_directories('includes')
 subdir('source')
 
 # Handle regex dependency
-disable_regex = get_option('disable_regex')
-if disable_regex
-  add_project_arguments('-DARGUS_NO_REGEX', language: 'c')
+regex = get_option('regex')
+if not regex
   pcre2_dep = dependency('', required: false)
 else
+  add_project_arguments('-DARGUS_REGEX', language: 'c')
   pcre2_dep = dependency('libpcre2-8', required: true, version: '>=10.00')
   if not pcre2_dep.found()
-    pcre2_dep = dependency('pcre2-8', required: true, version: '>=10.00')
+    pcre2_dep = dependency('pcre2', required: true, version: '>=10.00')
   endif
 endif
 
@@ -42,7 +42,7 @@ argus_lib = both_libraries(
     'argus',
     argus_sources,
     include_directories: inc_dirs,
-    dependencies: disable_regex ? [] : [pcre2_dep],
+    dependencies: regex ? [pcre2_dep] : [],
     version: meson.project_version(),
     soversion: '0',
     install: true,
@@ -52,7 +52,7 @@ argus_lib = both_libraries(
 argus_dep = declare_dependency(
     link_with: argus_lib,
     include_directories: inc_dirs,
-    dependencies: disable_regex ? [] : [pcre2_dep],
+    dependencies: regex ? [pcre2_dep] : [],
 )
 
 # Install headers (public API only)

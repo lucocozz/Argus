@@ -32,7 +32,7 @@ Pour implémenter des commandes imbriquées, vous créez une hiérarchie de déf
 // Définir les options pour la commande "service create"
 ARGUS_OPTIONS(
     service_create_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Nom du service"), FLAGS(FLAG_REQUIRED)),
     OPTION_STRING('i', "image", HELP("Image du conteneur"), FLAGS(FLAG_REQUIRED))
 )
@@ -40,7 +40,7 @@ ARGUS_OPTIONS(
 // Définir les options pour le groupe de commandes "service"
 ARGUS_OPTIONS(
     service_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     SUBCOMMAND("create", service_create_options, 
                HELP("Créer un nouveau service"), 
@@ -51,8 +51,8 @@ ARGUS_OPTIONS(
 // Définir les options principales avec des sous-commandes de premier niveau
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Options globales au niveau racine
     OPTION_FLAG('d', "debug", HELP("Activer le mode debug")),
@@ -70,7 +70,7 @@ argus prend en charge les abréviations de noms de commandes, permettant aux uti
     ```c
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         SUBCOMMAND("install", install_options, 
                    HELP("Installer un package")),
@@ -122,7 +122,7 @@ Cela permet des structures de commandes intuitives où certains arguments positi
     ```c
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         // Arguments positionnels globaux
         POSITIONAL_STRING("source", HELP("Répertoire source")),
@@ -134,7 +134,7 @@ Cela permet des structures de commandes intuitives où certains arguments positi
     
     ARGUS_OPTIONS(
         copy_options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         POSITIONAL_STRING("destination", HELP("Répertoire de destination"))
     )
     ```
@@ -265,8 +265,8 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
     // Options principales
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
-        VERSION_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
+        VERSION_OPTION(),
         
         SUBCOMMAND("remote", remote_options, 
                    HELP("Gérer les dépôts distants")),
@@ -277,7 +277,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
     // Sous-commandes de remote
     ARGUS_OPTIONS(
         remote_options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         SUBCOMMAND("add", remote_add_options,
                    HELP("Ajouter un dépôt distant"), 
@@ -293,8 +293,8 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
     // Options principales
     ARGUS_OPTIONS(
         options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
-        VERSION_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
+        VERSION_OPTION(),
         
         // Options globales pour toutes les commandes
         OPTION_FLAG('q', "quiet", HELP("Supprimer la sortie")),
@@ -308,7 +308,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
     // Sous-commandes de container
     ARGUS_OPTIONS(
         container_options,
-        HELP_OPTION(FLAGS(FLAG_EXIT)),
+        HELP_OPTION(),
         
         SUBCOMMAND("run", container_run_options,
                    HELP("Exécuter un conteneur"),
@@ -345,7 +345,7 @@ int config_get_action(argus_t *argus, void *data);
 // Définir les options pour la commande "service create"
 ARGUS_OPTIONS(
     service_create_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Nom du service"), FLAGS(FLAG_REQUIRED)),
     OPTION_STRING('i', "image", HELP("Image du conteneur"), FLAGS(FLAG_REQUIRED))
 )
@@ -353,14 +353,14 @@ ARGUS_OPTIONS(
 // Définir les options pour la commande "service list"
 ARGUS_OPTIONS(
     service_list_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('a', "all", HELP("Afficher tous les services, y compris les arrêtés"))
 )
 
 // Définir les options pour la commande parente "service"
 ARGUS_OPTIONS(
     service_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     SUBCOMMAND("create", service_create_options, 
                HELP("Créer un nouveau service"), 
@@ -373,7 +373,7 @@ ARGUS_OPTIONS(
 // Définir les options pour la commande "config set"
 ARGUS_OPTIONS(
     config_set_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     POSITIONAL_STRING("key", HELP("Clé de configuration")),
     POSITIONAL_STRING("value", HELP("Valeur de configuration"))
 )
@@ -381,14 +381,14 @@ ARGUS_OPTIONS(
 // Définir les options pour la commande "config get"
 ARGUS_OPTIONS(
     config_get_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     POSITIONAL_STRING("key", HELP("Clé de configuration"))
 )
 
 // Définir les options pour la commande parente "config"
 ARGUS_OPTIONS(
     config_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     
     SUBCOMMAND("set", config_set_options, 
                HELP("Définir une valeur de configuration"), 
@@ -401,8 +401,8 @@ ARGUS_OPTIONS(
 // Définir les options principales avec des sous-commandes de premier niveau
 ARGUS_OPTIONS(
     options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
-    VERSION_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
+    VERSION_OPTION(),
     
     // Option globale au niveau racine
     OPTION_FLAG('d', "debug", HELP("Activer le mode debug")),

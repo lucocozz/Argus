@@ -8,7 +8,7 @@
 // Test options with dependencies and conflicts
 ARGUS_OPTIONS(
     validation_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output"), CONFLICTS("quiet")),
     OPTION_FLAG('q', "quiet", HELP("Quiet mode"), CONFLICTS("verbose")),
     OPTION_STRING('u', "username", HELP("Username"), REQUIRES("password")),
@@ -19,7 +19,7 @@ ARGUS_OPTIONS(
 // Test options with exclusive groups
 ARGUS_OPTIONS(
     group_options,
-    HELP_OPTION(FLAGS(FLAG_EXIT)),
+    HELP_OPTION(),
     GROUP_START("Compression", GROUP_DESC("Compression options"), FLAGS(FLAG_EXCLUSIVE)),
         OPTION_FLAG('z', "gzip", HELP("Use gzip compression")),
         OPTION_FLAG('j', "bzip2", HELP("Use bzip2 compression")),
