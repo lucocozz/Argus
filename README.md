@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 ### Dependencies
 
 - **PCRE2**: Required only for regex validation support
-  - Can be disabled with `-Ddisable_regex=true` option
+  - Can be disabled with `-Dregex=false` option
 
 ### Package Managers
 
@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 conan install argus/1.0.0@
 
 # Without regex support
-conan install argus/1.0.0@ -o argus:disable_regex=true
+conan install argus/1.0.0@ -o argus:regex=false
 ```
 
 #### vcpkg

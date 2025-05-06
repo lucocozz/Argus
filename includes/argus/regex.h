@@ -10,7 +10,7 @@
 #ifndef ARGUS_REGEX_H
 #define ARGUS_REGEX_H
 
-#ifdef ARGUS_NO_REGEX
+#ifndef ARGUS_REGEX
 
     // Stub implementation when regex support is disabled
     #define MAKE_REGEX(_pattern, _hint)                                                            \
@@ -291,6 +291,6 @@
     /* Hex number with 0x prefix */
     #define ARGUS_RE_HEX     MAKE_REGEX("^0x[0-9a-fA-F]+$", "Enter hex: 0x1A3F")
 
-#endif /* ARGUS_NO_REGEX */
+#endif /* ARGUS_REGEX */
 
 #endif /* ARGUS_REGEX_H */

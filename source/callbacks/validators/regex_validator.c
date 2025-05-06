@@ -1,5 +1,5 @@
 #include <stddef.h>
-#ifndef ARGUS_NO_REGEX
+#ifdef ARGUS_REGEX
     #define PCRE2_CODE_UNIT_WIDTH 8
     #include <pcre2.h>
 #endif
@@ -17,13 +17,10 @@
  */
 int regex_validator(argus_t *argus, const char *value, validator_data_t data)
 {
-#ifdef ARGUS_NO_REGEX
-    // Regex support is disabled
+#ifndef ARGUS_REGEX
     (void)(value);
     (void)(data);
-    ARGUS_REPORT_ERROR(
-        argus, ARGUS_ERROR_INVALID_VALUE,
-        "Regex validation is not supported in this build (compiled with ARGUS_NO_REGEX)");
+    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "regex support is not available");
     return ARGUS_ERROR_INVALID_VALUE;
 #else
     const char *pattern = data.regex.pattern;
@@ -31,25 +28,21 @@ int regex_validator(argus_t *argus, const char *value, validator_data_t data)
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Regular expression pattern is NULL");
     }
 
-    // Compile the regular expression
     int         errorcode;
     PCRE2_SIZE  erroroffset;
     pcre2_code *re = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, 0, &errorcode,
                                    &erroroffset, NULL);
 
     if (re == NULL) {
-        // Failed to compile the regex
         PCRE2_UCHAR buffer[256];
         pcre2_get_error_message(errorcode, buffer, sizeof(buffer));
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Failed to compile regex '%s': %s",
                            pattern, buffer);
     }
 
-    // Execute the regex against the input string
     pcre2_match_data *match_data = pcre2_match_data_create_from_pattern(re, NULL);
     int rc = pcre2_match(re, (PCRE2_SPTR)value, PCRE2_ZERO_TERMINATED, 0, 0, match_data, NULL);
 
-    // Free resources
     pcre2_match_data_free(match_data);
     pcre2_code_free(re);
 

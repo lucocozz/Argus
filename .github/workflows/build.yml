@@ -13,7 +13,7 @@ on:
 
 jobs:
   build:
-    name: Build (${{ matrix.os }}/${{ matrix.compiler }}/${{ matrix.build_type }}${{ matrix.sanitizer && format(' + {0}', matrix.sanitizer) || '' }}${{ matrix.disable_regex && ' without regex' || '' }})
+    name: Build (${{ matrix.os }}/${{ matrix.compiler }}/${{ matrix.build_type }}${{ matrix.sanitizer && format(' + {0}', matrix.sanitizer) || '' }}${{ matrix.regex && ' without regex' || '' }})
     # Only run if code quality check passed or was triggered directly
     if: ${{ github.event.workflow_run == null || github.event.workflow_run.conclusion == 'success' }}
     strategy:
@@ -22,21 +22,21 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         compiler: [gcc, clang]
         build_type: [release]
-        disable_regex: [false, true]
+        regex: [false, true]
         include:
           - os: ubuntu-latest
             compiler: gcc
             build_type: debugoptimized
-            disable_regex: false
+            regex: true
           - os: macos-latest
             compiler: clang
             build_type: debugoptimized
-            disable_regex: false
+            regex: true
           - os: ubuntu-latest
             compiler: gcc
             build_type: debug
             sanitizer: address
-            disable_regex: false
+            regex: true
 
     runs-on: ${{ matrix.os }}
     outputs:
@@ -45,6 +45,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
 
       # Cache for dependencies
       - name: Cache apt packages (Ubuntu)
@@ -70,16 +75,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build
-          key: ${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.disable_regex }}-${{ matrix.sanitizer }}-${{ hashFiles('**/meson.build', '**/meson_options.txt') }}
+          key: ${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.regex }}-${{ matrix.sanitizer }}-${{ hashFiles('**/meson.build', '**/meson_options.txt') }}
           restore-keys: |
-            ${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.disable_regex }}-${{ matrix.sanitizer }}-
+            ${{ runner.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}-${{ matrix.regex }}-${{ matrix.sanitizer }}-
 
       # Install dependencies
       - name: Install dependencies (Ubuntu)
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y meson ninja-build libpcre2-dev libcriterion-dev
+          sudo apt-get install -y ninja-build libpcre2-dev libcriterion-dev gcovr
+          python -m pip install --upgrade pip
+          pip install 'meson>=1.0.0'
 
       - name: Install dependencies (macOS)
         if: matrix.os == 'macos-latest'
@@ -92,13 +99,13 @@ jobs:
       # Configure and build
       - name: Configure Meson
         run: |
-          meson_opts="--buildtype=${{ matrix.build_type }} -Dexamples=false -Dbenchmarks=false -Ddisable_regex=${{ matrix.disable_regex }}"
+          meson_opts="--buildtype=${{ matrix.build_type }} -Dexamples=false -Dbenchmarks=false -Dregex=${{ matrix.regex }}"
           if [ "${{ matrix.sanitizer }}" != "" ]; then
             meson_opts="$meson_opts -Db_sanitize=${{ matrix.sanitizer }}"
           fi
           
           # Always include tests for the build that will be used for testing
-          if [ "${{ matrix.os }}" = "ubuntu-latest" ] && [ "${{ matrix.compiler }}" = "gcc" ] && [ "${{ matrix.build_type }}" = "debugoptimized" ] && [ "${{ matrix.disable_regex }}" = "false" ]; then
+          if [ "${{ matrix.os }}" = "ubuntu-latest" ] && [ "${{ matrix.compiler }}" = "gcc" ] && [ "${{ matrix.build_type }}" = "debugoptimized" ] && [ "${{ matrix.regex }}" = "true" ]; then
             meson_opts="$meson_opts -Dtests=true -Db_coverage=true" # Enable coverage for the test build
           else
             meson_opts="$meson_opts -Dtests=false"
@@ -118,7 +125,7 @@ jobs:
 
       # Upload build artifacts
       - name: Upload test build directory
-        if: matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' && matrix.build_type == 'debugoptimized' && matrix.disable_regex == false
+        if: matrix.os == 'ubuntu-latest' && matrix.compiler == 'gcc' && matrix.build_type == 'debugoptimized' && matrix.regex == true
         uses: actions/upload-artifact@v4
         with:
           name: build-for-test
@@ -129,10 +136,10 @@ jobs:
         if: matrix.build_type == 'release' # Only upload release builds as potential release artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: lib-${{ matrix.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}${{ matrix.disable_regex && '-noregex' || '' }}
+          name: lib-${{ matrix.os }}-${{ matrix.compiler }}-${{ matrix.build_type }}${{ matrix.regex && '-noregex' || '' }}
           path: |
-            .build/source/argus.a
-            .build/source/argus.so
-            .build/source/argus.dylib
+            .build/source/libargus.a
+            .build/source/libargus.so
+            .build/source/libargus.dylib
           if-no-files-found: ignore
           retention-days: 7 # Keep release artifacts longer

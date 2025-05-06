@@ -16,12 +16,12 @@ class ArgusConan(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
-        "disable_regex": [True, False],
+        "regex": [True, False],
     }
     default_options = {
         "shared": False,
         "fPIC": True,
-        "disable_regex": False,
+        "regex": True,
     }
 
     def config_options(self):
@@ -38,8 +38,8 @@ class ArgusConan(ConanFile):
         basic_layout(self, src_folder="src")
 
     def requirements(self):
-        if not self.options.disable_regex:
-            self.requires("pcre2/10.42")
+        if self.options.regex:
+            self.requires("pcre2/[>=10.40]")
 
     def build_requirements(self):
         self.tool_requires("meson/[>=1.0.0]")
@@ -51,7 +51,7 @@ class ArgusConan(ConanFile):
     def generate(self):
         tc = MesonToolchain(self)
         tc.project_options["buildtype"] = str(self.settings.build_type).lower()
-        tc.project_options["disable_regex"] = self.options.disable_regex
+        tc.project_options["regex"] = self.options.regex
         tc.project_options["tests"] = False
         tc.project_options["examples"] = False
         tc.project_options["benchmarks"] = False
@@ -73,8 +73,8 @@ class ArgusConan(ConanFile):
         self.cpp_info.set_property("cmake_file_name", "argus")
         self.cpp_info.set_property("cmake_target_name", "argus::argus")
         self.cpp_info.libs = ["argus"]
-        if self.options.disable_regex:
-            self.cpp_info.defines.append("ARGUS_NO_REGEX")
+        if self.options.regex:
+            self.cpp_info.defines.append("ARGUS_REGEX")
         if self.settings.os == "Linux":
             self.cpp_info.system_libs.append("m")
         self.cpp_info.set_property("cmake_find_mode", "both")

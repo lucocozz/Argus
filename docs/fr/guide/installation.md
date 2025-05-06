@@ -43,7 +43,7 @@ argus n'a qu'une seule dépendance optionnelle :
 conan install argus/1.0.0@
 
 # Avec des options spécifiques
-conan install argus/1.0.0@ -o argus:disable_regex=true
+conan install argus/1.0.0@ -o argus:regex=false
 ```
 
 Dans votre fichier `conanfile.txt` :
@@ -52,7 +52,7 @@ Dans votre fichier `conanfile.txt` :
 argus/1.0.0
 
 [options]
-argus:disable_regex=False
+argus:regex=False
 ```
 
 #### vcpkg
@@ -145,17 +145,17 @@ Si vous n'avez pas besoin de validation par regex, vous pouvez compiler sans la 
 
 === "Meson"
     ```bash
-    meson setup -Ddisable_regex=true .build
+    meson setup -Dregex=false .build
     ```
 
 === "Just"
     ```bash
-    just disable_regex=true build
+    just regex=false build
     ```
 
 === "Conan"
     ```bash
-    conan install . -o argus:disable_regex=true
+    conan install . -o argus:regex=false
     ```
 
 === "vcpkg"
@@ -167,7 +167,7 @@ Quand le support des regex est désactivé :
 - Aucune dépendance PCRE2 n'est requise
 - Le validateur `REGEX()` devient une fonction sans effet
 - Tous les motifs prédéfinis dans `argus/regex.h` sont définis mais ne fonctionneront pas
-- La macro `ARGUS_NO_REGEX` est définie pour la compilation conditionnelle
+- La macro `ARGUS_REGEX` n'est pas définie pour la compilation conditionnelle
 
 ### Optimisation des Performances
 

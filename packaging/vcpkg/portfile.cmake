@@ -8,7 +8,7 @@ vcpkg_from_github(
 
 set(OPTIONS "")
 if(NOT "regex" IN_LIST FEATURES)
-    list(APPEND OPTIONS -Ddisable_regex=true)
+    list(APPEND OPTIONS -Dregex=false)
 endif()
 vcpkg_configure_meson(
     SOURCE_PATH "${SOURCE_PATH}"
