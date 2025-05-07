@@ -1,5 +1,8 @@
+#include "argus/internal/compiler.h"
+#include "argus/internal/windows_compat.h"
 #include "argus/types.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,7 +52,12 @@ int cmp_value(argus_valtype_t type, const argus_value_t a, const argus_value_t b
         case VALUE_TYPE_FLAG:
             return a.as_bool - b.as_bool;
         case VALUE_TYPE_INT:
+#if ARGUS_PLATFORM_WINDOWS && ARGUS_COMPILER_MSVC
+            /* Utiliser une macro sécurisée pour la conversion */
+            return ARGUS_INT64_TO_INT(a.as_int - b.as_int);
+#else
             return a.as_int - b.as_int;
+#endif
         case VALUE_TYPE_STRING:
             if (a.as_string == NULL || b.as_string == NULL)
                 return -1;

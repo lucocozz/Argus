@@ -1,0 +1,133 @@
+name: Test Windows Compatibility
+
+on:
+  workflow_dispatch:
+    inputs:
+      regex:
+        description: 'Enable regex support'
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  windows-tests:
+    name: Windows (${{ matrix.compiler }}/regex${{ github.event.inputs.regex == 'true' && '-yes' || '-no' }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, msvc]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies (Windows - MinGW)
+        if: matrix.compiler == 'gcc'
+        run: |
+          choco install mingw ninja
+          python -m pip install --upgrade pip
+          pip install 'meson>=1.0.0'
+          if (${{ github.event.inputs.regex == 'true' }}) {
+            choco install pcre2
+          }
+        shell: pwsh
+
+      - name: Install dependencies (Windows - MSVC)
+        if: matrix.compiler == 'msvc'
+        run: |
+          choco install ninja
+          python -m pip install --upgrade pip
+          pip install 'meson>=1.0.0'
+          if (${{ github.event.inputs.regex == 'true' }}) {
+            choco install pcre2
+          }
+        shell: pwsh
+
+      - name: Set up Visual Studio environment
+        if: matrix.compiler == 'msvc'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure Meson (Windows - MSVC)
+        if: matrix.compiler == 'msvc'
+        run: |
+          $examples_opt = "-Dexamples=true"
+          meson setup .build --buildtype=release -Dregex=${{ github.event.inputs.regex }} $examples_opt
+        shell: pwsh
+
+      - name: Configure Meson (Windows - MinGW)
+        if: matrix.compiler == 'gcc'
+        run: |
+          $env:PATH = "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin;$env:PATH"
+          $examples_opt = "-Dexamples=true"
+          meson setup .build --buildtype=release -Dregex=${{ github.event.inputs.regex }} $examples_opt
+        shell: pwsh
+
+      - name: Build
+        if: matrix.compiler == 'gcc'
+        run: |
+          $env:PATH = "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin;$env:PATH"
+          meson compile -C .build
+        shell: pwsh
+
+      - name: Build (MSVC)
+        if: matrix.compiler == 'msvc'
+        run: |
+          meson compile -C .build
+        shell: pwsh
+
+      - name: Run basic tests
+        run: |
+          if (Test-Path ".build\examples\basic_usage.exe") {
+            .build\examples\basic_usage.exe --help
+            Write-Output "✅ Basic example test passed"
+          }
+          else {
+            Write-Output "❌ Basic example not found, test failed"
+            exit 1
+          }
+          
+          if (Test-Path ".build\examples\regex.exe") {
+            Write-Output "Testing regex example with regex=${{ github.event.inputs.regex }}"
+            if ("${{ github.event.inputs.regex }}" -eq "true") {
+              .build\examples\regex.exe --email="user@example.com"
+              if ($LASTEXITCODE -eq 0) {
+                Write-Output "✅ Regex example passed with regex enabled"
+              }
+              else {
+                Write-Output "❌ Regex example failed with regex enabled"
+                exit 1
+              }
+            }
+            else {
+              $output = .build\examples\regex.exe --email="user@example.com" 2>&1
+              if ($output -match "regex support is not available") {
+                Write-Output "✅ Regex example correctly handled disabled regex"
+              }
+              else {
+                Write-Output "❌ Regex example didn't correctly handle disabled regex"
+                Write-Output "Output: $output"
+                exit 1
+              }
+            }
+          }
+          else {
+            Write-Output "⚠️ Regex example not found, skipping test"
+          }
+        shell: pwsh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: argus-${{ matrix.compiler }}-regex${{ github.event.inputs.regex == 'true' && '-yes' || '-no' }}
+          path: |
+            .build/source/*.lib
+            .build/source/*.dll
+            .build/source/*.a
+            .build/source/*.pdb
+          if-no-files-found: warn

@@ -14,33 +14,33 @@
 #include "argus/types.h"
 
 /* Forward declaration for handler functions */
-int flag_handler(argus_t *argus, argus_option_t *option, char *value);
-int bool_handler(argus_t *argus, argus_option_t *option, char *value);
-int string_handler(argus_t *argus, argus_option_t *option, char *value);
-int int_handler(argus_t *argus, argus_option_t *option, char *value);
-int float_handler(argus_t *argus, argus_option_t *option, char *value);
-int help_handler(argus_t *argus, argus_option_t *option, char *value);
-int version_handler(argus_t *argus, argus_option_t *option, char *value);
-int default_free(argus_option_t *option);
+ARGUS_API int flag_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int bool_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int string_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int int_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int float_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int help_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int version_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int default_free(argus_option_t *option);
 
-int array_string_handler(argus_t *argus, argus_option_t *option, char *value);
-int array_int_handler(argus_t *argus, argus_option_t *option, char *value);
-int array_float_handler(argus_t *argus, argus_option_t *option, char *value);
-int free_array_string_handler(argus_option_t *option);
+ARGUS_API int array_string_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int array_int_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int array_float_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int free_array_string_handler(argus_option_t *option);
 
-int map_string_handler(argus_t *argus, argus_option_t *option, char *value);
-int map_int_handler(argus_t *argus, argus_option_t *option, char *value);
-int map_float_handler(argus_t *argus, argus_option_t *option, char *value);
-int map_bool_handler(argus_t *argus, argus_option_t *option, char *value);
-int free_map_string_handler(argus_option_t *option);
-int free_map_int_handler(argus_option_t *option);
-int free_map_float_handler(argus_option_t *option);
-int free_map_bool_handler(argus_option_t *option);
+ARGUS_API int map_string_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int map_int_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int map_float_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int map_bool_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int free_map_string_handler(argus_option_t *option);
+ARGUS_API int free_map_int_handler(argus_option_t *option);
+ARGUS_API int free_map_float_handler(argus_option_t *option);
+ARGUS_API int free_map_bool_handler(argus_option_t *option);
 
-int range_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
-int length_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
-int count_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
-int regex_validator(argus_t *argus, const char *value, validator_data_t data);
+ARGUS_API int range_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
+ARGUS_API int length_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
+ARGUS_API int count_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
+ARGUS_API int regex_validator(argus_t *argus, const char *value, validator_data_t data);
 
 /*
  * Support macro for character to string conversion

@@ -2,21 +2,28 @@ name: Build
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "develop", "windows" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build (${{ matrix.os }}/${{ matrix.compiler }}/regex${{ matrix.regex && '-yes' || '-no' }}
+    name: Build (${{ matrix.os }}/${{ matrix.compiler }}/regex${{ matrix.regex && '-yes' || '-no' }})
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        compiler: [gcc, clang]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        compiler: [gcc, clang, msvc]
         build_type: [release]
         regex: [true, false]
+        exclude:
+          - os: windows-latest
+            compiler: clang
+          - os: ubuntu-latest
+            compiler: msvc
+          - os: macos-latest
+            compiler: msvc
         
         include:
           - os: ubuntu-latest
@@ -28,6 +35,16 @@ jobs:
             compiler: gcc
             build_type: release
             regex: false
+            examples: true
+          - os: windows-latest
+            compiler: gcc
+            build_type: release
+            regex: true
+            examples: true
+          - os: windows-latest
+            compiler: msvc
+            build_type: release
+            regex: true
             examples: true
 
     runs-on: ${{ matrix.os }}
@@ -54,7 +71,49 @@ jobs:
         run: |
           brew install meson ninja pcre2
 
-      - name: Configure Meson
+      - name: Install dependencies (Windows - MinGW)
+        if: matrix.os == 'windows-latest' && matrix.compiler == 'gcc'
+        run: |
+          choco install mingw ninja
+          python -m pip install --upgrade pip
+          pip install 'meson>=1.0.0'
+          if (${{ matrix.regex }}) {
+            choco install pcre2
+          }
+        shell: pwsh
+
+      - name: Install dependencies (Windows - MSVC)
+        if: matrix.os == 'windows-latest' && matrix.compiler == 'msvc'
+        run: |
+          choco install ninja
+          python -m pip install --upgrade pip
+          pip install 'meson>=1.0.0'
+          if (${{ matrix.regex }}) {
+            choco install pcre2
+          }
+        shell: pwsh
+
+      - name: Set up Visual Studio environment
+        if: matrix.os == 'windows-latest' && matrix.compiler == 'msvc'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure Meson (Windows - MSVC)
+        if: matrix.os == 'windows-latest' && matrix.compiler == 'msvc'
+        run: |
+          $examples_opt = "${{ matrix.examples == true && '-Dexamples=true' || '-Dexamples=false' }}"
+          meson setup .build --buildtype=${{ matrix.build_type }} -Dregex=${{ matrix.regex }} $examples_opt
+        shell: pwsh
+
+      - name: Configure Meson (Windows - MinGW)
+        if: matrix.os == 'windows-latest' && matrix.compiler == 'gcc'
+        run: |
+          $env:PATH = "C:\ProgramData\chocolatey\lib\mingw\tools\install\mingw64\bin;$env:PATH"
+          $examples_opt = "${{ matrix.examples == true && '-Dexamples=true' || '-Dexamples=false' }}"
+          meson setup .build --buildtype=${{ matrix.build_type }} -Dregex=${{ matrix.regex }} $examples_opt
+        shell: pwsh
+
+      - name: Configure Meson (Unix)
+        if: matrix.os != 'windows-latest'
         run: |
           examples_opt="${{ matrix.examples == true && '-Dexamples=true' || '-Dexamples=false' }}"
           meson setup .build --buildtype=${{ matrix.build_type }} -Dregex=${{ matrix.regex }} $examples_opt
@@ -69,8 +128,8 @@ jobs:
           CC: ${{ matrix.compiler }}
           CXX: ${{ matrix.compiler == 'gcc' && 'g++' || 'clang++' }}
 
-      - name: Test basic functionality
-        if: matrix.examples == true
+      - name: Test basic functionality (Unix)
+        if: matrix.examples == true && matrix.os != 'windows-latest'
         run: |
           if [ -f ".build/examples/basic_usage" ]; then
             .build/examples/basic_usage --help
@@ -102,8 +161,52 @@ jobs:
           fi
         shell: bash
 
+      - name: Test basic functionality (Windows)
+        if: matrix.examples == true && matrix.os == 'windows-latest'
+        run: |
+          if (Test-Path ".build\examples\basic_usage.exe") {
+            .build\examples\basic_usage.exe --help
+            echo "✅ Basic example test passed"
+          }
+          else {
+            echo "❌ Basic example not found, smoke test failed"
+            exit 1
+          }
+          
+          if (Test-Path ".build\examples\regex.exe") {
+            echo "Testing regex example with regex=${{ matrix.regex }}"
+            if ("${{ matrix.regex }}" -eq "true") {
+              # With regex enabled, should work normally
+              .build\examples\regex.exe --email="user@example.com"
+              if ($LASTEXITCODE -eq 0) {
+                echo "✅ Regex example passed with regex enabled"
+              }
+              else {
+                echo "❌ Regex example failed with regex enabled"
+                exit 1
+              }
+            }
+            else {
+              # With regex disabled, should display appropriate message without crashing
+              $output = .build\examples\regex.exe --email="user@example.com" 2>&1
+              if ($output -match "regex support is not available") {
+                echo "✅ Regex example correctly handled disabled regex"
+              }
+              else {
+                echo "❌ Regex example didn't correctly handle disabled regex"
+                echo "Output: $output"
+                exit 1
+              }
+            }
+          }
+          else {
+            echo "⚠️ Regex example not found, skipping test"
+          }
+        shell: pwsh
+
       # Upload artifacts for release builds
-      - name: Upload library artifacts
+      - name: Upload library artifacts (Unix)
+        if: matrix.os != 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: lib-${{ matrix.os }}-${{ matrix.compiler }}-regex${{ matrix.regex && '-yes' || '-no' }}
@@ -111,4 +214,26 @@ jobs:
             .build/source/libargus.a
             .build/source/libargus.so
             .build/source/libargus.dylib
+          if-no-files-found: ignore
+
+      - name: Upload library artifacts (Windows - MinGW)
+        if: matrix.os == 'windows-latest' && matrix.compiler == 'gcc'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lib-${{ matrix.os }}-${{ matrix.compiler }}-regex${{ matrix.regex && '-yes' || '-no' }}
+          path: |
+            .build/source/libargus.a
+            .build/source/argus.dll
+            .build/source/argus.lib
+          if-no-files-found: ignore
+
+      - name: Upload library artifacts (Windows - MSVC)
+        if: matrix.os == 'windows-latest' && matrix.compiler == 'msvc'
+        uses: actions/upload-artifact@v4
+        with:
+          name: lib-${{ matrix.os }}-${{ matrix.compiler }}-regex${{ matrix.regex && '-yes' || '-no' }}
+          path: |
+            .build/source/argus.lib
+            .build/source/argus.dll
+            .build/source/argus.pdb
           if-no-files-found: ignore

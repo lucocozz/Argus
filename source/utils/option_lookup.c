@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "argus/internal/compiler.h"
 #include "argus/internal/context.h"
 #include "argus/internal/utils.h"
+#include "argus/internal/windows_compat.h"
 #include "argus/types.h"
 
 argus_option_t *find_option_by_lname(argus_option_t *options, const char *lname)
@@ -110,7 +112,7 @@ argus_option_t *find_option_by_active_path(argus_t argus, const char *option_pat
         return (find_option_by_name(argus.options, option_path + 1));
 
     size_t component_count = count_components(option_path);
-    if (component_count > argus.context.subcommand_depth)
+    if (component_count > (size_t)argus.context.subcommand_depth)
         return (NULL);
 
     // Format: "subcommand.option_name"
