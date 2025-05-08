@@ -1,5 +1,8 @@
+#include "argus/internal/compiler.h"
+#include "argus/internal/cross_platform.h"
 #include "argus/types.h"
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,24 +12,23 @@ void free_option_value(argus_option_t *option)
     if (option->is_allocated == false)
         return;
 
-    if (option->free_handler != NULL) {
+    if (option->free_handler != NULL)
         option->free_handler(option);
-    } else {
+    else
         free(option->value.as_ptr);
-    }
 }
 
-argus_value_t choices_to_value(argus_valtype_t type, argus_value_t choices, int choices_count,
-                               int index)
+argus_value_t choices_to_value(argus_valtype_t type, argus_value_t choices, size_t choices_count,
+                               size_t index)
 {
     argus_value_t value = {0};
 
-    if (index < 0 || index >= choices_count)
+    if (index >= choices_count)
         return value;
 
     switch (type) {
         case VALUE_TYPE_INT:
-            value.as_int = choices.as_array_int[index];
+            value.as_int64 = choices.as_array_int[index];
             break;
         case VALUE_TYPE_STRING:
             value.as_string = choices.as_array_string[index];
@@ -49,19 +51,18 @@ int cmp_value(argus_valtype_t type, const argus_value_t a, const argus_value_t b
         case VALUE_TYPE_FLAG:
             return a.as_bool - b.as_bool;
         case VALUE_TYPE_INT:
-            return a.as_int - b.as_int;
+            return (int)(a.as_int - b.as_int);
         case VALUE_TYPE_STRING:
             if (a.as_string == NULL || b.as_string == NULL)
                 return -1;
             return strcmp(a.as_string, b.as_string);
         case VALUE_TYPE_FLOAT:
-            if (a.as_float == b.as_float) {
+            if (a.as_float == b.as_float)
                 return 0;
-            } else if (a.as_float > b.as_float) {
+            else if (a.as_float > b.as_float)
                 return 1;
-            } else {
+            else
                 return -1;
-            }
         case VALUE_TYPE_BOOL:
             return a.as_bool - b.as_bool;
         default:
