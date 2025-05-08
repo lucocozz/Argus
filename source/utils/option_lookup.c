@@ -112,7 +112,7 @@ argus_option_t *find_option_by_active_path(argus_t argus, const char *option_pat
         return (find_option_by_name(argus.options, option_path + 1));
 
     size_t component_count = count_components(option_path);
-    if (component_count > (size_t)argus.context.subcommand_depth)
+    if (component_count > ARGUS_SIZE_TO_INT(argus.context.subcommand_depth))
         return (NULL);
 
     // Format: "subcommand.option_name"

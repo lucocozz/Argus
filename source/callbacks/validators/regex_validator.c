@@ -1,8 +1,40 @@
 #include <stddef.h>
+
+#include "argus/internal/compiler.h"
+
 #ifdef ARGUS_REGEX
     #define PCRE2_CODE_UNIT_WIDTH 8
-    #include <pcre2.h>
+    
+    /* Inclusion conditionnelle selon la plateforme */
+    #if ARGUS_PLATFORM_WINDOWS
+        /* Essayer plusieurs chemins possibles pour Windows */
+        #if defined(_MSC_VER)
+            #pragma warning(push)
+            #pragma warning(disable:4996)  /* Ignorer l'avertissement d'inclusion en minuscules */
+        #endif
+        
+        /* Tenter différentes possibilités de chemins */
+        #if __has_include(<pcre2.h>)
+            #include <pcre2.h>
+        #elif __has_include("pcre2/pcre2.h")
+            #include "pcre2/pcre2.h"
+        #elif __has_include("include/pcre2.h")
+            #include "include/pcre2.h"
+        #elif __has_include("pcre2.h")
+            #include "pcre2.h"
+        #else
+            #error "PCRE2 headers not found! Please install PCRE2 development files or disable regex support."
+        #endif
+        
+        #if defined(_MSC_VER)
+            #pragma warning(pop)
+        #endif
+    #else
+        /* Sur les autres plateformes, utiliser l'inclusion standard */
+        #include <pcre2.h>
+    #endif
 #endif
+
 #include "argus/errors.h"
 #include "argus/types.h"
 

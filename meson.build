@@ -48,13 +48,61 @@ if not regex
     pcre2_dep = dependency('', required: false)
 else
     add_project_arguments('-DARGUS_REGEX', language: 'c')
+    pcre2_inc_dirs = []
+    
     if is_windows
-        # Try to find PCRE2 on Windows
+        # Try to find PCRE2 on Windows with more methods
         pcre2_dep = dependency('libpcre2-8', required: false, version: '>=10.00')
         if not pcre2_dep.found()
             pcre2_dep = dependency('pcre2', required: false, version: '>=10.00')
-            if not pcre2_dep.found()
-                # On Windows, allow fallback to disable regex if not found
+            
+            # Try manually for MinGW using pkg-config if available
+            if not pcre2_dep.found() and cc.get_id() == 'gcc'
+                pkg_config = find_program('pkg-config', required: false)
+                if pkg_config.found()
+                    # Try to get include paths from pkg-config
+                    r = run_command(pkg_config, '--cflags', 'libpcre2-8', check: false)
+                    if r.returncode() == 0
+                        pkg_cflags = r.stdout().strip().split()
+                        foreach cflag : pkg_cflags
+                            if cflag.startswith('-I')
+                                pcre2_inc_dirs += [cflag.substring(2)]
+                            endif
+                        endforeach
+                    endif
+                endif
+            endif
+            
+            # For MSVC, try to find PCRE2 in standard locations
+            if not pcre2_dep.found() and cc.get_id() == 'msvc'
+                pcre2_found = false
+                # Check common install paths for Windows
+                foreach path : ['C:/Program Files/PCRE2', 'C:/Program Files (x86)/PCRE2', 'C:/PCRE2', 'C:/vcpkg/installed/x64-windows/include']
+                    if cc.has_header('pcre2.h', args: '-I' + path)
+                        pcre2_inc_dirs += [path]
+                        pcre2_found = true
+                        break
+                    endif
+                endforeach
+                
+                # If found, create a custom dependency
+                if pcre2_found
+                    pcre2_lib = cc.find_library('pcre2-8', required: false)
+                    if not pcre2_lib.found()
+                        pcre2_lib = cc.find_library('libpcre2-8', required: false)
+                    endif
+                    
+                    if pcre2_lib.found()
+                        pcre2_dep = declare_dependency(
+                            include_directories: include_directories(pcre2_inc_dirs),
+                            dependencies: pcre2_lib
+                        )
+                    endif
+                endif
+            endif
+            
+            # If still not found, disable regex support
+            if not pcre2_dep.found() and pcre2_inc_dirs.length() == 0
                 warning('PCRE2 not found on Windows, disabling regex support')
                 regex = false
                 pcre2_dep = dependency('', required: false)
@@ -65,6 +113,20 @@ else
         pcre2_dep = dependency('libpcre2-8', required: true, version: '>=10.00')
         if not pcre2_dep.found()
             pcre2_dep = dependency('pcre2', required: true, version: '>=10.00')
+        endif
+    endif
+    
+    # If we found include directories but couldn't create a proper dependency
+    if regex and pcre2_dep.found() == false and pcre2_inc_dirs.length() > 0
+        inc_dirs += include_directories(pcre2_inc_dirs)
+        pcre2_lib = cc.find_library('pcre2-8', required: false)
+        if pcre2_lib.found()
+            pcre2_dep = declare_dependency(
+                include_directories: include_directories(pcre2_inc_dirs),
+                dependencies: pcre2_lib
+            )
+        else
+            pcre2_dep = declare_dependency(include_directories: include_directories(pcre2_inc_dirs))
         endif
     endif
 endif
