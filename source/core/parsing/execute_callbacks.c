@@ -13,7 +13,7 @@ int execute_callbacks(argus_t *argus, argus_option_t *option, char *value)
     }
 
     if (option->pre_validator != NULL) {
-        int status = option->pre_validator(argus, value, option->pre_validator_data);
+        status = option->pre_validator(argus, value, option->pre_validator_data);
         if (status != ARGUS_SUCCESS)
             return status;
     }

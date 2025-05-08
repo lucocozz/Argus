@@ -4,6 +4,8 @@
 #include <string.h>
 
 #include "argus/errors.h"
+#include "argus/internal/compiler.h"
+#include "argus/internal/platform/windows.h"
 #include "argus/internal/utils.h"
 #include "argus/options.h"
 #include "argus/types.h"

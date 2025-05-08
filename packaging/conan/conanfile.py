@@ -8,7 +8,7 @@ class ArgusConan(ConanFile):
     name = "argus"
     version = "1.0.0"
     description = "Modern C library for command-line argument parsing with an elegant, macro-based API"
-    topics = ("conan", "argus", "argus", "command-line", "arguments", "parser", "cli", "argparse")
+    topics = ("conan", "argus", "libargus", "command-line", "arguments", "parser", "cli", "argparse")
     url = "https://github.com/lucocozz/argus"
     homepage = "https://github.com/lucocozz/argus"
     license = "MIT"
@@ -23,10 +23,6 @@ class ArgusConan(ConanFile):
         "fPIC": True,
         "regex": True,
     }
-
-    def config_options(self):
-        if self.settings.os == "Windows":
-            del self.options.fPIC
 
     def configure(self):
         if self.options.shared:

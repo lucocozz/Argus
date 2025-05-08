@@ -21,7 +21,6 @@ int regex_validator(argus_t *argus, const char *value, validator_data_t data)
     (void)(value);
     (void)(data);
     ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "regex support is not available");
-    return ARGUS_ERROR_INVALID_VALUE;
 #else
     const char *pattern = data.regex.pattern;
     if (!pattern) {

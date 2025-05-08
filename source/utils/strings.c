@@ -1,5 +1,7 @@
 #define _GNU_SOURCE  // NOLINT
 
+#include "argus/internal/compiler.h"
+#include "argus/internal/platform/windows.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
