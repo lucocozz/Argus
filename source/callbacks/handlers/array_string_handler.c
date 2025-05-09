@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "argus/errors.h"
+#include "argus/internal/cross_platform.h"
 #include "argus/internal/utils.h"
 #include "argus/options.h"
 #include "argus/types.h"
@@ -11,7 +12,7 @@
 static void set_value(argus_option_t *option, char *value)
 {
     adjust_array_size(option);
-    option->value.as_array[option->value_count].as_string = strdup(value);
+    option->value.as_array[option->value_count].as_string = safe_strdup(value);
     option->value_count++;
 }
 

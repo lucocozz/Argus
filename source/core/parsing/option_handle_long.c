@@ -3,6 +3,7 @@
 
 #include "argus/errors.h"
 #include "argus/internal/context.h"
+#include "argus/internal/cross_platform.h"
 #include "argus/internal/parsing.h"
 #include "argus/internal/utils.h"
 #include "argus/types.h"
@@ -13,9 +14,9 @@ int handle_long_option(argus_t *argus, argus_option_t *options, char *arg, char 
     char  option_name[64] = {0};
     char *equal_pos       = strchr(arg, '=');
     if (equal_pos != NULL) {
-        strncpy(option_name, arg, equal_pos - arg);
+        safe_strncpy(option_name, sizeof(option_name), arg, equal_pos - arg);
     } else
-        strncpy(option_name, arg, sizeof(option_name) - 1);
+        safe_strncpy(option_name, sizeof(option_name), arg, sizeof(option_name) - 1);
 
     argus_option_t *option = find_option_by_lname(options, option_name);
     if (option == NULL) {

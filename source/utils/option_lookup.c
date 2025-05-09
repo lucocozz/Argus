@@ -3,7 +3,7 @@
 
 #include "argus/internal/compiler.h"
 #include "argus/internal/context.h"
-#include "argus/internal/platform/windows.h"
+#include "argus/internal/cross_platform.h"
 #include "argus/internal/utils.h"
 #include "argus/types.h"
 

@@ -11,28 +11,6 @@
 #define ARGUS_INTERNAL_COMPILER_H
 
 /**
- * Platform detection macros
- */
-#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__) || defined(__MINGW32__) ||           \
-    defined(__MINGW64__)
-    #define ARGUS_PLATFORM_WINDOWS 1
-#else
-    #define ARGUS_PLATFORM_WINDOWS 0
-#endif
-
-#if defined(__linux__) || defined(__linux) || defined(__gnu_linux__)
-    #define ARGUS_PLATFORM_LINUX 1
-#else
-    #define ARGUS_PLATFORM_LINUX 0
-#endif
-
-#if defined(__APPLE__) || defined(__MACH__)
-    #define ARGUS_PLATFORM_MACOS 1
-#else
-    #define ARGUS_PLATFORM_MACOS 0
-#endif
-
-/**
  * Macros to disable and restore specific warnings
  */
 #if defined(__clang__)
@@ -89,15 +67,16 @@
 /**
  * Shared library export/import macros for Windows DLL support
  */
-#if ARGUS_PLATFORM_WINDOWS
+#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__) || defined(__MINGW32__) ||           \
+    defined(__MINGW64__)
     #if defined(ARGUS_BUILDING)
-        #if ARGUS_COMPILER_MSVC
+        #if defined(_MSC_VER)
             #define ARGUS_API __declspec(dllexport)
         #else  // MinGW/GCC
             #define ARGUS_API __declspec(dllexport) __cdecl
         #endif
     #else
-        #if ARGUS_COMPILER_MSVC
+        #if defined(_MSC_VER)
             #define ARGUS_API __declspec(dllimport)
         #else  // MinGW/GCC
             #define ARGUS_API __declspec(dllimport) __cdecl
@@ -105,26 +84,6 @@
     #endif
 #else
     #define ARGUS_API
-#endif
-
-/**
- * Additional MSVC-specific macros
- */
-#if ARGUS_COMPILER_MSVC
-    /* Disable specific MSVC warnings that might occur in the code */
-    #pragma warning(disable : 4996) /* Function or variable may be unsafe */
-    #pragma warning(disable : 4244) /* Possible loss of data in conversion */
-
-    /* Add C99 compatibility for MSVC */
-    #if _MSC_VER < 1900 /* Before Visual Studio 2015 */
-        #define inline   __inline
-        #define snprintf _snprintf
-    #endif
-
-    /* MSVC doesn't support C99 variadic macros the same way as GCC/Clang */
-    #define ARGUS_VA_ARGS(...) __VA_ARGS__
-#else
-    #define ARGUS_VA_ARGS(...) __VA_ARGS__
 #endif
 
 #endif /* ARGUS_INTERNAL_COMPILER_H */

@@ -1,5 +1,5 @@
 #include "argus/internal/compiler.h"
-#include "argus/internal/platform/windows.h"
+#include "argus/internal/cross_platform.h"
 #include "argus/types.h"
 
 #include <limits.h>
