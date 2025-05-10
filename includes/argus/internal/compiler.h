@@ -41,35 +41,6 @@
 
     #define PRAGMA_RESTORE() _Pragma("GCC diagnostic pop")
 
-// #elif defined(_MSC_VER)
-//     /* For Microsoft Visual C++ compiler */
-//     /* Disable problematic warnings for designated initializers and structure initialization*/
-//     #define PRAGMA_DISABLE_OVERRIDE()                                                              \
-//         __pragma(warning(push))                                                                    \
-//         __pragma(warning(disable: 4204)) /* nonstandard extension: non-constant aggregate initializer */ \
-//         __pragma(warning(disable: 4047)) /* differs in levels of indirection */                    \
-//         __pragma(warning(disable: 4113)) /* differs in parameter lists */                          \
-//         __pragma(warning(disable: 4057)) /* differs in indirection to slightly different base types */ \
-//         __pragma(warning(disable: 4100)) /* unreferenced formal parameter */                       \
-//         __pragma(warning(disable: 4702)) /* unreachable code */                                    \
-//         __pragma(warning(disable: 4127)) /* conditional expression is constant */                  \
-//         __pragma(warning(disable: 4701)) /* potentially uninitialized local variable */            \
-//         __pragma(warning(disable: 4133)) /* incompatible types */                                  \
-//         __pragma(warning(disable: 4143)) /* modifier mismatch */                                   \
-//         __pragma(warning(disable: 4028)) /* formal parameter different from declaration */         \
-//         __pragma(warning(disable: 4115)) /* named type definition in parentheses */                \
-//         __pragma(warning(disable: 4152)) /* function/data pointer conversion in expression */      \
-
-//     #define PRAGMA_DISABLE_PEDANTIC()                                                              \
-//         __pragma(warning(push))                                                                    \
-//         __pragma(warning(disable: 4204)) /* nonstandard extension: non-constant aggregate initializer */
-
-//     #define PRAGMA_DISABLE_VARIADIC_MACROS()                                                       \
-//         __pragma(warning(push))                                                                    \
-//         __pragma(warning(disable: 4127)) /* conditional expression is constant */
-
-//     #define PRAGMA_RESTORE() __pragma(warning(pop))
-
 #else
     /* Fallback for other compilers */
     #define PRAGMA_DISABLE_OVERRIDE()
@@ -99,21 +70,5 @@
 #else
     #define ARGUS_API
 #endif
-
-/* Internal macro to disable MSVC warnings for structure initializers */
-// #if defined(_MSC_VER)
-// #define ARGUS_MSVC_WARNINGS_PUSH() \
-//     __pragma(warning(push)) \
-//     __pragma(warning(disable: 4204)) /* nonstandard extension: non-constant aggregate initializer */ \
-//     __pragma(warning(disable: 4047)) /* differs in levels of indirection */ \
-//     __pragma(warning(disable: 4133)) /* incompatible types */ \
-//     __pragma(warning(disable: 4113)) /* differs in parameter lists */
-
-// #define ARGUS_MSVC_WARNINGS_POP() \
-//     __pragma(warning(pop))
-// #else
-// #define ARGUS_MSVC_WARNINGS_PUSH()
-// #define ARGUS_MSVC_WARNINGS_POP()
-// #endif
 
 #endif /* ARGUS_INTERNAL_COMPILER_H */
