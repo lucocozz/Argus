@@ -81,6 +81,7 @@ ARGUS_API int regex_validator(argus_t *argus, const char *value, validator_data_
 #define VALIDATOR3(fn, data) VALIDATOR_AT(2, fn, data)
 #define VALIDATOR4(fn, data) VALIDATOR_AT(3, fn, data)
 
+/*
 #define RANGE(min, max) \
     .validators[0].func = (argus_validator_t)range_validator, \
     .validators[0].data = (validator_data_t){ .range = (range_t){ min, max } }, \
@@ -92,6 +93,23 @@ ARGUS_API int regex_validator(argus_t *argus, const char *value, validator_data_
 #define COUNT(min, max) \
     .validators[0].func = (argus_validator_t)count_validator, \
     .validators[0].data = (validator_data_t){ .range = (range_t){ min, max } }, \
+    .validator_count = 1
+*/
+
+#define RANGE(_min, _max) \
+    .validators[0].func = (argus_validator_t)range_validator, \
+    .validators[0].data.range.min = (_min), \
+    .validators[0].data.range.max = (_max), \
+    .validator_count = 1
+#define LENGTH(_min, _max) \
+    .validators[0].func = (argus_validator_t)length_validator, \
+    .validators[0].data.range.min = (_min), \
+    .validators[0].data.range.max = (_max), \
+    .validator_count = 1
+#define COUNT(_min, _max) \
+    .validators[0].func = (argus_validator_t)count_validator, \
+    .validators[0].data.range.min = (_min), \
+    .validators[0].data.range.max = (_max), \
     .validator_count = 1
 
 #define PRE_VALIDATOR(fn, data) \

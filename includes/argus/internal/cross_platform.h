@@ -88,24 +88,22 @@ static inline char *safe_strncat(char *dest, size_t dest_size, const char *src, 
 
 static inline char *safe_strndup(const char *s, size_t n)
 {
-    #ifdef __GLIBC__
-    return strndup(s, n);
-    #else
+    // #ifdef __GLIBC__
+    // return strndup(s, n);
+    // #else
 
     size_t len = 0;
-    while (len < n && s[len] != '\0') {
+    while (len < n && s[len] != '\0')
         len++;
-    }
 
     char *new_str = (char *)malloc(len + 1);
-    if (new_str == NULL) {
+    if (new_str == NULL)
         return NULL;
-    }
 
     memcpy(new_str, s, len);
     new_str[len] = '\0';
     return new_str;
-    #endif
+    // #endif
 }
 #endif
 
