@@ -1,0 +1,72 @@
+name: Build Ubuntu
+
+on:
+  push:
+    branches: [ develop, windows ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: ${{ matrix.compiler }} ${{ matrix.regex && '| regex' || ''}}
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [release]
+        compiler: [gcc, clang]
+        regex: [true, false]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y meson ninja-build pkg-config ${{ matrix.compiler }}
+        if [ "${{ matrix.regex }}" = "true" ]; then
+          sudo apt-get install -y libpcre2-dev
+        fi
+
+    - name: Configure project
+      run: meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=${{ matrix.regex }} -Dexamples=false
+      env:
+        CC: ${{ matrix.compiler }}
+
+    - name: Build project
+      run: meson compile -C .build
+      env:
+        CC: ${{ matrix.compiler }}
+        
+    - name: Configure examples
+      run: |
+        rm -rf .build/meson-info
+        meson setup --wipe .build --buildtype=${{ matrix.build-type }} -Dregex=${{ matrix.regex }} -Dexamples=true
+      env:
+        CC: ${{ matrix.compiler }}
+
+    - name: Build examples
+      run: meson compile -C .build
+      env:
+        CC: ${{ matrix.compiler }}
+
+    - name: Prepare Ubuntu artifacts
+      run: |
+        mkdir -p artifacts/lib
+        mkdir -p artifacts/include
+
+        cp .build/libargus.a artifacts/lib/
+        cp .build/libargus.so.1.0.0 artifacts/lib/
+
+        cp -r includes/argus artifacts/include/
+        cp includes/argus.h artifacts/include/
+
+      shell: bash
+
+    - name: Upload Ubuntu build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: argus-ubuntu-${{ matrix.compiler }}-${{ matrix.regex && 'regex' || 'noregex' }}
+        path: artifacts/
+        if-no-files-found: warn

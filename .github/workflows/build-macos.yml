@@ -1,0 +1,71 @@
+name: Build macOS
+
+on:
+  push:
+    branches: [ develop, windows ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    name: ${{ matrix.compiler }} ${{ matrix.regex && '| regex' || ''}}
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [release]
+        compiler: [gcc, clang]
+        regex: [true, false]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        brew update
+        brew install meson ninja pkg-config
+        if [ "${{ matrix.regex }}" = "true" ]; then
+          brew install pcre2
+        fi
+
+    - name: Configure project
+      run: meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=${{ matrix.regex }} -Dexamples=false
+      env:
+        CC: ${{ matrix.compiler }}
+
+    - name: Build project
+      run: meson compile -C .build
+      env:
+        CC: ${{ matrix.compiler }}
+        
+    - name: Configure examples
+      run: |
+        rm -rf .build/meson-info
+        meson setup --wipe .build --buildtype=${{ matrix.build-type }} -Dregex=${{ matrix.regex }} -Dexamples=true
+      env:
+        CC: ${{ matrix.compiler }}
+
+    - name: Build examples
+      run: meson compile -C .build
+      env:
+        CC: ${{ matrix.compiler }}
+
+    - name: Prepare macOS artifacts
+      run: |
+        mkdir -p artifacts/lib
+        mkdir -p artifacts/include
+
+        cp .build/libargus.a artifacts/lib/
+        cp .build/libargus.1.dylib artifacts/lib/
+
+        cp -r includes/argus artifacts/include/
+        cp includes/argus.h artifacts/include/
+      shell: bash
+
+    - name: Upload macOS build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: argus-macos-${{ matrix.compiler }}-${{ matrix.regex && 'regex' || 'noregex' }}
+        path: artifacts/
+        if-no-files-found: warn
