@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "argus/internal/cross_platform.h"
 #include "argus/internal/display.h"
 #include "argus/internal/utils.h"
 #include "argus/types.h"
@@ -356,13 +357,13 @@ static void print_option_description(const argus_option_t *option, size_t paddin
     char *description = NULL;
 
     if (option->help) {
-        description = strdup(option->help);
+        description = safe_strdup(option->help);
         if (!description) {
             printf("Error: Memory allocation failed\n");
             return;
         }
     } else {
-        description = strdup("");
+        description = safe_strdup("");
         if (!description) {
             printf("Error: Memory allocation failed\n");
             return;
@@ -378,7 +379,8 @@ static void print_option_description(const argus_option_t *option, size_t paddin
             char item[64] = {0};
 
             if (i > 0)
-                strncat(choices_buf, ", ", sizeof(choices_buf) - strlen(choices_buf) - 1);
+                safe_strncat(choices_buf, sizeof(choices_buf), ", ",
+                             sizeof(choices_buf) - strlen(choices_buf) - 1);
 
             switch (option->value_type) {
                 case VALUE_TYPE_INT:
@@ -394,16 +396,19 @@ static void print_option_description(const argus_option_t *option, size_t paddin
                     break;
             }
 
-            strncat(choices_buf, item, sizeof(choices_buf) - strlen(choices_buf) - 1);
+            safe_strncat(choices_buf, sizeof(choices_buf), item,
+                         sizeof(choices_buf) - strlen(choices_buf) - 1);
         }
 
-        strncat(choices_buf, "]", sizeof(choices_buf) - strlen(choices_buf) - 1);
+        safe_strncat(choices_buf, sizeof(choices_buf), "]",
+                     sizeof(choices_buf) - strlen(choices_buf) - 1);
 
         // Allocate new buffer for combined description
-        char *new_desc = malloc(strlen(description) + strlen(choices_buf) + 1);
+        size_t desc_size = strlen(description) + strlen(choices_buf) + 1;
+        char  *new_desc  = malloc(desc_size);
         if (new_desc) {
-            strcpy(new_desc, description);
-            strcat(new_desc, choices_buf);
+            safe_strcpy(new_desc, desc_size, description);
+            safe_strcat(new_desc, desc_size, choices_buf);
             free(description);
             description = new_desc;
         }
@@ -437,15 +442,16 @@ static void print_option_description(const argus_option_t *option, size_t paddin
                          option->default_value.as_bool ? "true" : "false");
                 break;
             default:
-                strcat(default_buf, ")");
+                safe_strcat(default_buf, sizeof(default_buf), ")");
                 break;
         }
 
         // Allocate new buffer for combined description
-        char *new_desc = malloc(strlen(description) + strlen(default_buf) + 1);
+        size_t desc_size = strlen(description) + strlen(default_buf) + 1;
+        char  *new_desc  = malloc(desc_size);
         if (new_desc) {
-            strcpy(new_desc, description);
-            strcat(new_desc, default_buf);
+            safe_strcpy(new_desc, desc_size, description);
+            safe_strcat(new_desc, desc_size, default_buf);
             free(description);
             description = new_desc;
         }
@@ -454,22 +460,23 @@ static void print_option_description(const argus_option_t *option, size_t paddin
     // Append additional attributes
     if (option->flags & FLAG_EXIT || option->flags & FLAG_REQUIRED ||
         option->flags & FLAG_DEPRECATED || option->flags & FLAG_EXPERIMENTAL) {
-        char attrs_buf[128] = {0};
+        char attrs_buf[32] = {0};
 
         if (option->flags & FLAG_EXIT)
-            strcat(attrs_buf, " (exit)");
+            safe_strcat(attrs_buf, sizeof(attrs_buf), " (exit)");
         if (option->flags & FLAG_REQUIRED)
-            strcat(attrs_buf, " (required)");
+            safe_strcat(attrs_buf, sizeof(attrs_buf), " (required)");
         if (option->flags & FLAG_DEPRECATED)
-            strcat(attrs_buf, " (deprecated)");
+            safe_strcat(attrs_buf, sizeof(attrs_buf), " (deprecated)");
         if (option->flags & FLAG_EXPERIMENTAL)
-            strcat(attrs_buf, " (experimental)");
+            safe_strcat(attrs_buf, sizeof(attrs_buf), " (experimental)");
 
         // Allocate new buffer for combined description
-        char *new_desc = malloc(strlen(description) + strlen(attrs_buf) + 1);
+        size_t desc_size = strlen(description) + strlen(attrs_buf) + 1;
+        char  *new_desc  = malloc(desc_size);
         if (new_desc) {
-            strcpy(new_desc, description);
-            strcat(new_desc, attrs_buf);
+            safe_strcpy(new_desc, desc_size, description);
+            safe_strcat(new_desc, desc_size, attrs_buf);
             free(description);
             description = new_desc;
         }

@@ -1,0 +1,114 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [ develop, windows ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    name: ${{ matrix.compiler }} ${{ matrix.regex && '| regex' || ''}}
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [release]
+        regex: [true, false]
+        compiler: [msvc, gcc]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        choco install ninja mingw
+        python -m pip install --upgrade pip
+        pip install 'meson>=1.0.0'
+
+    - name: Setup MINGW GCC environment
+      if: matrix.compiler == 'gcc'
+      run: |
+        choco install mingw
+        echo "CC=gcc" >> $env:GITHUB_ENV
+
+    - name: Setup MSVC environment
+      if: matrix.compiler == 'msvc'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+    
+    - name: Install Regex dependencies
+      if: matrix.regex
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git ${{ github.workspace }}/vcpkg
+        cd ${{ github.workspace }}/vcpkg
+        ./bootstrap-vcpkg.bat
+        ./vcpkg integrate install
+        
+        ./vcpkg install pcre2:x64-windows
+        
+        echo "INCLUDE=${{ github.workspace }}/vcpkg/installed/x64-windows/include;$env:INCLUDE" >> $env:GITHUB_ENV
+        echo "LIB=${{ github.workspace }}/vcpkg/installed/x64-windows/lib;$env:LIB" >> $env:GITHUB_ENV
+        echo "PKG_CONFIG_PATH=${{ github.workspace }}/vcpkg/installed/x64-windows/lib/pkgconfig" >> $env:GITHUB_ENV
+        
+        $vcpkgInclude = "${{ github.workspace }}/vcpkg/installed/x64-windows/include"
+        $vcpkgLib = "${{ github.workspace }}/vcpkg/installed/x64-windows/lib"
+        
+        $vcpkgInclude = $vcpkgInclude -replace '\\', '/'
+        $vcpkgLib = $vcpkgLib -replace '\\', '/'
+        
+        echo "VCPKG_INCLUDE=$vcpkgInclude" >> $env:GITHUB_ENV
+        echo "VCPKG_LIB=$vcpkgLib" >> $env:GITHUB_ENV
+
+    - name: Configure project
+      run: |
+        if ("${{ matrix.regex }}" -eq "true") {
+          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=true -Dpcre2_include_dir="$env:VCPKG_INCLUDE" -Dpcre2_lib_dir="$env:VCPKG_LIB" -Dexamples=false
+        } else {
+          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=false -Dexamples=false
+        }
+      shell: pwsh
+
+    - name: Build project
+      run: meson compile -C .build
+
+    # - name: Configure examples
+    #   run: |
+    #     if (Test-Path ".build/meson-info") {
+    #       Remove-Item -Recurse -Force .build/meson-info
+    #     }
+    #     if ("${{ matrix.regex }}" -eq "true") {
+    #       meson setup --wipe .build --buildtype=${{ matrix.build-type }} -Dregex=true -Dpcre2_include_dir="$env:VCPKG_INCLUDE" -Dpcre2_lib_dir="$env:VCPKG_LIB" -Dexamples=true
+    #     } else {
+    #       meson setup --wipe .build --buildtype=${{ matrix.build-type }} -Dregex=false -Dexamples=true
+    #     }
+    #   shell: pwsh
+
+    # - name: Build examples
+    #   run: meson compile -C .build
+
+    - name: Prepare artifacts
+      run: |
+        mkdir -p artifacts/lib
+        mkdir -p artifacts/include
+
+        cp .build/*argus-1.dll artifacts/lib/libargus-1.dll
+        cp .build/libargus.a artifacts/lib/
+
+        cp -r includes/argus artifacts/include/
+        cp includes/argus.h artifacts/include/
+      shell: pwsh
+
+    - name: Upload Windows build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: argus-windows-${{ matrix.compiler }}-${{ matrix.regex && 'regex' || 'noregex' }}
+        path: artifacts/
+        if-no-files-found: warn

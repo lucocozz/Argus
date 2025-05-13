@@ -72,7 +72,7 @@ void apply_map_flags(argus_option_t *option);
  */
 int           cmp_value(argus_valtype_t type, argus_value_t a, argus_value_t b);
 argus_value_t choices_to_value(argus_valtype_t type, argus_value_t choices, size_t choices_count,
-                               int index);
+                               size_t index);
 void          free_option_value(argus_option_t *option);
 void          print_value(FILE *stream, argus_valtype_t type, argus_value_t value);
 void print_value_array(FILE *stream, argus_valtype_t type, argus_value_t *values, size_t count);

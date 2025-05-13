@@ -10,10 +10,11 @@
 #ifndef ARGUS_API_H
 #define ARGUS_API_H
 
+#include "argus/internal/compiler.h"
 #include "argus/types.h"
 
-argus_t argus_init_mode(argus_option_t *options, const char *program_name, const char *version,
-                        bool release_mode);
+ARGUS_API argus_t argus_init_mode(argus_option_t *options, const char *program_name,
+                                  const char *version, bool release_mode);
 
 #ifdef ARGUS_RELEASE
 /**
@@ -35,7 +36,7 @@ argus_t argus_init_mode(argus_option_t *options, const char *program_name, const
  * Note: Only use this in production. During development, leave validation
  * enabled to catch configuration errors early.
  */
-argus_t argus_init(argus_option_t *options, const char *program_name, const char *version)
+ARGUS_API argus_t argus_init(argus_option_t *options, const char *program_name, const char *version)
 {
     return argus_init_mode(options, program_name, version, true);
 }
@@ -59,7 +60,7 @@ argus_t argus_init(argus_option_t *options, const char *program_name, const char
  * Note: Only use this in production. During development, leave validation
  * enabled to catch configuration errors early.
  */
-argus_t argus_init(argus_option_t *options, const char *program_name, const char *version)
+ARGUS_API argus_t argus_init(argus_option_t *options, const char *program_name, const char *version)
 {
     return argus_init_mode(options, program_name, version, false);
 }
@@ -74,21 +75,21 @@ argus_t argus_init(argus_option_t *options, const char *program_name, const char
  *
  * @return Status code (0 for success, non-zero for error)
  */
-int argus_parse(argus_t *argus, int argc, char **argv);
+ARGUS_API int argus_parse(argus_t *argus, int argc, char **argv);
 
 /**
  * argus_free - Clean up and free resources
  *
  * @param argus  Argus context
  */
-void argus_free(argus_t *argus);
+ARGUS_API void argus_free(argus_t *argus);
 
 /**
  * Display functions
  */
-void argus_print_help(argus_t argus);
-void argus_print_usage(argus_t argus);
-void argus_print_version(argus_t argus);
+ARGUS_API void argus_print_help(argus_t argus);
+ARGUS_API void argus_print_usage(argus_t argus);
+ARGUS_API void argus_print_version(argus_t argus);
 
 /**
  * argus_is_set - Check if an option was set on the command line
@@ -98,7 +99,7 @@ void argus_print_version(argus_t argus);
  *
  * @return true if the option was set, false otherwise
  */
-bool argus_is_set(argus_t argus, const char *option_path);
+ARGUS_API bool argus_is_set(argus_t argus, const char *option_path);
 
 /**
  * argus_get - Get the value of an option
@@ -108,7 +109,7 @@ bool argus_is_set(argus_t argus, const char *option_path);
  *
  * @return Value of the option, or {0} if not found
  */
-argus_value_t argus_get(argus_t argus, const char *option_path);
+ARGUS_API argus_value_t argus_get(argus_t argus, const char *option_path);
 
 /**
  * argus_count - Get the number of values for an option
@@ -118,7 +119,7 @@ argus_value_t argus_get(argus_t argus, const char *option_path);
  *
  * @return Number of values for the option
  */
-size_t argus_count(argus_t argus, const char *option_path);
+ARGUS_API size_t argus_count(argus_t argus, const char *option_path);
 
 /**
  * argus_has_command - Check if a subcommand was parsed
@@ -127,7 +128,7 @@ size_t argus_count(argus_t argus, const char *option_path);
  *
  * @return true if a subcommand was parsed, false otherwise
  */
-bool argus_has_command(argus_t argus);
+ARGUS_API bool argus_has_command(argus_t argus);
 
 /**
  * argus_exec - Execute the parsed subcommand
@@ -137,7 +138,7 @@ bool argus_has_command(argus_t argus);
  *
  * @return Status code (0 for success, non-zero for error)
  */
-int argus_exec(argus_t *argus, void *data);
+ARGUS_API int argus_exec(argus_t *argus, void *data);
 
 /**
  * argus_array_get - Get an element from an array option at the specified index
@@ -148,7 +149,7 @@ int argus_exec(argus_t *argus, void *data);
  *
  * @return Value of the element at the specified index, or {0} if not found or index out of bounds
  */
-argus_value_t argus_array_get(argus_t argus, const char *option_path, size_t index);
+ARGUS_API argus_value_t argus_array_get(argus_t argus, const char *option_path, size_t index);
 
 /**
  * argus_map_get - Get a value from a map option with the specified key
@@ -159,7 +160,7 @@ argus_value_t argus_array_get(argus_t argus, const char *option_path, size_t ind
  *
  * @return Value associated with the key, or {0} if not found
  */
-argus_value_t argus_map_get(argus_t argus, const char *option_path, const char *key);
+ARGUS_API argus_value_t argus_map_get(argus_t argus, const char *option_path, const char *key);
 
 /**
  * argus_array_it - Create an iterator for efficiently traversing an array option
@@ -169,7 +170,7 @@ argus_value_t argus_map_get(argus_t argus, const char *option_path, const char *
  *
  * @return Iterator structure for the array, with count=0 if option not found
  */
-argus_array_it_t argus_array_it(argus_t argus, const char *option_path);
+ARGUS_API argus_array_it_t argus_array_it(argus_t argus, const char *option_path);
 
 /**
  * argus_array_next - Get the next element from an array iterator
@@ -178,14 +179,14 @@ argus_array_it_t argus_array_it(argus_t argus, const char *option_path);
  *
  * @return true if a value was retrieved, false if end of array
  */
-bool argus_array_next(argus_array_it_t *it);
+ARGUS_API bool argus_array_next(argus_array_it_t *it);
 
 /**
  * argus_array_reset - Reset an array iterator to the beginning
  *
  * @param it  Array iterator to reset
  */
-void argus_array_reset(argus_array_it_t *it);
+ARGUS_API void argus_array_reset(argus_array_it_t *it);
 
 /**
  * argus_map_it - Create an iterator for efficiently traversing a map option
@@ -195,7 +196,7 @@ void argus_array_reset(argus_array_it_t *it);
  *
  * @return Iterator structure for the map, with count=0 if option not found
  */
-argus_map_it_t argus_map_it(argus_t argus, const char *option_path);
+ARGUS_API argus_map_it_t argus_map_it(argus_t argus, const char *option_path);
 
 /**
  * argus_map_next - Get the next key-value pair from a map iterator
@@ -204,13 +205,13 @@ argus_map_it_t argus_map_it(argus_t argus, const char *option_path);
  *
  * @return true if a pair was retrieved, false if end of map
  */
-bool argus_map_next(argus_map_it_t *it);
+ARGUS_API bool argus_map_next(argus_map_it_t *it);
 
 /**
  * argus_map_reset - Reset a map iterator to the beginning
  *
  * @param it  Map iterator to reset
  */
-void argus_map_reset(argus_map_it_t *it);
+ARGUS_API void argus_map_reset(argus_map_it_t *it);
 
 #endif /* ARGUS_API_H */

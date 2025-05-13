@@ -1,5 +1,7 @@
 #define _GNU_SOURCE  // NOLINT
 
+#include "argus/internal/compiler.h"
+#include "argus/internal/cross_platform.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -84,7 +86,7 @@ char **split(const char *str, const char *charset)
         tmp += skip_charset(tmp, charset);
 
         size_t len  = word_len(tmp, charset);
-        char  *word = strndup(tmp, len);
+        char  *word = safe_strndup(tmp, len);
         if (word == NULL) {
             cleanup_split(result, i);
             return (NULL);
