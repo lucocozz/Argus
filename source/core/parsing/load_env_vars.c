@@ -49,7 +49,7 @@ static const char *get_env_var_name(argus_t *argus, argus_option_t *option)
         }
 
         for (char *p = full_name; *p; ++p)
-            *p = *p == '-' ? '_' : toupper(*p);
+            *p = *p == '-' ? '_' : (char)toupper(*p);
         return (full_name);
     }
 
@@ -108,7 +108,7 @@ int load_env_vars(argus_t *argus)
     for (size_t i = 0; i < argus->context.subcommand_depth; ++i) {
         const argus_option_t *subcommand = argus->context.subcommand_stack[i];
         if (subcommand && subcommand->sub_options) {
-            int status = load_env(argus, subcommand->sub_options);
+            status = load_env(argus, subcommand->sub_options);
             if (status != ARGUS_SUCCESS)
                 return (status);
         }

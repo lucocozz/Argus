@@ -71,7 +71,7 @@ int validate_structure(argus_t *argus, argus_option_t *options)
             if (option->type != other_option->type)
                 continue;
 
-            int result = is_unique(argus, option, other_option);
+            result = is_unique(argus, option, other_option);
             if (result != ARGUS_SUCCESS)
                 status = result;
         }

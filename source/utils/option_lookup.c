@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "argus/internal/compiler.h"
 #include "argus/internal/context.h"
+#include "argus/internal/cross_platform.h"
 #include "argus/internal/utils.h"
 #include "argus/types.h"
 
@@ -69,14 +71,13 @@ const argus_option_t *get_active_options(argus_t *argus)
 
 static argus_option_t *find_from_relative_path(argus_t argus, const char *option_name)
 {
-    for (int i = argus.context.subcommand_depth; i >= 0; --i) {
+    for (int i = (int)argus.context.subcommand_depth; i >= 0; --i) {
         argus_option_t *options;
 
-        if (i == 0) {
+        if (i == 0)
             options = argus.options;
-        } else {
+        else
             options = argus.context.subcommand_stack[i - 1]->sub_options;
-        }
 
         argus_option_t *option = find_option_by_name(options, option_name);
         if (option != NULL)

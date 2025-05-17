@@ -12,10 +12,12 @@ example_programs = [
   'regex',
 ]
 
+fs = import('fs')
+
 # Build each example
 foreach example : example_programs
   src_file = meson.current_source_dir() / (example + '.c')
-  if run_command('test', '-f', src_file, check: false).returncode() == 0
+  if fs.exists(src_file)
     executable(
       example,
       example + '.c',

@@ -4,6 +4,8 @@
 #include <string.h>
 
 #include "argus/errors.h"
+#include "argus/internal/compiler.h"
+#include "argus/internal/cross_platform.h"
 #include "argus/internal/utils.h"
 #include "argus/options.h"
 #include "argus/types.h"
@@ -21,12 +23,12 @@ static int set_kv_pair(argus_t *argus, argus_option_t *option, char *pair)
     }
 
     // Split the string at the separator
-    char *key = strndup(pair, separator - pair);
+    char *key = safe_strndup(pair, separator - pair);
     if (key == NULL) {
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
                            key);
     }
-    char *value = strdup(separator + 1);
+    char *value = safe_strdup(separator + 1);
     if (value == NULL) {
         free(key);
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for value '%s'",

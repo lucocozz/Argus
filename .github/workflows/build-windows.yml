@@ -1,0 +1,151 @@
+name: Build Windows
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    name: ${{ matrix.compiler }} ${{ matrix.regex && '| regex' || ''}}
+    strategy:
+      fail-fast: false
+      matrix:
+        build-type: [release]
+        regex: [true, false]
+        compiler: [msvc, gcc]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install Ninja and Meson
+      run: |
+        python -m pip install --upgrade pip
+        pip install 'meson>=1.0.0'
+        choco install ninja -y
+  
+    - name: Install MSYS2 and GCC
+      if: matrix.compiler == 'gcc'
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-toolchain
+          ninja
+          pkg-config
+          mingw-w64-x86_64-pcre2
+          mingw-w64-x86_64-meson
+      
+    - name: Setup MSVC environment
+      if: matrix.compiler == 'msvc'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+    
+    - name: Install Regex dependencies
+      if: matrix.regex && matrix.compiler == 'msvc'
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git ${{ github.workspace }}/vcpkg
+        cd ${{ github.workspace }}/vcpkg
+        ./bootstrap-vcpkg.bat
+        ./vcpkg integrate install
+        ./vcpkg install pcre2:x64-windows
+        
+        $vcpkgInclude = "${{ github.workspace }}/vcpkg/installed/x64-windows/include"
+        $vcpkgLib = "${{ github.workspace }}/vcpkg/installed/x64-windows/lib"
+        
+        $vcpkgInclude = $vcpkgInclude -replace '\\', '/'
+        $vcpkgLib = $vcpkgLib -replace '\\', '/'
+        
+        echo "VCPKG_INCLUDE=$vcpkgInclude" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "VCPKG_LIB=$vcpkgLib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      shell: pwsh
+
+    - name: Configure project with MSVC
+      if: matrix.compiler == 'msvc'
+      shell: pwsh
+      run: |
+        if ("${{ matrix.regex }}" -eq "true") {
+          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=true -Dpcre2_include_dir="$env:VCPKG_INCLUDE" -Dpcre2_lib_dir="$env:VCPKG_LIB" -Dexamples=false
+        } else {
+          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=false -Dexamples=false
+        }
+
+    - name: Configure project with GCC
+      if: matrix.compiler == 'gcc'
+      shell: msys2 {0}
+      run: |
+        cd $GITHUB_WORKSPACE
+        if [ "${{ matrix.regex }}" = "true" ]; then
+          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=true -Dexamples=false
+        else
+          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=false -Dexamples=false
+        fi
+
+    - name: Build project with MSVC
+      if: matrix.compiler == 'msvc'
+      shell: pwsh
+      run: meson compile -C .build
+
+    - name: Build project with GCC
+      if: matrix.compiler == 'gcc'
+      shell: msys2 {0}
+      run: |
+        cd $GITHUB_WORKSPACE
+        meson compile -C .build
+
+    - name: Configure examples with GCC
+      if: matrix.compiler == 'gcc'
+      shell: msys2 {0}
+      run: |
+        cd $GITHUB_WORKSPACE
+        if [ -d ".build/meson-info" ]; then
+          rm -rf .build/meson-info
+        fi
+        
+        if [ "${{ matrix.regex }}" = "true" ]; then
+          meson setup --wipe .build --buildtype=${{ matrix.build-type }} -Dregex=true -Dexamples=true
+        else
+          meson setup --wipe .build --buildtype=${{ matrix.build-type }} -Dregex=false -Dexamples=true
+        fi
+
+    - name: Build examples with GCC
+      if: matrix.compiler == 'gcc'
+      shell: msys2 {0}
+      run: |
+        cd $GITHUB_WORKSPACE
+        meson compile -C .build
+
+    - name: Prepare artifacts
+      run: |
+        mkdir -p artifacts/lib
+        mkdir -p artifacts/include
+
+        if (Test-Path ".build/*argus-1.dll") {
+          cp .build/*argus-1.dll artifacts/lib/libargus-1.dll
+        }
+        
+        if (Test-Path ".build/libargus.a") {
+          cp .build/libargus.a artifacts/lib/
+        }
+
+        cp -r includes/argus artifacts/include/
+        cp includes/argus.h artifacts/include/
+      shell: pwsh
+
+    - name: Upload Windows build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: argus-windows-${{ matrix.compiler }}-${{ matrix.regex && 'regex' || 'noregex' }}
+        path: artifacts/
+        if-no-files-found: warn

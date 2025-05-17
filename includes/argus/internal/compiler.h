@@ -15,38 +15,57 @@
  */
 #if defined(__clang__)
     /* For Clang compiler */
-    #define PRAGMA_DISABLE_OVERRIDE()                                                              \
+    #define ARGUS_COMPILER_RULE_PUSH()                                                             \
         _Pragma("clang diagnostic push")                                                           \
-            _Pragma("clang diagnostic ignored \"-Winitializer-overrides\"")
+            _Pragma("clang diagnostic ignored \"-Wgnu-zero-variadic-macro-arguments\"")            \
+                _Pragma("clang diagnostic ignored \"-Winitializer-overrides\"")                    \
+                    _Pragma("clang diagnostic ignored \"-Wpedantic\"")
 
-    #define PRAGMA_DISABLE_PEDANTIC()                                                              \
-        _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Wpedantic\"")
+    #define ARGUS_COMPILER_RULE_POP() _Pragma("clang diagnostic pop")
 
-    #define PRAGMA_DISABLE_VARIADIC_MACROS()                                                       \
-        _Pragma("clang diagnostic push")                                                           \
-            _Pragma("clang diagnostic ignored \"-Wgnu-zero-variadic-macro-arguments\"")
+#elif defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW64__)
+    /* For GCC compiler and MinGW variants */
 
-    #define PRAGMA_RESTORE() _Pragma("clang diagnostic pop")
+    #if defined(__WIN32__) || defined(__WIN64__) || defined(__CYGWIN__)
+        #define ARGUS_COMPILER_RULE_PUSH()                                                         \
+            _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wvariadic-macros\"") \
+                _Pragma("GCC diagnostic ignored \"-Woverride-init\"")                              \
+                    _Pragma("GCC diagnostic ignored \"-Wpedantic\"")
+    #else
+        #define ARGUS_COMPILER_RULE_PUSH()                                                         \
+            _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wvariadic-macros\"") \
+                _Pragma("GCC diagnostic ignored \"-Woverride-init\"")                              \
+                    _Pragma("GCC diagnostic ignored \"-Wpedantic\"")
+    #endif
 
-#elif defined(__GNUC__)
-    /* For GCC compiler */
-    #define PRAGMA_DISABLE_OVERRIDE()                                                              \
-        _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Woverride-init\"")
-
-    #define PRAGMA_DISABLE_PEDANTIC()                                                              \
-        _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wpedantic\"")
-
-    #define PRAGMA_DISABLE_VARIADIC_MACROS()                                                       \
-        _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wvariadic-macros\"")
-
-    #define PRAGMA_RESTORE() _Pragma("GCC diagnostic pop")
+    #define ARGUS_COMPILER_RULE_POP() _Pragma("GCC diagnostic pop")
 
 #else
     /* Fallback for other compilers */
-    #define PRAGMA_DISABLE_OVERRIDE()
-    #define PRAGMA_DISABLE_PEDANTIC()
-    #define PRAGMA_DISABLE_VARIADIC_MACROS()
-    #define PRAGMA_RESTORE()
+    #define ARGUS_COMPILER_RULE_PUSH()
+    #define ARGUS_COMPILER_RULE_POP()
+#endif
+
+/**
+ * Shared library export/import macros for Windows DLL support
+ */
+#if defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__) || defined(__MINGW32__) ||           \
+    defined(__MINGW64__)
+    #if defined(ARGUS_BUILDING)
+        #if defined(_MSC_VER)
+            #define ARGUS_API __declspec(dllexport)
+        #else  // MinGW/GCC
+            #define ARGUS_API __declspec(dllexport) __cdecl
+        #endif
+    #else
+        #if defined(_MSC_VER)
+            #define ARGUS_API __declspec(dllimport)
+        #else  // MinGW/GCC
+            #define ARGUS_API __declspec(dllimport) __cdecl
+        #endif
+    #endif
+#else
+    #define ARGUS_API
 #endif
 
 #endif /* ARGUS_INTERNAL_COMPILER_H */
