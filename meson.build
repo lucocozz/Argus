@@ -8,7 +8,7 @@ project(
         'c_std=gnu11',
         'buildtype=debugoptimized',
     ],
-    meson_version: '>=1.0.0',
+    meson_version: '>=1.1.0',
 )
 
 cc = meson.get_compiler('c')
@@ -22,9 +22,9 @@ endif
 is_windows = host_machine.system() == 'windows'
 if is_windows
     add_project_arguments('-DARGUS_BUILDING', language: 'c')
-    if cc.get_id() == 'gcc'
-        add_project_link_arguments('-static-libgcc', language: 'c')
-    endif
+    # if cc.get_id() == 'gcc'
+    #     add_project_link_arguments('-static-libgcc', language: 'c')
+    # endif
 endif
 
 
@@ -76,6 +76,7 @@ argus_lib = both_libraries(
     version: meson.project_version(),
     soversion: '1',
     install: true,
+    vs_module_defs: 'argus.def',
 )
 
 # Create dependency object for internal usage

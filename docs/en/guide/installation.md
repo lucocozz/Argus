@@ -4,7 +4,7 @@ This guide explains how to install the argus library on various operating system
 
 !!! warning "Working in progress"
     - Only the manual installation method is available at the moment. The package manager methods are reserved for future releases.
-    - Windowa support is not yet available.
+    - Windows support is limited to gcc version 13.0.0 or newer.
 
 ## Quick Installation Methods
 
@@ -177,7 +177,7 @@ Reserved for future releases
 === "Windows"
     Install the following tools:
     
-    - **Visual Studio** or **MinGW**
+    - **Visual Studio** or **MinGW with GCC 13.0.0+**
     - **Python** 3.7+
     - **Meson** and **Ninja** build system
     
@@ -188,6 +188,9 @@ Reserved for future releases
     # For regex support (optional)
     vcpkg install pcre2:x64-windows
     ```
+    
+    !!! warning "Windows Compatibility"
+        The argus library is only compatible with GCC version 13.0.0 or newer on Windows platforms.
 
 === "Linux"
     ```bash
@@ -285,6 +288,11 @@ Download pre-built packages from [GitHub Releases](https://github.com/lucocozz/a
     **For MSVC projects:**
     - Add include path to your project
     - Link against argus.lib
+    
+    **For MinGW/GCC projects:**
+    - Requires GCC 13.0.0 or newer
+    - Add include path to your project
+    - Link against libargus.a
 
 === "Linux/macOS"
     1. Download `argus-1.0.0.tar.gz`
@@ -378,6 +386,11 @@ executable('myapp', 'main.c', dependencies: [argus_dep])
     meson setup .build
     meson compile -C .build
     ```
+    
+    !!! important "GCC Version Requirement"
+        For Windows with MinGW, you must use GCC version 13.0.0 or newer. Older versions are not compatible with the argus library.
+        
+        Check your GCC version with: `gcc --version`
 
 ### Linux-Specific
 
@@ -409,6 +422,19 @@ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:~/.local/lib/pkgconfig
 | **Headers not found** | Add include path: `-I/path/to/argus/include` |
 | **PCRE2 not found** | Install PCRE2 or disable regex with `-Dregex=false` |
 | **Windows DLL not found at runtime** | Add DLL directory to PATH or copy DLL to executable directory |
+| **"undefined reference" errors on Windows** | Make sure you're using GCC 13.0.0 or newer |
+
+### Windows GCC Version
+
+On Windows, argus requires GCC 13.0.0 or newer. If you're using an older version, you'll need to upgrade:
+
+```bash
+# Check your GCC version
+gcc --version
+
+# If using MSYS2/MinGW, update to the latest version
+pacman -Syu mingw-w64-x86_64-gcc
+```
 
 ### PCRE2 on Windows
 
@@ -431,14 +457,14 @@ ARGUS_OPTIONS(
     HELP_OPTION()
 )
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     argus_t argus = argus_init(options, "test", "1.0.0");
     int status = argus_parse(&argus, argc, argv);
     
-    if (status == ARGUS_SUCCESS) {
+    if (status == ARGUS_SUCCESS)
         printf("argus is working correctly!\n");
-    }
-    
+
     argus_free(&argus);
     return 0;
 }

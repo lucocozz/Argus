@@ -13,10 +13,6 @@
 #include "argus/internal/compiler.h"
 #include "argus/types.h"
 
-ARGUS_API argus_t argus_init_mode(argus_option_t *options, const char *program_name,
-                                  const char *version, bool release_mode);
-
-#ifdef ARGUS_RELEASE
 /**
  * argus_init - Initialize the argus context
  *
@@ -36,35 +32,8 @@ ARGUS_API argus_t argus_init_mode(argus_option_t *options, const char *program_n
  * Note: Only use this in production. During development, leave validation
  * enabled to catch configuration errors early.
  */
-ARGUS_API argus_t argus_init(argus_option_t *options, const char *program_name, const char *version)
-{
-    return argus_init_mode(options, program_name, version, true);
-}
-#else
-/**
- * argus_init - Initialize the argus context
- *
- * @param options      Array of command-line options
- * @param program_name Name of the program
- * @param version      Version string
- * @param description  Program description
- *
- * @return Initialized argus_t context
- *
- * @note
- * Define `ARGUS_RELEASE` when compiling your application to skip
- * options structure validation and improve performance.
- *
- * Example: `gcc -DARGUS_RELEASE my_program.c -o my_program -largus`
- *
- * Note: Only use this in production. During development, leave validation
- * enabled to catch configuration errors early.
- */
-ARGUS_API argus_t argus_init(argus_option_t *options, const char *program_name, const char *version)
-{
-    return argus_init_mode(options, program_name, version, false);
-}
-#endif
+ARGUS_API argus_t argus_init(argus_option_t *options, const char *program_name,
+                             const char *version);
 
 /**
  * argus_parse - Parse command-line arguments

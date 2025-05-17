@@ -2,7 +2,7 @@ name: Build macOS
 
 on:
   push:
-    branches: [ develop, windows ]
+    branches: [ develop ]
   pull_request:
     branches: [ main, develop ]
   workflow_dispatch:

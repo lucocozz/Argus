@@ -2,9 +2,9 @@
 
 Ce guide explique comment installer la bibliothèque argus sur différents systèmes d'exploitation.
 
-!!! warning "Travaux en cours"
-    - Seule la méthode d'installation manuelle est disponible pour le moment. Les méthodes par gestionnaire de paquets sont réservées pour les versions futures.
-    - La prise en charge de Windows n'est pas encore disponible.
+!!! warning "Travail en cours"
+    - Seule la méthode d'installation manuelle est disponible pour le moment. Les méthodes via gestionnaires de paquets sont réservées pour les futures versions.
+    - Le support Windows est limité à gcc version 13.0.0 ou plus récente.
 
 ## Méthodes d'Installation Rapide
 
@@ -80,7 +80,7 @@ Choisissez la méthode qui convient le mieux à votre environnement :
 
 argus n'a qu'une seule dépendance optionnelle :
 
-**PCRE2** : Nécessaire uniquement pour la prise en charge de la validation par expressions régulières.
+**PCRE2** : Requis uniquement pour la prise en charge de la validation par expressions régulières.
 
 === "Windows"
     ```bash
@@ -112,23 +112,23 @@ argus n'a qu'une seule dépendance optionnelle :
 
 #### Conan
 
-[Conan](https://conan.io/) fournit une gestion de paquets multiplateforme pour les bibliothèques C/C++.
+[Conan](https://conan.io/) fournit une gestion des paquets multi-plateformes pour les bibliothèques C/C++.
 
 ```bash
 # Installer la dernière version
 conan install argus/1.0.0@
 
-# Désactiver la prise en charge des expressions régulières
+# Désactiver le support des regex
 conan install argus/1.0.0@ -o argus:regex=false
 ```
 
-Ajoutez à votre fichier `conanfile.txt` du projet :
+Ajoutez à votre `conanfile.txt` de projet :
 ```ini
 [requires]
 argus/1.0.0
 
 [options]
-argus:regex=True  # Mettre à False pour désactiver les expressions régulières
+argus:regex=True  # Mettre à False pour désactiver les regex
 ```
 
 #### vcpkg
@@ -136,14 +136,14 @@ argus:regex=True  # Mettre à False pour désactiver les expressions régulière
 [vcpkg](https://github.com/microsoft/vcpkg) est le gestionnaire de bibliothèques C++ de Microsoft.
 
 ```bash
-# Installer avec prise en charge des expressions régulières
+# Installer avec le support des regex
 vcpkg install argus
 
-# Installer sans prise en charge des expressions régulières
+# Installer sans le support des regex
 vcpkg install argus[core]
 ```
 
-Ajoutez à votre fichier `vcpkg.json` du projet :
+Ajoutez à votre `vcpkg.json` de projet :
 ```json
 {
   "dependencies": [
@@ -157,37 +157,40 @@ Ajoutez à votre fichier `vcpkg.json` du projet :
 
 <!--
 #### APT (Debian/Ubuntu)
-Réservé pour les versions futures
+Réservé pour les futures versions
 -->
 
 <!--
 #### Homebrew (macOS)
-Réservé pour les versions futures
+Réservé pour les futures versions
 -->
 
 <!--
 #### Chocolatey (Windows)
-Réservé pour les versions futures
+Réservé pour les futures versions
 -->
 
-### Compilation depuis les Sources
+### Compilation à partir des Sources
 
 #### Étape 1 : Installer les Outils de Compilation
 
 === "Windows"
     Installez les outils suivants :
     
-    - **Visual Studio** ou **MinGW**
+    - **Visual Studio** ou **MinGW avec GCC 13.0.0+**
     - **Python** 3.7+
-    - Système de compilation **Meson** et **Ninja**
+    - **Meson** et le système de compilation **Ninja**
     
     ```bash
     # Installer Python et Meson
     pip install meson ninja
     
-    # Pour la prise en charge des expressions régulières (optionnel)
+    # Pour le support des regex (optionnel)
     vcpkg install pcre2:x64-windows
     ```
+    
+    !!! warning "Compatibilité Windows"
+        La bibliothèque argus est uniquement compatible avec GCC version 13.0.0 ou plus récente sur les plateformes Windows.
 
 === "Linux"
     ```bash
@@ -203,7 +206,7 @@ Réservé pour les versions futures
 
 === "macOS"
     ```bash
-    # Installer les outils en ligne de commande
+    # Installer les outils de ligne de commande
     xcode-select --install
     
     # Installer les outils de compilation
@@ -230,7 +233,7 @@ meson compile -C .build
 Options de configuration :
 
 ```bash
-# Désactiver la prise en charge des expressions régulières
+# Désactiver le support des regex
 meson setup .build -Dregex=false
 
 # Compilation en mode release
@@ -285,6 +288,11 @@ Téléchargez les paquets précompilés depuis [GitHub Releases](https://github.
     **Pour les projets MSVC :**
     - Ajoutez le chemin d'inclusion à votre projet
     - Liez avec argus.lib
+    
+    **Pour les projets MinGW/GCC :**
+    - Nécessite GCC 13.0.0 ou plus récent
+    - Ajoutez le chemin d'inclusion à votre projet
+    - Liez avec libargus.a
 
 === "Linux/macOS"
     1. Téléchargez `argus-1.0.0.tar.gz`
@@ -299,10 +307,10 @@ Pour Linux et macOS, le script d'installation fournit une méthode d'installatio
 # Installation système (par défaut)
 ./install.sh
 
-# Installer dans le répertoire utilisateur (~/.local)
+# Installation dans le répertoire utilisateur (~/.local)
 ./install.sh --local
 
-# Installer sans prise en charge des expressions régulières
+# Installation sans support des regex
 ./install.sh --no-regex
 
 # Spécifier un répertoire d'installation personnalisé
@@ -317,20 +325,20 @@ Options disponibles :
 | `--libdir=CHEMIN` | Répertoire des bibliothèques (par défaut : `$prefix/lib`) |
 | `--includedir=CHEMIN` | Répertoire des en-têtes (par défaut : `$prefix/include`) |
 | `--local` | Installer dans `~/.local` au lieu des répertoires système |
-| `--no-regex` | Désactiver la prise en charge des expressions régulières |
+| `--no-regex` | Désactiver le support des regex |
 | `--uninstall` | Désinstaller la bibliothèque |
-| `--verbose` | Afficher une sortie détaillée |
+| `--verbose` | Afficher des informations détaillées |
 
-## Intégration au Projet
+## Intégration dans un Projet
 
-### Options du Compilateur
+### Flags du Compilateur
 
 ```bash
 # Compilation directe
-gcc your_program.c -o your_program -largus
+gcc votre_programme.c -o votre_programme -largus
 
 # Avec pkg-config
-gcc your_program.c -o your_program $(pkg-config --cflags --libs argus)
+gcc votre_programme.c -o votre_programme $(pkg-config --cflags --libs argus)
 ```
 
 ### Intégration CMake
@@ -338,7 +346,7 @@ gcc your_program.c -o your_program $(pkg-config --cflags --libs argus)
 ```cmake
 # Trouver argus installé
 find_package(argus REQUIRED)
-target_link_libraries(your_target PRIVATE argus::argus)
+target_link_libraries(votre_cible PRIVATE argus::argus)
 ```
 
 ### Intégration Meson
@@ -347,22 +355,22 @@ target_link_libraries(your_target PRIVATE argus::argus)
 # Dans votre meson.build
 argus_dep = dependency('argus', version: '>=1.0.0', required: false)
 
-# Repli sur un sous-projet si non trouvé
+# Solution de secours via sous-projet si non trouvé
 if not argus_dep.found()
   argus_proj = subproject('argus')
   argus_dep = argus_proj.get_variable('argus_dep')
 endif
 
-executable('myapp', 'main.c', dependencies: [argus_dep])
+executable('monapplication', 'main.c', dependencies: [argus_dep])
 ```
 
 ## Notes Spécifiques aux Plateformes
 
-### Spécifique à Windows
+### Windows-Spécifique
 
 === "MSVC"
     ```powershell
-    # Ouvrir l'Invite de Commandes Développeur pour VS
+    # Ouvrir l'Invite de Commande pour VS
     
     # Configurer et compiler
     meson setup .build
@@ -378,8 +386,13 @@ executable('myapp', 'main.c', dependencies: [argus_dep])
     meson setup .build
     meson compile -C .build
     ```
+    
+    !!! important "Exigence de Version GCC"
+        Pour Windows avec MinGW, vous devez utiliser GCC version 13.0.0 ou plus récente. Les versions plus anciennes ne sont pas compatibles avec la bibliothèque argus.
+        
+        Vérifiez votre version de GCC avec : `gcc --version`
 
-### Spécifique à Linux
+### Linux-Spécifique
 
 Si vous avez installé dans un emplacement non standard ou dans votre répertoire utilisateur, vous devrez peut-être mettre à jour votre environnement :
 
@@ -389,7 +402,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/.local/lib
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:~/.local/lib/pkgconfig
 ```
 
-### Spécifique à macOS
+### macOS-Spécifique
 
 Si vous avez installé dans un emplacement non standard :
 
@@ -399,16 +412,29 @@ export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:~/.local/lib
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:~/.local/lib/pkgconfig
 ```
 
-## Dépannage
+## Résolution de Problèmes
 
 ### Problèmes Courants
 
 | Problème | Solution |
-|-------|----------|
-| **Bibliothèque introuvable lors de l'édition de liens** | Ajouter le chemin de la bibliothèque : `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib` |
-| **En-têtes introuvables** | Ajouter le chemin d'inclusion : `-I/chemin/vers/argus/include` |
-| **PCRE2 introuvable** | Installer PCRE2 ou désactiver les expressions régulières avec `-Dregex=false` |
-| **DLL Windows introuvable à l'exécution** | Ajouter le répertoire DLL au PATH ou copier la DLL dans le répertoire de l'exécutable |
+|----------|----------|
+| **Bibliothèque non trouvée lors de l'édition des liens** | Ajouter le chemin de la bibliothèque : `export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib` |
+| **En-têtes non trouvés** | Ajouter le chemin d'inclusion : `-I/chemin/vers/argus/include` |
+| **PCRE2 non trouvé** | Installer PCRE2 ou désactiver les regex avec `-Dregex=false` |
+| **DLL Windows non trouvée à l'exécution** | Ajouter le répertoire DLL au PATH ou copier la DLL dans le répertoire de l'exécutable |
+| **Erreurs "undefined reference" sur Windows** | Assurez-vous d'utiliser GCC 13.0.0 ou plus récent |
+
+### Version de GCC sur Windows
+
+Sur Windows, argus nécessite GCC 13.0.0 ou plus récent. Si vous utilisez une version plus ancienne, vous devrez la mettre à jour :
+
+```bash
+# Vérifier votre version de GCC
+gcc --version
+
+# Si vous utilisez MSYS2/MinGW, mettre à jour vers la dernière version
+pacman -Syu mingw-w64-x86_64-gcc
+```
 
 ### PCRE2 sur Windows
 
@@ -431,14 +457,14 @@ ARGUS_OPTIONS(
     HELP_OPTION()
 )
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     argus_t argus = argus_init(options, "test", "1.0.0");
     int status = argus_parse(&argus, argc, argv);
     
-    if (status == ARGUS_SUCCESS) {
+    if (status == ARGUS_SUCCESS)
         printf("argus fonctionne correctement !\n");
-    }
-    
+
     argus_free(&argus);
     return 0;
 }
@@ -451,6 +477,6 @@ gcc test.c -o test -largus
 ./test --help
 ```
 
-## Prochaines Étapes
+## Étapes Suivantes
 
 Une fois installé, passez au [Guide de Démarrage Rapide](quickstart.md) pour commencer à utiliser argus dans vos projets.
