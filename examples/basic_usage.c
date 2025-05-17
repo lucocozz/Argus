@@ -29,14 +29,6 @@ ARGUS_OPTIONS(
                DEFAULT(8080), 
                RANGE(1, 65535)),
 
-    // Boolean option with both short and long names
-    OPTION_BOOL('d', NULL, HELP("Debug mode"), 
-               DEFAULT(false), 
-               HINT("true|false")),
-
-    // Another option with only long name (using '\0' instead of 0)
-    OPTION_FLAG('\0', "dry-run", HELP("Run without making changes")),
-    
     // Required positional argument
     POSITIONAL_STRING("input", HELP("Input file")),
     POSITIONAL_INT("value", HELP("Value to process"), FLAGS(FLAG_OPTIONAL))
@@ -50,27 +42,23 @@ int main(int argc, char **argv)
 
     // Parse command-line arguments
     int status = argus_parse(&argus, argc, argv);
-    if (status != ARGUS_SUCCESS) {
+    if (status != ARGUS_SUCCESS)
         return status;
-    }
 
     // Access parsed values
     bool verbose = argus_get(argus, "verbose").as_bool;
-    const char* output = argus_get(argus, "output").as_string;
+    const char *output = argus_get(argus, "output").as_string;
     int port = argus_get(argus, "p").as_int;  // Using short name as ID when only short name exists
-    bool dry_run = argus_get(argus, "dry-run").as_bool;
-    const char* input = argus_get(argus, "input").as_string;
-    bool debug = argus_get(argus, "d").as_bool;  // Using short name as ID when both exist
+    const char *input = argus_get(argus, "input").as_string;
 
     // Display configuration
     printf("Configuration:\n");
-    printf("  Verbose (-v, --verbose): %s\n", verbose ? "enabled" : "disabled");
-    printf("  Output (--output only): %s\n", output);
-    printf("  Port (-p only): %d\n", port);
-    printf("  Dry run (--dry-run only): %s\n", dry_run ? "enabled" : "disabled");
-    printf("  Debug (-d only): %s\n", debug ? "enabled" : "disabled");
+    printf("  Verbose: %s\n", verbose ? "enabled" : "disabled");
+    printf("  Output: %s\n", output);
+    printf("  Port: %d\n", port);
     printf("  Input: %s\n", input);
-    printf("  Value: %d\n", argus_get(argus, "value").as_int);
+    if (argus_is_set(argus, "value")) // Check if the optional positional argument was set
+        printf("  Value: %d\n", argus_get(argus, "value").as_int);
 
     // Free resources
     argus_free(&argus);
