@@ -1,5 +1,5 @@
 EXPORTS
-    argus_init
+    _argus_init_validate
     argus_parse
     argus_free
     argus_is_set

@@ -31,8 +31,8 @@ endforeach
 release_mode_test_sources = files('test_core/test_release_mode.c')
 
 # Build and run the test in normal mode (validation enabled)
-test_release_normal = executable(
-  'test_release_mode_normal',
+test_release_mode_do_validation = executable(
+  'test_release_mode_do_validation',
   release_mode_test_sources,
   dependencies: [criterion_dep, argus_dep],
   include_directories: test_includes,
@@ -40,15 +40,15 @@ test_release_normal = executable(
 )
 
 test(
-  'unit_release_mode_normal',
-  test_release_normal,
+  'unit_release_mode_do_validation',
+  test_release_mode_do_validation,
   env: test_env,
   timeout: 30
 )
 
 # Build and run the test in release mode (validation disabled)
-test_release_optimized = executable(
-  'test_release_mode_optimized',
+test_release_skip_validation = executable(
+  'test_release_mode_skip_validation',
   release_mode_test_sources,
   dependencies: [criterion_dep, argus_dep],
   include_directories: test_includes,
@@ -56,8 +56,8 @@ test_release_optimized = executable(
 )
 
 test(
-  'unit_release_mode_optimized',
-  test_release_optimized,
+  'unit_release_mode_skip_validation',
+  test_release_skip_validation,
   env: test_env,
   timeout: 30
 )

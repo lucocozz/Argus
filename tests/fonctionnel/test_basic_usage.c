@@ -10,7 +10,7 @@ ARGUS_OPTIONS(
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
     OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
     OPTION_INT('p', "port", HELP("Port number"), DEFAULT(8080), RANGE(1, 65535)),
-    POSITIONAL_STRING("input", HELP("Input file"))
+    POSITIONAL_STRING("input", HELP("Input file")),
 )
 
 // Test successful parsing and execution

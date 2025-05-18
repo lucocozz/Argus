@@ -38,7 +38,7 @@ ARGUS_OPTIONS(
     OPTION_ARRAY_INT('i', "ids", HELP("Liste d'identifiants")),
     
     // Tableau de flottants
-    OPTION_ARRAY_FLOAT('f', "factors", HELP("Facteurs d'échelle"))
+    OPTION_ARRAY_FLOAT('f', "factors", HELP("Facteurs d'échelle")),
 )
 ```
 
@@ -106,7 +106,7 @@ ARGUS_OPTIONS(
     OPTION_MAP_FLOAT('s', "scales", HELP("Facteurs d'échelle")),
     
     // Mapping de booléens
-    OPTION_MAP_BOOL('f', "features", HELP("Indicateurs de fonctionnalités"))
+    OPTION_MAP_BOOL('f', "features", HELP("Indicateurs de fonctionnalités")),
 )
 ```
 
@@ -266,7 +266,7 @@ ARGUS_OPTIONS(
     // Options de type mapping
     OPTION_MAP_STRING('e', "env", HELP("Variables d'environnement")),
     OPTION_MAP_INT('p', "port", HELP("Mappages de ports")),
-    OPTION_MAP_BOOL('f', "feature", HELP("Indicateurs de fonctionnalités"))
+    OPTION_MAP_BOOL('f', "feature", HELP("Indicateurs de fonctionnalités")),
 )
 
 int main(int argc, char **argv)

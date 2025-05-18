@@ -13,7 +13,7 @@ ARGUS_OPTIONS(
     OPTION_FLAG('q', "quiet", HELP("Quiet mode"), CONFLICTS("verbose")),
     OPTION_STRING('u', "username", HELP("Username"), REQUIRES("password")),
     OPTION_STRING('p', "password", HELP("Password"), REQUIRES("username")),
-    POSITIONAL_STRING("input", HELP("Input file"), FLAGS(FLAG_REQUIRED))
+    POSITIONAL_STRING("input", HELP("Input file")),
 )
 
 // Test options with exclusive groups
@@ -24,7 +24,7 @@ ARGUS_OPTIONS(
         OPTION_FLAG('z', "gzip", HELP("Use gzip compression")),
         OPTION_FLAG('j', "bzip2", HELP("Use bzip2 compression")),
     GROUP_END(),
-    POSITIONAL_STRING("input", HELP("Input file"), FLAGS(FLAG_REQUIRED))
+    POSITIONAL_STRING("input", HELP("Input file")),
 )
 
 // Test post_parse_validation with required positionals

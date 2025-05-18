@@ -13,14 +13,14 @@ ARGUS_OPTIONS(
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     OPTION_STRING('o', "output", HELP("Output file")),
     OPTION_INT('c', "count", HELP("Count value")),
-    POSITIONAL_STRING("input", HELP("Input file"))
+    POSITIONAL_STRING("input", HELP("Input file")),
 )
 
 // Options for testing subcommands
 ARGUS_OPTIONS(
     sub_parse_options,
     HELP_OPTION(),
-    OPTION_FLAG('d', "debug", HELP("Debug mode"))
+    OPTION_FLAG('d', "debug", HELP("Debug mode")),
 )
 
 ARGUS_OPTIONS(
@@ -28,7 +28,7 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     SUBCOMMAND("sub", sub_parse_options, 
-               HELP("Subcommand"))
+               HELP("Subcommand")),
 )
 
 // Argus context for tests

@@ -18,20 +18,20 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     OPTION_STRING('o', "output", HELP("Output file")),
-    POSITIONAL_STRING("input", HELP("Input file"))
+    POSITIONAL_STRING("input", HELP("Input file")),
 )
 
 ARGUS_OPTIONS(
     invalid_options, // Intentionally invalid, no help option
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
-    OPTION_STRING('o', "output", HELP("Output file"))
+    OPTION_STRING('o', "output", HELP("Output file")),
 )
 
 ARGUS_OPTIONS(
     duplicate_options, // Intentionally invalid, duplicate names
     HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
-    OPTION_STRING('v', "verbose", HELP("Duplicate option")) // Same name and same short option
+    OPTION_STRING('v', "verbose", HELP("Duplicate option")), // Same name and same short option
 )
 
 // Contexte argus pour les tests

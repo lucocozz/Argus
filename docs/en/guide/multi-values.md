@@ -38,7 +38,7 @@ ARGUS_OPTIONS(
     OPTION_ARRAY_INT('i', "ids", HELP("List of IDs")),
     
     // Float array
-    OPTION_ARRAY_FLOAT('f', "factors", HELP("Scaling factors"))
+    OPTION_ARRAY_FLOAT('f', "factors", HELP("Scaling factors")),
 )
 ```
 
@@ -106,7 +106,7 @@ ARGUS_OPTIONS(
     OPTION_MAP_FLOAT('s', "scales", HELP("Scaling factors")),
     
     // Boolean map
-    OPTION_MAP_BOOL('f', "features", HELP("Feature flags"))
+    OPTION_MAP_BOOL('f', "features", HELP("Feature flags")),
 )
 ```
 
@@ -266,7 +266,7 @@ ARGUS_OPTIONS(
     // Map options
     OPTION_MAP_STRING('e', "env", HELP("Environment variables")),
     OPTION_MAP_INT('p', "port", HELP("Port mappings")),
-    OPTION_MAP_BOOL('f', "feature", HELP("Feature flags"))
+    OPTION_MAP_BOOL('f', "feature", HELP("Feature flags")),
 )
 
 int main(int argc, char **argv)

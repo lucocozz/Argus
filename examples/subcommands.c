@@ -17,7 +17,7 @@ ARGUS_OPTIONS(
     add_options,
     HELP_OPTION(),
     OPTION_FLAG('f', "force", HELP("Force add operation")),
-    POSITIONAL_STRING("file", HELP("File to add"))
+    POSITIONAL_STRING("file", HELP("File to add")),
 )
 
 // Define options for "remove" subcommand
@@ -25,7 +25,7 @@ ARGUS_OPTIONS(
     remove_options,
     HELP_OPTION(),
     OPTION_FLAG('r', "recursive", HELP("Recursively remove directories")),
-    POSITIONAL_STRING("file", HELP("File to remove"))
+    POSITIONAL_STRING("file", HELP("File to remove")),
 )
 
 // Define main options with subcommands
@@ -44,8 +44,27 @@ ARGUS_OPTIONS(
     
     SUBCOMMAND("rm", remove_options, 
                HELP("Remove files from the index"), 
-               ACTION(remove_command))
+               ACTION(remove_command)),
 )
+
+int main(int argc, char **argv)
+{
+    argus_t argus = argus_init(options, "subcommands_example", "1.0.0");
+    argus.description = "Example of subcommands";
+
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS)
+        return status;
+
+    if (argus_has_command(argus))
+        // Execute the subcommand handler
+        status = argus_exec(&argus, NULL);
+    else
+        printf("No command specified. Use --help to see available commands.\n");
+
+    argus_free(&argus);
+    return 0;
+}
 
 // Implementation of the "add" command
 int add_command(argus_t *argus, void *data)
@@ -82,26 +101,5 @@ int remove_command(argus_t *argus, void *data)
     if (verbose) printf("  verbose mode enabled\n");
     if (recursive) printf("  recursively\n");
 
-    return 0;
-}
-
-int main(int argc, char **argv)
-{
-    argus_t argus = argus_init(options, "subcommands_example", "1.0.0");
-    argus.description = "Example of subcommands";
-
-    int status = argus_parse(&argus, argc, argv);
-    if (status != ARGUS_SUCCESS) {
-        return status;
-    }
-
-    if (argus_has_command(argus)) {
-        // Execute the subcommand handler
-        status = argus_exec(&argus, NULL);
-    } else {
-        printf("No command specified. Use --help to see available commands.\n");
-    }
-
-    argus_free(&argus);
     return 0;
 }

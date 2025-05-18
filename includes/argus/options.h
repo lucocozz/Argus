@@ -247,7 +247,7 @@ ARGUS_API int regex_validator(argus_t *argus, const char *value, validator_data_
  */
 #define ARGUS_OPTIONS(name, ...)                                                                   \
     ARGUS_COMPILER_RULE_PUSH()                                                                     \
-    argus_option_t name[] = {__VA_ARGS__, OPTION_END()};                                           \
+    argus_option_t name[] = {__VA_ARGS__ OPTION_END()};                                            \
     ARGUS_COMPILER_RULE_POP()
 
 #endif /* ARGUS_OPTIONS_H */

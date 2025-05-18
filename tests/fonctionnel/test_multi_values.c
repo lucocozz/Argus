@@ -10,7 +10,7 @@ ARGUS_OPTIONS(
     OPTION_ARRAY_STRING('s', "strings", HELP("Array of strings")),
     OPTION_ARRAY_INT('i', "ints", HELP("Array of integers")),
     OPTION_MAP_STRING('m', "map", HELP("String map")),
-    OPTION_MAP_INT('p', "ports", HELP("Port map"))
+    OPTION_MAP_INT('p', "ports", HELP("Port map")),
 )
 
 // Setup function that parses arguments with multi-value options

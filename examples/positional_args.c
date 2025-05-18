@@ -32,7 +32,7 @@ ARGUS_OPTIONS(
     // Optional positional argument without default value
     POSITIONAL_STRING("log_file", HELP("Log file"),
                     FLAGS(FLAG_OPTIONAL),
-                    HINT("LOG"))
+                    HINT("LOG")),
 )
 
 int main(int argc, char **argv)
@@ -41,19 +41,18 @@ int main(int argc, char **argv)
     argus.description = "Example of positional arguments";
     
     int status = argus_parse(&argus, argc, argv);
-    if (status != ARGUS_SUCCESS) {
+    if (status != ARGUS_SUCCESS)
         return status;
-    }
-    
+
     // Access required positional arguments
-    const char* source = argus_get(argus, "source").as_string;
-    const char* destination = argus_get(argus, "destination").as_string;
+    const char *source = argus_get(argus, "source").as_string;
+    const char *destination = argus_get(argus, "destination").as_string;
     
     // Access optional positional arguments
     int buffer_size = argus_get(argus, "buffer_size").as_int;
     
     // Optional argument may not be set
-    const char* log_file = argus_is_set(argus, "log_file") ? 
+    const char *log_file = argus_is_set(argus, "log_file") ? 
                           argus_get(argus, "log_file").as_string : 
                           "(none)";
     

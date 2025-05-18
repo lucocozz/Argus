@@ -15,26 +15,20 @@ int email_validator(argus_t *argus, argus_option_t *option, validator_data_t dat
 {
     (void)data; // Unused parameter
     
-    const char* email = option->value.as_string;
-    if (!email) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "Email address cannot be NULL");
-    }
-    
+    const char *email = option->value.as_string;
+    if (!email)
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Email address cannot be NULL");
+
     // Check for @ character
-    const char* at = strchr(email, '@');
-    if (!at) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "Email address must contain an '@' character");
-    }
-    
+    const char *at = strchr(email, '@');
+    if (!at)
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Email address must contain an '@' character");
+
     // Check for domain
     const char* dot = strchr(at, '.');
-    if (!dot) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "Email domain must contain a '.' character");
-    }
-    
+    if (!dot)
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Email domain must contain a '.' character");
+
     return ARGUS_SUCCESS;
 }
 
@@ -44,11 +38,9 @@ int even_validator(argus_t *argus, argus_option_t *option, validator_data_t data
     (void)data; // Unused parameter
     
     int number = option->value.as_int;
-    if (number % 2 != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "Value must be an even number");
-    }
-    
+    if (number % 2 != 0)
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be an even number");
+
     return ARGUS_SUCCESS;
 }
 
@@ -72,16 +64,12 @@ int alphanumeric_validator(argus_t *argus, argus_option_t *option, validator_dat
     (void)data; // Unused parameter
     
     const char* str = option->value.as_string;
-    if (!str) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "String cannot be NULL");
-    }
-    
-    for (const char* p = str; *p; p++) {
-        if (!isalnum(*p)) {
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                              "String must contain only alphanumeric characters");
-        }
+    if (!str)
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "String cannot be NULL");
+
+    for (const char *p = str; *p; p++) {
+        if (!isalnum(*p))
+            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "String must contain only alphanumeric characters");
     }
     
     return ARGUS_SUCCESS;
@@ -140,24 +128,24 @@ ARGUS_OPTIONS(
     OPTION_INT('n', "number", HELP("A positive even number"),
                 VALIDATOR(even_validator, NULL),
                 VALIDATOR2(positive_validator, NULL),
-                DEFAULT(42))
+                DEFAULT(42)),
 )
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     argus_t argus = argus_init(options, "validators_example", "1.0.0");
     argus.description = "Example of validators and multi-validators";
     
     int status = argus_parse(&argus, argc, argv);
-    if (status != ARGUS_SUCCESS) {
+    if (status != ARGUS_SUCCESS)
         return status;
-    }
     
     // Access parsed values
     int port = argus_get(argus, "port").as_int;
-    const char* log_level = argus_get(argus, "log-level").as_string;
-    const char* username = argus_get(argus, "username").as_string;
+    const char *log_level = argus_get(argus, "log-level").as_string;
+    const char *username = argus_get(argus, "username").as_string;
     int number = argus_get(argus, "number").as_int;
-    const char* email = argus_is_set(argus, "email") ? 
+    const char *email = argus_is_set(argus, "email") ? 
                         argus_get(argus, "email").as_string : "not set";
     
     printf("Validated values:\n");
@@ -167,13 +155,13 @@ int main(int argc, char **argv) {
     printf("  Number: %d (validators: even + positive)\n", number);
     printf("  Email: %s (validators: email format + domain)\n", email);
     
-    if (argus_is_set(argus, "tags")) {
+    if (argus_is_set(argus, "tags"))
+    {
         size_t count = argus_count(argus, "tags");
         argus_value_t *tags = argus_get(argus, "tags").as_array;
         printf("  Tags (%zu items, validator: count 1-5):\n", count);
-        for (size_t i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++)
             printf("    - %s\n", tags[i].as_string);
-        }
     }
     
     argus_free(&argus);

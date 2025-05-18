@@ -9,7 +9,7 @@ ARGUS_OPTIONS(
     positional_options,
     HELP_OPTION(),
     POSITIONAL_INT("number", HELP("A numeric value")),
-    POSITIONAL_STRING("text", HELP("A text value"), FLAGS(FLAG_OPTIONAL))
+    POSITIONAL_STRING("text", HELP("A text value"), FLAGS(FLAG_OPTIONAL)),
 )
 
 // Test options for testing the -- separator
@@ -18,7 +18,7 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose mode")),
     POSITIONAL_STRING("arg1", HELP("First argument")),
-    POSITIONAL_STRING("arg2", HELP("Second argument"), FLAGS(FLAG_OPTIONAL))
+    POSITIONAL_STRING("arg2", HELP("Second argument"), FLAGS(FLAG_OPTIONAL)),
 )
 
 // Test options for integer arrays
@@ -26,7 +26,7 @@ ARGUS_OPTIONS(
     array_options,
     HELP_OPTION(),
     OPTION_ARRAY_INT('n', "numbers", HELP("List of numbers")),
-    POSITIONAL_INT("count", HELP("A count value"))
+    POSITIONAL_INT("count", HELP("A count value")),
 )
 
 // Helper function for output redirection

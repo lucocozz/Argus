@@ -100,7 +100,8 @@ int url_handler(argus_t *argus, argus_option_t *option, char *arg)
 
     return ARGUS_SUCCESS;
 }
-// You can combine with a custom (pre-)validator to check if the URL is valid
+// You can combine with a custom pre-validator to check if the URL format is valid or
+// a custom validator to check if the URL is reachable
 
 
 // Define helpers macros for URL handlers
@@ -118,7 +119,7 @@ ARGUS_OPTIONS(
     VERSION_OPTION(),
 
     OPTION_URL('p', "proxy", HELP("Proxy URL to connect to")),
-    POSITIONAL_URL("target", HELP("Target URL to connect to"))
+    POSITIONAL_URL("target", HELP("Target URL to connect to")),
 )
 
 
@@ -142,12 +143,12 @@ int main(int argc, char **argv)
         return status;
     
     url_t *target = argus_get(argus, "target").as_ptr;
-        
+
     printf("Target URL:\n");
     print_url(target);
     printf("\n");
 
-    if (argus_get(argus, "proxy").as_ptr)
+    if (argus_is_set(argus, "proxy"))
     {
         url_t *proxy = argus_get(argus, "proxy").as_ptr;
         printf("Proxy URL:\n");

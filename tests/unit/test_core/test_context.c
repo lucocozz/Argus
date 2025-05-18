@@ -9,20 +9,20 @@
 ARGUS_OPTIONS(
     context_test_options,
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
-    OPTION_STRING('o', "output", HELP("Output file"))
+    OPTION_STRING('o', "output", HELP("Output file")),
 )
 
 // Mock subcommand options
 ARGUS_OPTIONS(
     context_sub_options,
     OPTION_FLAG('d', "debug", HELP("Debug mode")),
-    OPTION_STRING('f', "file", HELP("File option"))
+    OPTION_STRING('f', "file", HELP("File option")),
 )
 
 // Mock nested subcommand options
 ARGUS_OPTIONS(
     context_nested_options,
-    OPTION_FLAG('n', "nested", HELP("Nested flag"))
+    OPTION_FLAG('n', "nested", HELP("Nested flag")),
 )
 
 // Define subcommands with nested structure

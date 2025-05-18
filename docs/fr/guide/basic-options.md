@@ -167,7 +167,7 @@ ARGUS_OPTIONS(
     // Arguments positionnels optionnels ensuite
     POSITIONAL_INT("buffer_size", HELP("Taille du tampon"), 
                    FLAGS(FLAG_OPTIONAL), DEFAULT(4096)),                  // Optionnel
-    POSITIONAL_STRING("log_file", HELP("Fichier journal"), FLAGS(FLAG_OPTIONAL)) // Optionnel
+    POSITIONAL_STRING("log_file", HELP("Fichier journal"), FLAGS(FLAG_OPTIONAL)), // Optionnel
 )
 ```
 
@@ -202,7 +202,7 @@ ARGUS_OPTIONS(
         OPTION_STRING('u', "username", HELP("Nom d'utilisateur")),
         OPTION_STRING('P', "password", HELP("Mot de passe")),
         OPTION_FLAG('s', "secure", HELP("Utiliser une connexion sécurisée")),
-    GROUP_END()
+    GROUP_END(),
 )
 ```
 
@@ -333,41 +333,8 @@ ARGUS_OPTIONS(
     OPTION_STRING('P', "password", HELP("Mot de passe"), REQUIRES("username")),
     
     // Arguments positionnels
-    POSITIONAL_STRING("input", HELP("Fichier d'entrée"))
+    POSITIONAL_STRING("input", HELP("Fichier d'entrée")),
 )
-
-int main(int argc, char **argv)
-{
-    argus_t argus = argus_init(options, "my_program", "1.0.0");
-    
-    int status = argus_parse(&argus, argc, argv);
-    if (status != ARGUS_SUCCESS) {
-        return status;
-    }
-    
-    // Accéder aux valeurs
-    const char *input = argus_get(argus, "input").as_string;
-    const char *output = argus_get(argus, "output").as_string;
-    int port = argus_get(argus, "port").as_int;
-    float scale = argus_get(argus, "scale").as_float;
-    bool verbose = argus_get(argus, "verbose").as_bool;
-    
-    // Vérifier les options exclusives
-    bool debug = argus_get(argus, "debug").as_bool;
-    bool release = argus_get(argus, "release").as_bool;
-    
-    // Authentification si spécifiée
-    if (argus_is_set(argus, "username")) {
-        const char *username = argus_get(argus, "username").as_string;
-        const char *password = argus_get(argus, "password").as_string;
-        
-        printf("Authentification avec %s\n", username);
-    }
-    
-    // Libérer les ressources
-    argus_free(&argus);
-    return 0;
-}
 ```
 
 Lorsqu'il est exécuté avec `--help`, cet exemple générera un affichage d'aide bien formaté avec toutes les options correctement organisées.

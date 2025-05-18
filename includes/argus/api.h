@@ -13,6 +13,9 @@
 #include "argus/internal/compiler.h"
 #include "argus/types.h"
 
+ARGUS_API argus_t _argus_init_validate(argus_option_t *options, const char *program_name,
+                                       const char *version, bool validate);
+
 /**
  * argus_init - Initialize the argus context
  *
@@ -32,8 +35,14 @@
  * Note: Only use this in production. During development, leave validation
  * enabled to catch configuration errors early.
  */
-ARGUS_API argus_t argus_init(argus_option_t *options, const char *program_name,
-                             const char *version);
+ARGUS_API argus_t argus_init(argus_option_t *options, const char *program_name, const char *version)
+{
+#ifdef ARGUS_RELEASE
+    return _argus_init_validate(options, program_name, version, false);
+#else
+    return _argus_init_validate(options, program_name, version, true);
+#endif
+}
 
 /**
  * argus_parse - Parse command-line arguments

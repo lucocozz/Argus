@@ -21,14 +21,14 @@ ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED)),
 )
 
 // Define options for "service list" command
 ARGUS_OPTIONS(
     service_list_options,
     HELP_OPTION(),
-    OPTION_FLAG('a', "all", HELP("Show all services, including stopped ones"))
+    OPTION_FLAG('a', "all", HELP("Show all services, including stopped ones")),
 )
 
 // Define options for the "service" parent command
@@ -41,7 +41,7 @@ ARGUS_OPTIONS(
                ACTION(service_create_action)),
     SUBCOMMAND("list", service_list_options, 
                HELP("List services"), 
-               ACTION(service_list_action))
+               ACTION(service_list_action)),
 )
 
 // Define options for "config set" command
@@ -49,14 +49,14 @@ ARGUS_OPTIONS(
     config_set_options,
     HELP_OPTION(),
     POSITIONAL_STRING("key", HELP("Configuration key")),
-    POSITIONAL_STRING("value", HELP("Configuration value"))
+    POSITIONAL_STRING("value", HELP("Configuration value")),
 )
 
 // Define options for "config get" command
 ARGUS_OPTIONS(
     config_get_options,
     HELP_OPTION(),
-    POSITIONAL_STRING("key", HELP("Configuration key"))
+    POSITIONAL_STRING("key", HELP("Configuration key")),
 )
 
 // Define options for the "config" parent command
@@ -69,7 +69,7 @@ ARGUS_OPTIONS(
                ACTION(config_set_action)),
     SUBCOMMAND("get", config_get_options, 
                HELP("Get a configuration value"), 
-               ACTION(config_get_action))
+               ACTION(config_get_action)),
 )
 
 // Define main options with top-level subcommands
@@ -85,28 +85,52 @@ ARGUS_OPTIONS(
     SUBCOMMAND("service", service_options, 
                HELP("Service management commands")),
     SUBCOMMAND("config", config_options, 
-               HELP("Configuration commands"))
+               HELP("Configuration commands")),
 )
 
+int main(int argc, char **argv)
+{
+    argus_t argus = argus_init(options, "nested_commands", "1.0.0");
+    argus.description = "Example of nested subcommands and path formats";
+    
+    int status = argus_parse(&argus, argc, argv);
+    if (status != ARGUS_SUCCESS)
+        return status;
+
+    // Root-level options can be accessed directly from main
+    bool debug = argus_get(argus, ".debug").as_bool;
+    if (debug)
+        printf("[Debug mode enabled at root level]\n");
+
+    if (argus_has_command(argus))
+        status = argus_exec(&argus, NULL);
+    else
+        printf("No command specified. Use --help to see available commands.\n");
+
+    argus_free(&argus);
+    return 0;
+}
+
 // Command action implementations
-int service_create_action(argus_t *argus, void *data) {
+int service_create_action(argus_t *argus, void *data)
+{
     (void)data;
     
     // Different ways to access option values
     
     // 1. Relative path (relative to current subcommand)
     // - When inside "service create" handler, "name" refers to "service.create.name"
-    const char* name = argus_get(*argus, "name").as_string;
-    const char* image = argus_get(*argus, "image").as_string;
+    const char *name = argus_get(*argus, "name").as_string;
+    const char *image = argus_get(*argus, "image").as_string;
     
     // 2. Absolute path (full path from root)
     // - Explicitly specifies the full path
-    const char* name_abs = argus_get(*argus, "service.create.name").as_string;
+    const char *name_abs = argus_get(*argus, "service.create.name").as_string;
     (void)name_abs;
     
     // 3. Root-level path (access options at root level)
     // - Starts with "." to force root level
-    const char* output = argus_get(*argus, ".output").as_string;
+    const char *output = argus_get(*argus, ".output").as_string;
     bool debug = argus_get(*argus, ".debug").as_bool;
     
     printf("Creating service '%s' using image '%s'\n", name, image);
@@ -123,7 +147,8 @@ int service_create_action(argus_t *argus, void *data) {
     return 0;
 }
 
-int service_list_action(argus_t *argus, void *data) {
+int service_list_action(argus_t *argus, void *data)
+{
     (void)data;
     
     // Relative path (within current subcommand context)
@@ -145,15 +170,16 @@ int service_list_action(argus_t *argus, void *data) {
     return 0;
 }
 
-int config_set_action(argus_t *argus, void *data) {
+int config_set_action(argus_t *argus, void *data)
+{
     (void)data;
     
     // Access positional arguments (relative path)
-    const char* key = argus_get(*argus, "key").as_string;
-    const char* value = argus_get(*argus, "value").as_string;
+    const char *key = argus_get(*argus, "key").as_string;
+    const char *value = argus_get(*argus, "value").as_string;
     
     // Alternative: absolute path
-    const char* key_abs = argus_get(*argus, "config.set.key").as_string;
+    const char *key_abs = argus_get(*argus, "config.set.key").as_string;
     (void)key_abs;
     
     // Check if positional arguments are set
@@ -163,60 +189,17 @@ int config_set_action(argus_t *argus, void *data) {
            argus_is_set(*argus, "key") ? "yes" : "no");
     printf("- 'value' positional is set: %s\n", 
            argus_is_set(*argus, "value") ? "yes" : "no");
-    
+
     return 0;
 }
 
-int config_get_action(argus_t *argus, void *data) {
+int config_get_action(argus_t *argus, void *data)
+{
     (void)data;
-    const char* key = argus_get(*argus, "config.get.key").as_string;
+    const char *key = argus_get(*argus, "config.get.key").as_string;
     
     printf("Getting config value for '%s'\n", key);
     return 0;
 }
 
-int main(int argc, char **argv) {
-    argus_t argus = argus_init(options, "nested_commands", "1.0.0");
-    argus.description = "Example of nested subcommands and path formats";
-    
-    int status = argus_parse(&argus, argc, argv);
-    if (status != ARGUS_SUCCESS) {
-        return status;
-    }
-    
-    // Root-level options can be accessed directly from main
-    bool debug = argus_get(argus, "debug").as_bool;
-    if (debug) {
-        printf("[Debug mode enabled at root level]\n");
-    }
-    
-    // Check which subcommand was used with argus_is_set
-    if (argus_is_set(argus, "service")) {
-        printf("Service command selected\n");
-        
-        // Check subcommands
-        if (argus_is_set(argus, "service.create")) {
-            printf("Service create subcommand selected\n");
-        } else if (argus_is_set(argus, "service.list")) {
-            printf("Service list subcommand selected\n");
-        }
-    } else if (argus_is_set(argus, "config")) {
-        printf("Config command selected\n");
-        
-        // Check subcommands
-        if (argus_is_set(argus, "config.set")) {
-            printf("Config set subcommand selected\n");
-        } else if (argus_is_set(argus, "config.get")) {
-            printf("Config get subcommand selected\n");
-        }
-    }
-    
-    if (argus_has_command(argus)) {
-        status = argus_exec(&argus, NULL);
-    } else {
-        printf("No command specified. Use --help to see available commands.\n");
-    }
-    
-    argus_free(&argus);
-    return 0;
-}
+
