@@ -40,7 +40,7 @@ ARGUS_OPTIONS(
     OPTION_FLAG('\0', "dry-run", "Run without applying changes"),
     
     // Required positional argument
-    POSITIONAL_STRING("input", "Input file")
+    POSITIONAL_STRING("input", "Input file"),
 )
 
 int main(int argc, char **argv)

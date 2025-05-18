@@ -31,7 +31,7 @@ ARGUS_OPTIONS(
 
     // Required positional argument
     POSITIONAL_STRING("input", HELP("Input file")),
-    POSITIONAL_INT("value", HELP("Value to process"), FLAGS(FLAG_OPTIONAL))
+    POSITIONAL_INT("value", HELP("Value to process"), FLAGS(FLAG_OPTIONAL)),
 )
 
 int main(int argc, char **argv)

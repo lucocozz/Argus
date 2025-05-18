@@ -64,7 +64,7 @@ ARGUS_OPTIONS(
 			  
 	// Option 6: Debug flag with default prefix
 	OPTION_FLAG('\0', "debug", HELP("Enable debug mode"),
-			   ENV_VAR("DEBUG"))
+			   ENV_VAR("DEBUG")),
 )
 
 int main(int argc, char **argv)

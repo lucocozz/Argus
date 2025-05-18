@@ -14,14 +14,14 @@ ARGUS_OPTIONS(
     OPTION_INT('n', "number", HELP("A number"), DEFAULT(42)),
     OPTION_ARRAY_INT('a', "array", HELP("An array of numbers")),
     OPTION_MAP_INT('m', "map", HELP("A map of numbers")),
-    POSITIONAL_STRING("input", HELP("Input file"))
+    POSITIONAL_STRING("input", HELP("Input file")),
 )
 
 // Subcommand options
 ARGUS_OPTIONS(
     api_sub_options,
     HELP_OPTION(),
-    OPTION_FLAG('d', "debug", HELP("Debug mode"))
+    OPTION_FLAG('d', "debug", HELP("Debug mode")),
 )
 
 // Test action handler
@@ -38,7 +38,7 @@ ARGUS_OPTIONS(
     api_cmd_options,
     HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
-    SUBCOMMAND("sub", api_sub_options, HELP("Subcommand"), ACTION(test_action))
+    SUBCOMMAND("sub", api_sub_options, HELP("Subcommand"), ACTION(test_action)),
 )
 
 // Test argus_init

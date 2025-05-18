@@ -14,7 +14,7 @@ ARGUS_OPTIONS(
     OPTION_STRING('d', "database", HELP("Database connection string"),
                 ENV_VAR("DATABASE_URL"), FLAGS(FLAG_NO_ENV_PREFIX)),
     OPTION_INT('t', "timeout", HELP("Connection timeout in seconds"),
-                DEFAULT(30), ENV_VAR("FORCE_TIMEOUT"), FLAGS(FLAG_ENV_OVERRIDE))
+                DEFAULT(30), ENV_VAR("FORCE_TIMEOUT"), FLAGS(FLAG_ENV_OVERRIDE)),
 )
 
 // Helper function to setup and cleanup environment

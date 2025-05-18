@@ -128,7 +128,7 @@ ARGUS_OPTIONS(
     OPTION_INT('n', "number", HELP("A positive even number"),
                 VALIDATOR(even_validator, NULL),
                 VALIDATOR2(positive_validator, NULL),
-                DEFAULT(42))
+                DEFAULT(42)),
 )
 
 int main(int argc, char **argv)

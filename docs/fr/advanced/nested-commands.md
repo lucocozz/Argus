@@ -34,7 +34,7 @@ ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Nom du service"), FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", HELP("Image du conteneur"), FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('i', "image", HELP("Image du conteneur"), FLAGS(FLAG_REQUIRED)),
 )
 
 // Définir les options pour le groupe de commandes "service"
@@ -58,7 +58,7 @@ ARGUS_OPTIONS(
     OPTION_FLAG('d', "debug", HELP("Activer le mode debug")),
     
     SUBCOMMAND("service", service_options, 
-               HELP("Commandes de gestion de service"))
+               HELP("Commandes de gestion de service")),
 )
 ```
 
@@ -271,7 +271,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
         SUBCOMMAND("remote", remote_options, 
                    HELP("Gérer les dépôts distants")),
         SUBCOMMAND("branch", branch_options,
-                   HELP("Gérer les branches"))
+                   HELP("Gérer les branches")),
     )
     
     // Sous-commandes de remote
@@ -284,7 +284,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
                    ACTION(remote_add_action)),
         SUBCOMMAND("remove", remote_remove_options,
                    HELP("Supprimer un dépôt distant"),
-                   ACTION(remote_remove_action))
+                   ACTION(remote_remove_action)),
     )
     ```
 
@@ -302,7 +302,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
         SUBCOMMAND("container", container_options,
                    HELP("Gérer les conteneurs")),
         SUBCOMMAND("image", image_options,
-                   HELP("Gérer les images"))
+                   HELP("Gérer les images")),
     )
     
     // Sous-commandes de container
@@ -315,7 +315,7 @@ Avec les commandes imbriquées, vous pouvez créer des structures de commandes c
                    ACTION(container_run_action)),
         SUBCOMMAND("stop", container_stop_options,
                    HELP("Arrêter un conteneur"),
-                   ACTION(container_stop_action))
+                   ACTION(container_stop_action)),
     )
     ```
 
@@ -347,14 +347,14 @@ ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Nom du service"), FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", HELP("Image du conteneur"), FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('i', "image", HELP("Image du conteneur"), FLAGS(FLAG_REQUIRED)),
 )
 
 // Définir les options pour la commande "service list"
 ARGUS_OPTIONS(
     service_list_options,
     HELP_OPTION(),
-    OPTION_FLAG('a', "all", HELP("Afficher tous les services, y compris les arrêtés"))
+    OPTION_FLAG('a', "all", HELP("Afficher tous les services, y compris les arrêtés")),
 )
 
 // Définir les options pour la commande parente "service"
@@ -367,7 +367,7 @@ ARGUS_OPTIONS(
                ACTION(service_create_action)),
     SUBCOMMAND("list", service_list_options, 
                HELP("Lister les services"), 
-               ACTION(service_list_action))
+               ACTION(service_list_action)),
 )
 
 // Définir les options pour la commande "config set"
@@ -375,14 +375,14 @@ ARGUS_OPTIONS(
     config_set_options,
     HELP_OPTION(),
     POSITIONAL_STRING("key", HELP("Clé de configuration")),
-    POSITIONAL_STRING("value", HELP("Valeur de configuration"))
+    POSITIONAL_STRING("value", HELP("Valeur de configuration")),
 )
 
 // Définir les options pour la commande "config get"
 ARGUS_OPTIONS(
     config_get_options,
     HELP_OPTION(),
-    POSITIONAL_STRING("key", HELP("Clé de configuration"))
+    POSITIONAL_STRING("key", HELP("Clé de configuration")),
 )
 
 // Définir les options pour la commande parente "config"
@@ -395,7 +395,7 @@ ARGUS_OPTIONS(
                ACTION(config_set_action)),
     SUBCOMMAND("get", config_get_options, 
                HELP("Obtenir une valeur de configuration"), 
-               ACTION(config_get_action))
+               ACTION(config_get_action)),
 )
 
 // Définir les options principales avec des sous-commandes de premier niveau
@@ -411,7 +411,7 @@ ARGUS_OPTIONS(
     SUBCOMMAND("service", service_options, 
                HELP("Commandes de gestion de service")),
     SUBCOMMAND("config", service_options, 
-               HELP("Commandes de configuration"))
+               HELP("Commandes de configuration")),
 )
 
 // Implémentations d'actions de commandes

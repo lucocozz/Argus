@@ -12,20 +12,20 @@ ARGUS_OPTIONS(
     OPTION_FLAG('\0', "long-only", HELP("Long-only option")),
     POSITIONAL_STRING("input", HELP("Input file")),
     POSITIONAL_STRING("output", HELP("Output file")),
-    POSITIONAL_INT("count", HELP("Count value"), FLAGS(FLAG_OPTIONAL))
+    POSITIONAL_INT("count", HELP("Count value"), FLAGS(FLAG_OPTIONAL)),
 )
 
 // Mock subcommand options
 ARGUS_OPTIONS(
     sub_options,
     OPTION_FLAG('d', "debug", HELP("Debug mode")),
-    POSITIONAL_STRING("subfile", HELP("Subcommand file"))
+    POSITIONAL_STRING("subfile", HELP("Subcommand file")),
 )
 
 // Mock nested subcommand options
 ARGUS_OPTIONS(
     nested_options,
-    OPTION_FLAG('n', "nested", HELP("Nested option"))
+    OPTION_FLAG('n', "nested", HELP("Nested option")),
 )
 
 // Mock options with subcommands
@@ -33,7 +33,7 @@ ARGUS_OPTIONS(
     cmd_options,
     OPTION_FLAG('g', "global", HELP("Global option")),
     SUBCOMMAND("sub", sub_options, HELP("Subcommand")),
-    SUBCOMMAND("nested", nested_options, HELP("Nested subcommand"))
+    SUBCOMMAND("nested", nested_options, HELP("Nested subcommand")),
 )
 
 // Mock argus context for testing

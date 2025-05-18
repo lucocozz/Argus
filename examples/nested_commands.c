@@ -21,14 +21,14 @@ ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED)),
 )
 
 // Define options for "service list" command
 ARGUS_OPTIONS(
     service_list_options,
     HELP_OPTION(),
-    OPTION_FLAG('a', "all", HELP("Show all services, including stopped ones"))
+    OPTION_FLAG('a', "all", HELP("Show all services, including stopped ones")),
 )
 
 // Define options for the "service" parent command
@@ -41,7 +41,7 @@ ARGUS_OPTIONS(
                ACTION(service_create_action)),
     SUBCOMMAND("list", service_list_options, 
                HELP("List services"), 
-               ACTION(service_list_action))
+               ACTION(service_list_action)),
 )
 
 // Define options for "config set" command
@@ -49,14 +49,14 @@ ARGUS_OPTIONS(
     config_set_options,
     HELP_OPTION(),
     POSITIONAL_STRING("key", HELP("Configuration key")),
-    POSITIONAL_STRING("value", HELP("Configuration value"))
+    POSITIONAL_STRING("value", HELP("Configuration value")),
 )
 
 // Define options for "config get" command
 ARGUS_OPTIONS(
     config_get_options,
     HELP_OPTION(),
-    POSITIONAL_STRING("key", HELP("Configuration key"))
+    POSITIONAL_STRING("key", HELP("Configuration key")),
 )
 
 // Define options for the "config" parent command
@@ -69,7 +69,7 @@ ARGUS_OPTIONS(
                ACTION(config_set_action)),
     SUBCOMMAND("get", config_get_options, 
                HELP("Get a configuration value"), 
-               ACTION(config_get_action))
+               ACTION(config_get_action)),
 )
 
 // Define main options with top-level subcommands
@@ -85,7 +85,7 @@ ARGUS_OPTIONS(
     SUBCOMMAND("service", service_options, 
                HELP("Service management commands")),
     SUBCOMMAND("config", config_options, 
-               HELP("Configuration commands"))
+               HELP("Configuration commands")),
 )
 
 int main(int argc, char **argv)

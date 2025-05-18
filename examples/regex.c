@@ -23,7 +23,7 @@ ARGUS_OPTIONS(
     
     // Using predefined patterns from header
     POSITIONAL_STRING("ip", HELP("IPv4 address"),
-        REGEX(ARGUS_RE_IPV4))
+        REGEX(ARGUS_RE_IPV4)),
 )
 
 int main(int argc, char **argv)

@@ -19,7 +19,7 @@ ARGUS_OPTIONS(
     nested_options,
     HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Verbose output in nested command")),
-    POSITIONAL_INT("value", HELP("A numerical value"))
+    POSITIONAL_INT("value", HELP("A numerical value")),
 )
 
 // Options for remove subcommand
@@ -28,7 +28,7 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
     OPTION_FLAG('r', "recursive", HELP("Recursive removal")),
     OPTION_FLAG('f', "force", HELP("Force removal")),
-    POSITIONAL_STRING("path", HELP("Path to remove"))
+    POSITIONAL_STRING("path", HELP("Path to remove")),
 )
 
 // Options for add subcommand
@@ -37,7 +37,7 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
     OPTION_STRING('m', "message", HELP("Commit message")),
     SUBCOMMAND("nested", nested_options, HELP("Nested subcommand"), ACTION(test_nested_action)),
-    POSITIONAL_STRING("path", HELP("Path to add"), FLAGS(FLAG_OPTIONAL))
+    POSITIONAL_STRING("path", HELP("Path to add"), FLAGS(FLAG_OPTIONAL)),
 )
 
 // Root command options
@@ -49,7 +49,7 @@ ARGUS_OPTIONS(
     OPTION_FLAG('v', "verbose", HELP("Global verbose output")),
     // Subcommands
     SUBCOMMAND("add", add_options, HELP("Add files"), ACTION(test_add_action)),
-    SUBCOMMAND("remove", remove_options, HELP("Remove files"), ACTION(test_remove_action))
+    SUBCOMMAND("remove", remove_options, HELP("Remove files"), ACTION(test_remove_action)),
 )
 
 // Options for option format testing
@@ -59,7 +59,7 @@ ARGUS_OPTIONS(
     OPTION_STRING('o', "output", HELP("Output file")),
     OPTION_INT('n', "number", HELP("A number")),
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
-    OPTION_FLAG('q', "quiet", HELP("Quiet mode"))
+    OPTION_FLAG('q', "quiet", HELP("Quiet mode")),
 )
 
 // Action function implementations

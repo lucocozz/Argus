@@ -69,7 +69,7 @@ ARGUS_OPTIONS(
     // Multiple validators: length and alphanumeric
     OPTION_STRING('a', "alphanum", HELP("Alphanumeric username"),
                 LENGTH(3, 8),
-                VALIDATOR2(test_alphanumeric_validator, NULL))
+                VALIDATOR2(test_alphanumeric_validator, NULL)),
 )
 
 // Test for range validation

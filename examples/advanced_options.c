@@ -40,7 +40,7 @@ ARGUS_OPTIONS(
     OPTION_STRING('u', "username", HELP("Username for authentication"), 
                 REQUIRES("password")),
     OPTION_STRING('p', "password", HELP("Password for authentication"), 
-                REQUIRES("username"))
+                REQUIRES("username")),
 )
 
 int main(int argc, char **argv)

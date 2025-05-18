@@ -36,7 +36,7 @@ ARGUS_OPTIONS(
     OPTION_MAP_INT('\0', "ports", HELP("Port numbers for services"),
                     FLAGS(FLAG_UNIQUE_VALUE)),
     OPTION_MAP_FLOAT('\0', "scales", HELP("Scaling factors for dimensions"),
-                    FLAGS(FLAG_SORTED_VALUE))
+                    FLAGS(FLAG_SORTED_VALUE)),
 )
 
 int main(int argc, char **argv)

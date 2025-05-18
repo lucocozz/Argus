@@ -333,41 +333,8 @@ ARGUS_OPTIONS(
     OPTION_STRING('P', "password", HELP("Password"), REQUIRES("username")),
     
     // Positional arguments
-    POSITIONAL_STRING("input", HELP("Input file"))
+    POSITIONAL_STRING("input", HELP("Input file")),
 )
-
-int main(int argc, char **argv)
-{
-    argus_t argus = argus_init(options, "my_program", "1.0.0");
-    
-    int status = argus_parse(&argus, argc, argv);
-    if (status != ARGUS_SUCCESS) {
-        return status;
-    }
-    
-    // Access values
-    const char *input = argus_get(argus, "input").as_string;
-    const char *output = argus_get(argus, "output").as_string;
-    int port = argus_get(argus, "port").as_int;
-    float scale = argus_get(argus, "scale").as_float;
-    bool verbose = argus_get(argus, "verbose").as_bool;
-    
-    // Check exclusive options
-    bool debug = argus_get(argus, "debug").as_bool;
-    bool release = argus_get(argus, "release").as_bool;
-    
-    // Authentication if specified
-    if (argus_is_set(argus, "username")) {
-        const char *username = argus_get(argus, "username").as_string;
-        const char *password = argus_get(argus, "password").as_string;
-        
-        printf("Authenticating with %s\n", username);
-    }
-    
-    // Free resources
-    argus_free(&argus);
-    return 0;
-}
 ```
 
 When run with `--help`, this example will generate a well-formatted help display with all the options properly organized.

@@ -17,7 +17,7 @@ ARGUS_OPTIONS(
     add_options,
     HELP_OPTION(),
     OPTION_FLAG('f', "force", HELP("Force add operation")),
-    POSITIONAL_STRING("file", HELP("File to add"))
+    POSITIONAL_STRING("file", HELP("File to add")),
 )
 
 // Define options for "remove" subcommand
@@ -25,7 +25,7 @@ ARGUS_OPTIONS(
     remove_options,
     HELP_OPTION(),
     OPTION_FLAG('r', "recursive", HELP("Recursively remove directories")),
-    POSITIONAL_STRING("file", HELP("File to remove"))
+    POSITIONAL_STRING("file", HELP("File to remove")),
 )
 
 // Define main options with subcommands
@@ -44,7 +44,7 @@ ARGUS_OPTIONS(
     
     SUBCOMMAND("rm", remove_options, 
                HELP("Remove files from the index"), 
-               ACTION(remove_command))
+               ACTION(remove_command)),
 )
 
 int main(int argc, char **argv)

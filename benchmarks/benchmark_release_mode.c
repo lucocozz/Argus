@@ -39,14 +39,14 @@ ARGUS_OPTIONS(
     GROUP_END(),
     
     POSITIONAL_STRING("command", HELP("Command to execute")),
-    POSITIONAL_STRING("arguments", HELP("Command arguments"), FLAGS(FLAG_OPTIONAL))
+    POSITIONAL_STRING("arguments", HELP("Command arguments"), FLAGS(FLAG_OPTIONAL)),
 )
 
 // Invalid options with duplicated option names
 ARGUS_OPTIONS(
     invalid_options,
     OPTION_FLAG('v', "verbose", HELP("Verbose output")),
-    OPTION_STRING('v', "verbose", HELP("Duplicate option"))  // Same names - should fail validation
+    OPTION_STRING('v', "verbose", HELP("Duplicate option")),  // Same names - should fail validation
 )
 
 // Small options structure for comparison
@@ -56,7 +56,7 @@ ARGUS_OPTIONS(
     VERSION_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
     OPTION_STRING('o', "output", HELP("Output file")),
-    POSITIONAL_STRING("input", HELP("Input file"))
+    POSITIONAL_STRING("input", HELP("Input file")),
 )
 
 // Forward declaration of the function

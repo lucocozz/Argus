@@ -32,7 +32,7 @@ ARGUS_OPTIONS(
     // Optional positional argument without default value
     POSITIONAL_STRING("log_file", HELP("Log file"),
                     FLAGS(FLAG_OPTIONAL),
-                    HINT("LOG"))
+                    HINT("LOG")),
 )
 
 int main(int argc, char **argv)

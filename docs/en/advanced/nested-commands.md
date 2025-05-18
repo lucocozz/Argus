@@ -34,7 +34,7 @@ ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED)),
 )
 
 // Define options for "service" command group
@@ -58,7 +58,7 @@ ARGUS_OPTIONS(
     OPTION_FLAG('d', "debug", HELP("Enable debug mode")),
     
     SUBCOMMAND("service", service_options, 
-               HELP("Service management commands"))
+               HELP("Service management commands")),
 )
 ```
 
@@ -271,7 +271,7 @@ With nested commands, you can create complex command structures like those found
         SUBCOMMAND("remote", remote_options, 
                    HELP("Manage remote repositories")),
         SUBCOMMAND("branch", branch_options,
-                   HELP("Manage branches"))
+                   HELP("Manage branches")),
     )
     
     // Remote subcommands
@@ -284,7 +284,7 @@ With nested commands, you can create complex command structures like those found
                    ACTION(remote_add_action)),
         SUBCOMMAND("remove", remote_remove_options,
                    HELP("Remove a remote"),
-                   ACTION(remote_remove_action))
+                   ACTION(remote_remove_action)),
     )
     ```
 
@@ -302,7 +302,7 @@ With nested commands, you can create complex command structures like those found
         SUBCOMMAND("container", container_options,
                    HELP("Manage containers")),
         SUBCOMMAND("image", image_options,
-                   HELP("Manage images"))
+                   HELP("Manage images")),
     )
     
     // Container subcommands
@@ -315,7 +315,7 @@ With nested commands, you can create complex command structures like those found
                    ACTION(container_run_action)),
         SUBCOMMAND("stop", container_stop_options,
                    HELP("Stop a container"),
-                   ACTION(container_stop_action))
+                   ACTION(container_stop_action)),
     )
     ```
 
@@ -347,14 +347,14 @@ ARGUS_OPTIONS(
     service_create_options,
     HELP_OPTION(),
     OPTION_STRING('n', "name", HELP("Service name"), FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED))
+    OPTION_STRING('i', "image", HELP("Container image"), FLAGS(FLAG_REQUIRED)),
 )
 
 // Define options for "service list" command
 ARGUS_OPTIONS(
     service_list_options,
     HELP_OPTION(),
-    OPTION_FLAG('a', "all", "Show all services, including stopped ones")
+    OPTION_FLAG('a', "all", "Show all services, including stopped ones"),
 )
 
 // Define options for the "service" parent command
@@ -367,7 +367,7 @@ ARGUS_OPTIONS(
                ACTION(service_create_action)),
     SUBCOMMAND("list", service_list_options, 
                HELP("List services"), 
-               ACTION(service_list_action))
+               ACTION(service_list_action)),
 )
 
 // Define options for "config set" command
@@ -375,14 +375,14 @@ ARGUS_OPTIONS(
     config_set_options,
     HELP_OPTION(),
     POSITIONAL_STRING("key", "Configuration key"),
-    POSITIONAL_STRING("value", "Configuration value")
+    POSITIONAL_STRING("value", "Configuration value"),
 )
 
 // Define options for "config get" command
 ARGUS_OPTIONS(
     config_get_options,
     HELP_OPTION(),
-    POSITIONAL_STRING("key", "Configuration key")
+    POSITIONAL_STRING("key", "Configuration key"),
 )
 
 // Define options for the "config" parent command
@@ -395,7 +395,7 @@ ARGUS_OPTIONS(
                ACTION(config_set_action)),
     SUBCOMMAND("get", config_get_options, 
                HELP("Get a configuration value"), 
-               ACTION(config_get_action))
+               ACTION(config_get_action)),
 )
 
 // Define main options with top-level subcommands
@@ -411,7 +411,7 @@ ARGUS_OPTIONS(
     SUBCOMMAND("service", service_options, 
                HELP("Service management commands")),
     SUBCOMMAND("config", service_options, 
-               HELP("Configuration commands"))
+               HELP("Configuration commands")),
 )
 
 // Command action implementations

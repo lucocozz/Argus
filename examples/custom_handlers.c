@@ -119,7 +119,7 @@ ARGUS_OPTIONS(
     VERSION_OPTION(),
 
     OPTION_URL('p', "proxy", HELP("Proxy URL to connect to")),
-    POSITIONAL_URL("target", HELP("Target URL to connect to"))
+    POSITIONAL_URL("target", HELP("Target URL to connect to")),
 )
 
 
