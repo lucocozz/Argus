@@ -15,9 +15,9 @@ In this guide, you'll learn about:
 
 ## Understanding Validator Types
 
-Argus supports two distinct types of custom validation functions, each with a specific purpose:
+Argus supports custom validation functions with explicit ordering control, allowing precise control over when validation occurs in the parsing process:
 
-### Validators
+### Validators (ORDER_POST)
 
 **Purpose**: Check the **processed** value after type conversion
 
@@ -25,10 +25,15 @@ Argus supports two distinct types of custom validation functions, each with a sp
 
 **Function signature**:
 ```c
-int validator_function(argus_t *argus, argus_option_t *option, validator_data_t data);
+int validator_function(argus_t *argus, void *option_ptr, validator_data_t data);
 ```
 
-### Pre-validators
+**Key points**:
+- The `option_ptr` parameter must be cast to `argus_option_t *`
+- Access the converted value via `option->value.as_int`, `option->value.as_string`, etc.
+- Runs after the raw string has been converted to the target type
+
+### Pre-validators (ORDER_PRE)
 
 **Purpose**: Check the **raw string** before it's processed
 
@@ -39,8 +44,13 @@ int validator_function(argus_t *argus, argus_option_t *option, validator_data_t 
 
 **Function signature**:
 ```c
-int pre_validator_function(argus_t *argus, const char *value, validator_data_t data);
+int pre_validator_function(argus_t *argus, void *value_ptr, validator_data_t data);
 ```
+
+**Key points**:
+- The `value_ptr` parameter should be cast to `const char *`
+- Operates on the raw command-line string value
+- Runs before any type conversion occurs
 
 ## Creating Basic Validators
 
@@ -51,10 +61,12 @@ Let's start with simple examples of both validator types.
 This validator ensures that integer options have even values:
 
 ```c
-int even_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
+int even_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 {
+    argus_option_t *option = (argus_option_t *)option_ptr;
+    
     // Not using custom data in this example
-    UNUSED(data);
+    (void)data;
     
     if (option->value.as_int % 2 != 0) {
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
@@ -67,8 +79,12 @@ int even_validator(argus_t *argus, argus_option_t *option, validator_data_t data
 **Using the validator**:
 
 ```c
+// Create a helper macro
+#define V_EVEN() \
+    MAKE_VALIDATOR(even_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+
 OPTION_INT('n', "number", HELP("An even number"), 
-          VALIDATOR(even_validator, NULL))
+          VALIDATOR(V_EVEN()))
 ```
 
 ### Example: String Length Pre-validator
@@ -76,10 +92,10 @@ OPTION_INT('n', "number", HELP("An even number"),
 This pre-validator checks if a string meets a minimum length requirement:
 
 ```c
-int string_length_pre_validator(argus_t *argus, const char *value, validator_data_t data)
+int string_length_pre_validator(argus_t *argus, void *value_ptr, validator_data_t data)
 {
-    // Get minimum length from the validator data
-    size_t min_length = *(size_t *)data.custom;
+    const char *value = (const char *)value_ptr;
+    size_t min_length = (size_t)data.custom;
     
     if (strlen(value) < min_length) {
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
@@ -92,16 +108,43 @@ int string_length_pre_validator(argus_t *argus, const char *value, validator_dat
 **Using the pre-validator**:
 
 ```c
-// Define the validation constraint
-size_t min_length = 8;
+// Create a helper macro
+#define V_MIN_LENGTH(len) \
+    MAKE_VALIDATOR(string_length_pre_validator, _V_DATA_CUSTOM_(len), ORDER_PRE)
 
 OPTION_STRING('p', "password", HELP("Password"),
-             PRE_VALIDATOR(string_length_pre_validator, &min_length))
+             VALIDATOR(V_MIN_LENGTH(8)))
 ```
 
 ## Passing Data to Validators
 
-The `validator_data_t` parameter allows you to pass configuration data to your validators, making them more flexible and reusable.
+The `validator_data_t` parameter allows you to pass configuration data to your validators, making them more flexible and reusable. With the new API, data is passed using helper macros.
+
+### Using the Custom Data Field
+
+For simple data types, use `_V_DATA_CUSTOM_()` to pass values:
+
+```c
+int divisible_validator(argus_t *argus, void *option_ptr, validator_data_t data)
+{
+    argus_option_t *option = (argus_option_t *)option_ptr;
+    int divisor = (int)data.custom;  // Extract the divisor
+    
+    if (option->value.as_int % divisor != 0) {
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
+                          "Value must be divisible by %d", divisor);
+    }
+    return ARGUS_SUCCESS;
+}
+
+// Helper macro for reusability
+#define V_DIVISIBLE_BY(n) \
+    MAKE_VALIDATOR(divisible_validator, _V_DATA_CUSTOM_(n), ORDER_POST)
+
+// Usage
+OPTION_INT('n', "number", HELP("Number divisible by 5"), 
+          VALIDATOR(V_DIVISIBLE_BY(5)))
+```
 
 ### Using Custom Data Structures
 
@@ -157,10 +200,10 @@ For simple cases, you can use C99 compound literals to pass data inline:
 
 ```c
 OPTION_STRING('u', "username", HELP("Username"),
-             PRE_VALIDATOR(string_length_pre_validator, &((size_t){3})))
+             VALIDATOR(V_MIN_LENGTH(3)))
 ```
 
-This creates an anonymous `size_t` variable with value 3 and passes its address to the validator.
+This creates a reusable validator macro with the desired minimum length.
 
 ## Advanced Validation Techniques
 
@@ -206,19 +249,21 @@ For frequently used validation patterns, create helper macros:
 
 ```c
 // Helper macro for even number validation
-#define EVEN_NUMBER() VALIDATOR(even_validator, NULL)
+#define V_EVEN() \
+    MAKE_VALIDATOR(even_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
 
 // Helper macro for minimum string length
-#define MIN_LENGTH(min) \
-    PRE_VALIDATOR(string_length_pre_validator, &((size_t){min}))
+#define V_MIN_LENGTH(min) \
+    MAKE_VALIDATOR(string_length_pre_validator, _V_DATA_CUSTOM_(min), ORDER_PRE)
 
 // Helper macro for maximum string length
-#define MAX_LENGTH(max) \
-    PRE_VALIDATOR(string_length_max_validator, &((size_t){max}))
+#define V_MAX_LENGTH(max) \
+    MAKE_VALIDATOR(string_length_max_validator, _V_DATA_CUSTOM_(max), ORDER_PRE)
 
 // Combined length check
-#define STRING_LENGTH(min, max) \
-    PRE_VALIDATOR(string_length_range_validator, &((length_range_t){min, max}))
+#define V_STRING_LENGTH(min, max) \
+    MAKE_VALIDATOR(string_length_range_validator, \
+        _V_DATA_CUSTOM_(&((length_range_t){min, max})), ORDER_PRE)
 ```
 
 **Usage example**:
