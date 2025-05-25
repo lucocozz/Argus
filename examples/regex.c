@@ -19,11 +19,11 @@ ARGUS_OPTIONS(
 
     // Custom patterns defined in this file
     OPTION_STRING('u', "username", HELP("Username (3-20 chars)"),
-        REGEX(RE_SIMPLE_NAME)),
+        VALIDATOR(V_REGEX(RE_SIMPLE_NAME))),
     
     // Using predefined patterns from header
     POSITIONAL_STRING("ip", HELP("IPv4 address"),
-        REGEX(ARGUS_RE_IPV4)),
+        VALIDATOR(V_REGEX(ARGUS_RE_IPV4))),
 )
 
 int main(int argc, char **argv)

@@ -15,13 +15,13 @@
 /**
  * range_validator - Validate that a numeric value is within a specified range
  *
- * @param argus  Argus context
- * @param value  Value to validate
- * @param data   Validator data containing range information
+ * @param argus      Argus context
+ * @param option_ptr Pointer to option (cast to argus_option_t*)
+ * @param data       Validator data containing range information
  *
  * @return Status code (0 for success, non-zero for error)
  */
-int range_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
+int range_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 
 /**
  * regex_validator - Validate that a string value matches a regex pattern

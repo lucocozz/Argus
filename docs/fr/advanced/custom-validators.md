@@ -68,7 +68,7 @@ int even_validator(argus_t *argus, argus_option_t *option, validator_data_t data
 
 ```c
 OPTION_INT('n', "number", HELP("An even number"), 
-          VALIDATOR(even_validator, NULL))
+          VALIDATOR(V_EVEN()))
 ```
 
 ### Exemple : Pré-validateur de longueur de chaîne
@@ -96,7 +96,7 @@ int string_length_pre_validator(argus_t *argus, const char *value, validator_dat
 size_t min_length = 8;
 
 OPTION_STRING('p', "password", HELP("Password"),
-             PRE_VALIDATOR(string_length_pre_validator, &min_length))
+             VALIDATOR(V_MIN_LENGTH(min_length)))
 ```
 
 ## Transmission de données aux validateurs
@@ -148,7 +148,7 @@ static number_constraints_t constraints = {
 };
 
 OPTION_INT('n', "number", HELP("A number with constraints"), 
-          VALIDATOR(number_validator, &constraints))
+          MAKE_VALIDATOR(number_validator, _V_DATA_CUSTOM_(&constraints), ORDER_POST))
 ```
 
 ### Utilisation de "Inline Compound Literals"
@@ -157,7 +157,7 @@ Pour les cas simples, vous pouvez utiliser des "compound literals" C99 pour pass
 
 ```c
 OPTION_STRING('u', "username", HELP("Username"),
-             PRE_VALIDATOR(string_length_pre_validator, &((size_t){3})))
+             MAKE_VALIDATOR(string_length_pre_validator, _V_DATA_CUSTOM_(&((size_t){3})), ORDER_PRE))
 ```
 
 Cela crée une variable anonyme `size_t` avec la valeur 3 et transmet son adresse au validateur.
@@ -196,7 +196,7 @@ ARGUS_OPTIONS(
     options,
     OPTION_INT('n', "min", HELP("Minimum value")),
     OPTION_INT('x', "max", HELP("Maximum value"), 
-               VALIDATOR(greater_than_validator, &max_relation))
+               MAKE_VALIDATOR(greater_than_validator, _V_DATA_CUSTOM_(&max_relation), ORDER_POST))
 )
 ```
 
@@ -206,50 +206,47 @@ Pour les modèles de validation fréquemment utilisés, créez des macros d'aide
 
 ```c
 // Macro d'aide pour la validation des nombres pairs
-#define EVEN_NUMBER() VALIDATOR(even_validator, NULL)
+#define V_EVEN() \
+    MAKE_VALIDATOR(even_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
 
 // Macro d'aide pour la longueur minimale de chaîne
-#define MIN_LENGTH(min) \
-    PRE_VALIDATOR(string_length_pre_validator, &((size_t){min}))
+#define V_MIN_LENGTH(min) \
+    MAKE_VALIDATOR(string_length_pre_validator, _V_DATA_CUSTOM_(&((size_t){min})), ORDER_PRE)
 
 // Macro d'aide pour la longueur maximale de chaîne
-#define MAX_LENGTH(max) \
-    PRE_VALIDATOR(string_length_max_validator, &((size_t){max}))
+#define V_MAX_LENGTH(max) \
+    MAKE_VALIDATOR(string_length_max_validator, _V_DATA_CUSTOM_(&((size_t){max})), ORDER_PRE)
 
 // Vérification de longueur combinée
-#define STRING_LENGTH(min, max) \
-    PRE_VALIDATOR(string_length_range_validator, &((length_range_t){min, max}))
+#define V_STRING_LENGTH(min, max) \
+    MAKE_VALIDATOR(string_length_range_validator, _V_DATA_CUSTOM_(&((length_range_t){min, max})), ORDER_PRE)
 ```
 
 **Exemple d'utilisation** :
+
 ```c
 ARGUS_OPTIONS(
     options,
-    OPTION_INT('n', "number", HELP("An even number"), EVEN_NUMBER()),
-    OPTION_STRING('p', "password", HELP("Password"), MIN_LENGTH(8)),
-    OPTION_STRING('u', "username", HELP("Username"), STRING_LENGTH(3, 20))
+    OPTION_INT('n', "number", HELP("An even number"), VALIDATOR(V_EVEN())),
+    OPTION_STRING('p', "password", HELP("Password"), VALIDATOR(V_MIN_LENGTH(8))),
+    OPTION_STRING('u', "username", HELP("Username"), VALIDATOR(V_STRING_LENGTH(3, 20)))
 )
 ```
 
 ## Combinaison de plusieurs validateurs
 
-Argus vous permet d'appliquer plusieurs validateurs à une seule option en utilisant les macros de validateur numérotées :
+Argus vous permet d'appliquer plusieurs validateurs à une seule option en utilisant la macro `VALIDATOR` avec plusieurs validateurs :
 
 ```c
 OPTION_INT('p', "port", HELP("Port number"), 
-          VALIDATOR(is_even_validator, NULL),      // Premier validateur
-          VALIDATOR2(range_validator, &port_range), // Deuxième validateur
-          VALIDATOR3(port_validator, NULL))        // Troisième validateur
+          VALIDATOR(V_RANGE(1, 65535), V_EVEN(), V_DIVISIBLE_BY(10)))
 ```
 
-Argus a une limite de 4 validateurs par option, mais vous pouvez modifier la constante `ARGUS_MAX_VALIDATORS` pour augmenter cette limite.
-
-Notez que les validateurs intégrés comme `RANGE()`, `LENGTH()`, et `COUNT()` utilisent le premier emplacement de validateur. Vous pouvez les combiner avec des validateurs personnalisés en utilisant le deuxième et les emplacements suivants :
+Notez que les validateurs intégrés comme `RANGE()`, `LENGTH()`, et `COUNT()` peuvent être combinés avec des validateurs personnalisés :
 
 ```c
 OPTION_INT('p', "port", HELP("Port number"),
-          RANGE(1, 65535),                     // Utilise le premier emplacement de validateur
-          VALIDATOR2(is_even_validator, NULL)) // Utilise le deuxième emplacement de validateur
+          VALIDATOR(V_RANGE(1, 65535), V_EVEN())) // Utilise la nouvelle syntaxe de combinaison
 ```
 
 ## Signalement d'erreurs

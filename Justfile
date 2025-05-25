@@ -5,7 +5,7 @@ shared_lib := "lib" + name + ".so"
 
 # Default values for variables
 tests := "false"
-examples := "true"
+examples := "false"
 benchmarks := "false"
 build_type := "debugoptimized"
 regex := "true"

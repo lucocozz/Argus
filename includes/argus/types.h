@@ -166,13 +166,13 @@ typedef struct argus_map_iterator_s
 } argus_map_it_t;
 
 /**
- * range_t - Min/max range for numeric validation
+ * argus_range_t - Min/max range for numeric validation
  */
-typedef struct range_s
+typedef struct argus_range_s
 {
     long long min;
     long long max;
-} range_t;
+} argus_range_t;
 
 /**
  * regex_data_t - Data structure for regex validation
@@ -187,32 +187,31 @@ typedef struct regex_data_s
  * validator_data_u - Data used by validator functions
  */
 union validator_data_u {
-    void        *custom; /* Custom validator data */
-    range_t      range;  /* Range limits */
-    regex_data_t regex;  /* Regex pattern and info */
+    uintptr_t     custom; /* Custom validator data */
+    argus_range_t range;  /* Range limits */
+    regex_data_t  regex;  /* Regex pattern and info */
 };
 
 /* Callback function types */
 typedef int (*argus_handler_t)(argus_t *, argus_option_t *, char *);
 typedef int (*argus_free_handler_t)(argus_option_t *);
-typedef int (*argus_validator_t)(argus_t *, argus_option_t *, validator_data_t);
-typedef int (*argus_pre_validator_t)(argus_t *, const char *, validator_data_t);
+typedef int (*argus_validator_t)(argus_t *, void *, validator_data_t);
 typedef int (*argus_action_t)(argus_t *, void *);
 
-/**
- * validator_data_t - Data structure for validator functions
- */
-#ifndef ARGUS_MAX_VALIDATORS
-    #define ARGUS_MAX_VALIDATORS 4
-#endif
+typedef enum validation_order_e
+{
+    ORDER_PRE = 0, /* Validation before option processing */
+    ORDER_POST,    /* Validation after option processing */
+} validation_order_t;
 
 /**
- * validator_data_t - Data structure for validator functions
+ * validator_entry_t - Entry for a validator function
  */
 typedef struct validator_entry_s
 {
-    argus_validator_t func;
-    validator_data_t  data;
+    argus_validator_t  func;
+    validator_data_t   data;
+    validation_order_t order;
 } validator_entry_t;
 
 /**
@@ -243,12 +242,9 @@ struct argus_option_s
     char           *env_name;
 
     /* Callbacks metadata */
-    argus_handler_t       handler;
-    argus_free_handler_t  free_handler;
-    validator_entry_t     validators[ARGUS_MAX_VALIDATORS];
-    size_t                validator_count;
-    argus_pre_validator_t pre_validator;
-    validator_data_t      pre_validator_data;
+    argus_handler_t      handler;
+    argus_free_handler_t free_handler;
+    validator_entry_t  **validators;
 
     /* Dependencies metadata */
     const char **
