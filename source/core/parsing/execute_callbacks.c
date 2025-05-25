@@ -12,10 +12,15 @@ int execute_callbacks(argus_t *argus, argus_option_t *option, char *value)
                            option->name);
     }
 
-    if (option->pre_validator != NULL) {
-        status = option->pre_validator(argus, value, option->pre_validator_data);
-        if (status != ARGUS_SUCCESS)
-            return status;
+    if (option->validators) {
+        for (size_t i = 0; option->validators[i] != NULL; ++i) {
+            validator_entry_t *validator = option->validators[i];
+            if (validator->order == ORDER_PRE) {
+                status = validator->func(argus, (void *)value, validator->data);
+                if (status != ARGUS_SUCCESS)
+                    return status;
+            }
+        }
     }
 
     status = option->handler(argus, option, value);

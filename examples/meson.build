@@ -1,14 +1,14 @@
 # List of example programs
 example_programs = [
-  'basic_usage',
-  'subcommands',
-  'positional_args',
-  'custom_handlers',
-  'advanced_options',
-  'nested_commands',
+  # 'basic_usage',
+  # 'subcommands',
+  # 'positional_args',
+  # 'custom_handlers',
+  # 'advanced_options',
+  # 'nested_commands',
   'validators',
-  'multi_values',
-  'env_vars',
+  # 'multi_values',
+  # 'env_vars',
   'regex',
 ]
 

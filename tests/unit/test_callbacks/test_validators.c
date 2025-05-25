@@ -5,10 +5,10 @@
 #include "argus/internal/callbacks/validators.h"
 
 // Forward declarations of validators to test
-int range_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
+int range_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 int regex_validator(argus_t *argus, const char *value, validator_data_t data);
-int length_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
-int count_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
+int length_validator(argus_t *argus, void *option_ptr, validator_data_t data);
+int count_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 
 // Mock argus context for testing
 static argus_t test_argus;
