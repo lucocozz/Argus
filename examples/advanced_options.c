@@ -27,7 +27,7 @@ ARGUS_OPTIONS(
 
     // Compression level requires one of the compression options
     OPTION_INT('l', "level", HELP("Compression level"), 
-               DEFAULT(6), RANGE(1, 9),
+               DEFAULT(6), VALIDATOR(V_RANGE(1, 9)),
                REQUIRES("gzip", "bzip2", "lzma")),
     
     // Options that conflict with each other

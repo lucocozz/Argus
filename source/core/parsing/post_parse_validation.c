@@ -60,13 +60,17 @@ static int validate_conflicts(argus_t *argus, argus_option_t *options, argus_opt
 
 static int call_validators(argus_t *argus, argus_option_t *option)
 {
-    for (size_t i = 0; i < option->validator_count; ++i) {
-        validator_entry_t *validator = &option->validators[i];
-        if (validator->func == NULL)
-            continue;
-        int status = validator->func(argus, option, validator->data);
-        if (status != ARGUS_SUCCESS)
-            return (status);
+    if (!option->validators) {
+        return ARGUS_SUCCESS;
+    }
+
+    for (size_t i = 0; option->validators[i] != NULL; ++i) {
+        validator_entry_t *validator = option->validators[i];
+        if (validator->order == ORDER_POST) {
+            int status = validator->func(argus, (void *)option, validator->data);
+            if (status != ARGUS_SUCCESS)
+                return (status);
+        }
     }
     return (ARGUS_SUCCESS);
 }

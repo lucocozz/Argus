@@ -113,8 +113,10 @@ Pour une logique de validation plus complexe, vous pouvez créer vos propres val
 
 === "Validateur simple"
     ```c
-    int even_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
+    int even_validator(argus_t *argus, void *option_ptr, validator_data_t data)
     {
+        argus_option_t *option = (argus_option_t *)option_ptr;
+        
         if (option->value.as_int % 2 != 0) {
             ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                              "La valeur doit être un nombre pair");
@@ -122,47 +124,65 @@ Pour une logique de validation plus complexe, vous pouvez créer vos propres val
         return ARGUS_SUCCESS;
     }
     
-    // Utilisation
+    // Utilisation avec MAKE_VALIDATOR
+    #define V_EVEN() \
+        MAKE_VALIDATOR(even_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+    
     OPTION_INT('n', "number", HELP("Un nombre pair"), 
-              VALIDATOR(even_validator, NULL))
+              VALIDATOR(V_EVEN()))
     ```
 
-=== "Pré-validateur de base"
+=== "Validateur avec données personnalisées"
     ```c
-    int length_pre_validator(argus_t *argus, const char *value, validator_data_t data)
+    int divisible_validator(argus_t *argus, void *option_ptr, validator_data_t data)
     {
-        size_t min_length = *(size_t *)data.custom;
+        argus_option_t *option = (argus_option_t *)option_ptr;
+        int divisor = (int)data.custom;
         
-        if (strlen(value) < min_length) {
+        if (option->value.as_int % divisor != 0) {
             ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                              "La chaîne doit comporter au moins %zu caractères", min_length);
+                              "La valeur doit être divisible par %d", divisor);
         }
         return ARGUS_SUCCESS;
     }
     
-    // Utilisation
-    size_t min_length = 8;
-    OPTION_STRING('p', "password", HELP("Mot de passe"),
-                 PRE_VALIDATOR(length_pre_validator, &min_length))
+    // Utilisation avec données personnalisées
+    #define V_DIVISIBLE_BY(n) \
+        MAKE_VALIDATOR(divisible_validator, _V_DATA_CUSTOM_(n), ORDER_POST)
+    
+    OPTION_INT('n', "number", HELP("Nombre divisible par 5"), 
+              VALIDATOR(V_DIVISIBLE_BY(5)))
     ```
 
-!!! info "Types de validateurs"
-    argus prend en charge deux types de validateurs personnalisés :
+=== "Validateurs multiples"
+    ```c
+    // Combiner plusieurs validateurs
+    OPTION_INT('p', "port", HELP("Port pair dans une plage valide"), 
+              VALIDATOR(V_RANGE(1, 65535), V_EVEN()))
     
-    1. **Validateurs** - Valident la valeur **traitée** après conversion vers son type final
-    2. **Pré-validateurs** - Valident la **chaîne brute** avant tout traitement
+    OPTION_STRING('e', "email", HELP("Email avec validation de longueur"),
+                 VALIDATOR(V_LENGTH(5, 50), V_REGEX(email_regex)))
+    ```
+
+!!! info "Types de validateurs et nouvelle API"
+    argus prend en charge les validateurs avec ordre explicite :
     
-    Pour une exploration détaillée des validateurs personnalisés, y compris des exemples et des bonnes pratiques, 
-    consultez le [guide des validateurs personnalisés](../advanced/custom-validators.md).
+    1. **ORDER_PRE** - Valider la **chaîne brute** avant tout traitement
+    2. **ORDER_POST** - Valider la valeur **traitée** après conversion vers son type final
+    
+    Utilisez `MAKE_VALIDATOR(fonction, données, ordre)` pour créer des validateurs avec la nouvelle API.
+    Les validateurs intégrés comme `V_RANGE()`, `V_LENGTH()`, et `V_COUNT()` sont prêts à utiliser.
+    
+    Pour une exploration détaillée des validateurs personnalisés, incluant des exemples et bonnes pratiques, 
+    consultez le guide [Validateurs personnalisés](../advanced/custom-validators.md).
 
 ## Combinaison de validateurs
 
-Vous pouvez appliquer plusieurs validateurs à une seule option pour une validation plus complète :
+Vous pouvez appliquer plusieurs validateurs à une seule option en utilisant plusieurs entrées de validateurs dans la macro `VALIDATOR()` :
 
 ```c
 OPTION_INT('p', "port", HELP("Numéro de port"), 
-          RANGE(1, 65535),                   // Validateur de plage
-          VALIDATOR(even_validator, NULL),   // Validateur personnalisé
+          VALIDATOR(V_RANGE(1, 65535), V_EVEN()),  // Validateurs multiples
           DEFAULT(8080))
 ```
 
@@ -180,6 +200,7 @@ ARGUS_REPORT_ERROR(argus, error_code, format_string, ...);
     ```
 
 Les codes d'erreur courants incluent :
+
 - `ARGUS_ERROR_INVALID_VALUE` : La valeur ne répond pas aux exigences
 - `ARGUS_ERROR_INVALID_RANGE` : Valeur hors de la plage autorisée
 - `ARGUS_ERROR_INVALID_FORMAT` : La valeur a un format incorrect

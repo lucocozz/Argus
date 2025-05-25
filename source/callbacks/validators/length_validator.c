@@ -3,8 +3,10 @@
 
 #include <string.h>
 
-int length_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
+int length_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 {
+    argus_option_t *option = (argus_option_t *)option_ptr;
+
     if (option->value.as_string == NULL) {
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value is NULL");
     }

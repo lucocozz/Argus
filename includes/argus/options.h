@@ -37,15 +37,14 @@ ARGUS_API int free_map_int_handler(argus_option_t *option);
 ARGUS_API int free_map_float_handler(argus_option_t *option);
 ARGUS_API int free_map_bool_handler(argus_option_t *option);
 
-ARGUS_API int range_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
-ARGUS_API int length_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
-ARGUS_API int count_validator(argus_t *argus, argus_option_t *option, validator_data_t data);
-ARGUS_API int regex_validator(argus_t *argus, const char *value, validator_data_t data);
+ARGUS_API int range_validator(argus_t *argus, void *option_ptr, validator_data_t data);
+ARGUS_API int length_validator(argus_t *argus, void *option_ptr, validator_data_t data);
+ARGUS_API int count_validator(argus_t *argus, void *option_ptr, validator_data_t data);
+ARGUS_API int regex_validator(argus_t *argus, void *value_ptr, validator_data_t data);
 
 /*
  * Support macro for character to string conversion
  */
-
 #define CHAR_TO_STRING(c) ((char[]){c, '\0'})
 
 // clang-format off
@@ -54,7 +53,6 @@ ARGUS_API int regex_validator(argus_t *argus, const char *value, validator_data_
  * Optional option fields macros
  */
 #define DEFINE_NAME(lname, sname) ((lname) ? (lname) : CHAR_TO_STRING(sname))
-// #define DEFINE_NAME(lname, sname) ((lname) ? (lname) : #sname)
 #define DEFAULT(val)            .value = (argus_value_t){ .raw = (uintptr_t)(val) },         \
                                 .default_value = (argus_value_t){ .raw = (uintptr_t)(val) }, \
                                 .is_set = true, \
@@ -69,58 +67,30 @@ ARGUS_API int regex_validator(argus_t *argus, const char *value, validator_data_
 #define HELP(desc)              .help = desc
 #define FLAGS(_flags)           .flags = _flags
 #define ENV_VAR(name)           .env_name = name
+#define VALIDATOR(...)          .validators = (validator_entry_t*[]){__VA_ARGS__, NULL}
 
 /*
  * Validator macros
  */
-#define VALIDATOR_AT(index, fn, _data) \
-    .validator_count = ((index) + 1), \
-    .validators[index].func = (argus_validator_t)(fn), \
-    .validators[index].data = (validator_data_t){ .custom = (_data) }
+#define MAKE_VALIDATOR(fn, _data_, _order_) \
+    &(validator_entry_t){ \
+        .func = fn, \
+        .data = _data_, \
+        .order = _order_ \
+    }
+#define _V_DATA_RANGE_(_min_, _max_) \
+    ((validator_data_t){ .range = (argus_range_t){ .min = _min_, .max = _max_ } })
+#define _V_DATA_CUSTOM_(data) \
+    ((validator_data_t){ .custom = (uintptr_t)(data) })
 
-#define VALIDATOR(fn, data)  VALIDATOR_AT(0, fn, data)
-#define VALIDATOR2(fn, data) VALIDATOR_AT(1, fn, data)
-#define VALIDATOR3(fn, data) VALIDATOR_AT(2, fn, data)
-#define VALIDATOR4(fn, data) VALIDATOR_AT(3, fn, data)
-
-/*
-#define RANGE(min, max) \
-    .validators[0].func = (argus_validator_t)range_validator, \
-    .validators[0].data = (validator_data_t){ .range = (range_t){ min, max } }, \
-    .validator_count = 1
-#define LENGTH(min, max) \
-    .validators[0].func = (argus_validator_t)length_validator, \
-    .validators[0].data = (validator_data_t){ .range = (range_t){ min, max } }, \
-    .validator_count = 1
-#define COUNT(min, max) \
-    .validators[0].func = (argus_validator_t)count_validator, \
-    .validators[0].data = (validator_data_t){ .range = (range_t){ min, max } }, \
-    .validator_count = 1
-*/
-
-#define RANGE(_min, _max) \
-    .validators[0].func = (argus_validator_t)range_validator, \
-    .validators[0].data.range.min = (_min), \
-    .validators[0].data.range.max = (_max), \
-    .validator_count = 1
-#define LENGTH(_min, _max) \
-    .validators[0].func = (argus_validator_t)length_validator, \
-    .validators[0].data.range.min = (_min), \
-    .validators[0].data.range.max = (_max), \
-    .validator_count = 1
-#define COUNT(_min, _max) \
-    .validators[0].func = (argus_validator_t)count_validator, \
-    .validators[0].data.range.min = (_min), \
-    .validators[0].data.range.max = (_max), \
-    .validator_count = 1
-
-#define PRE_VALIDATOR(fn, data) \
-    .pre_validator = (argus_pre_validator_t)(fn), \
-    .pre_validator_data = (validator_data_t){ .custom = (data) }
-
-#define REGEX(re) \
-    .pre_validator = (argus_pre_validator_t)regex_validator, \
-    .pre_validator_data = (validator_data_t){ .regex = (re) }
+#define V_RANGE(_min_, _max_) \
+    MAKE_VALIDATOR(range_validator, _V_DATA_RANGE_(_min_, _max_), ORDER_POST)
+#define V_LENGTH(_min_, _max_) \
+    MAKE_VALIDATOR(length_validator, _V_DATA_RANGE_(_min_, _max_), ORDER_POST)
+#define V_COUNT(_min_, _max_) \
+    MAKE_VALIDATOR(count_validator, _V_DATA_RANGE_(_min_, _max_), ORDER_POST)
+#define V_REGEX(re) \
+    MAKE_VALIDATOR(regex_validator, ((validator_data_t){ .regex = (re) }), ORDER_PRE)
 
 /*
  * Choice macros for different types

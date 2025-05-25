@@ -27,7 +27,7 @@ ARGUS_OPTIONS(
     POSITIONAL_INT("buffer_size", HELP("Buffer size in KB"),
                     FLAGS(FLAG_OPTIONAL),
                     DEFAULT(64),
-                    RANGE(1, 8192)),
+                    VALIDATOR(V_RANGE(1, 8192))),
     
     // Optional positional argument without default value
     POSITIONAL_STRING("log_file", HELP("Log file"),

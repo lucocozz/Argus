@@ -106,8 +106,10 @@ For more complex validation logic, you can create your own validators:
 
 === "Simple Validator"
     ```c
-    int even_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
+    int even_validator(argus_t *argus, void *option_ptr, validator_data_t data)
     {
+        argus_option_t *option = (argus_option_t *)option_ptr;
+        
         if (option->value.as_int % 2 != 0) {
             ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
                              "Value must be an even number");
@@ -115,47 +117,65 @@ For more complex validation logic, you can create your own validators:
         return ARGUS_SUCCESS;
     }
     
-    // Usage
+    // Usage with MAKE_VALIDATOR
+    #define V_EVEN() \
+        MAKE_VALIDATOR(even_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+    
     OPTION_INT('n', "number", HELP("An even number"), 
-              VALIDATOR(even_validator, NULL))
+              VALIDATOR(V_EVEN()))
     ```
 
-=== "Basic Pre-Validator"
+=== "Validator with Custom Data"
     ```c
-    int length_pre_validator(argus_t *argus, const char *value, validator_data_t data)
+    int divisible_validator(argus_t *argus, void *option_ptr, validator_data_t data)
     {
-        size_t min_length = *(size_t *)data.custom;
+        argus_option_t *option = (argus_option_t *)option_ptr;
+        int divisor = (int)data.custom;
         
-        if (strlen(value) < min_length) {
+        if (option->value.as_int % divisor != 0) {
             ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                              "String must be at least %zu characters long", min_length);
+                              "Value must be divisible by %d", divisor);
         }
         return ARGUS_SUCCESS;
     }
     
-    // Usage
-    size_t min_length = 8;
-    OPTION_STRING('p', "password", HELP("Password"),
-                 PRE_VALIDATOR(length_pre_validator, &min_length))
+    // Usage with custom data
+    #define V_DIVISIBLE_BY(n) \
+        MAKE_VALIDATOR(divisible_validator, _V_DATA_CUSTOM_(n), ORDER_POST)
+    
+    OPTION_INT('n', "number", HELP("Number divisible by 5"), 
+              VALIDATOR(V_DIVISIBLE_BY(5)))
     ```
 
-!!! info "Validator Types"
-    argus supports two types of custom validators:
+=== "Multiple Validators"
+    ```c
+    // Combine multiple validators
+    OPTION_INT('p', "port", HELP("Even port number in valid range"), 
+              VALIDATOR(V_RANGE(1, 65535), V_EVEN()))
     
-    1. **Validators** - Validate the **processed** value after conversion to its final type
-    2. **Pre-Validators** - Validate the **raw string** before any processing
+    OPTION_STRING('e', "email", HELP("Email with length validation"),
+                 VALIDATOR(V_LENGTH(5, 50), V_REGEX(email_regex)))
+    ```
+
+!!! info "Validator Types and New API"
+    argus supports validators with explicit ordering:
+    
+    1. **ORDER_PRE** - Validate the **raw string** before any processing
+    2. **ORDER_POST** - Validate the **processed** value after conversion to its final type
+    
+    Use `MAKE_VALIDATOR(function, data, order)` to create validators with the new API.
+    Built-in validators like `V_RANGE()`, `V_LENGTH()`, and `V_COUNT()` are ready to use.
     
     For a detailed exploration of custom validators, including examples and best practices, 
     see the [Custom Validators guide](../advanced/custom-validators.md).
 
 ## Combining Validators
 
-You can apply multiple validators to a single option for more comprehensive validation:
+You can apply multiple validators to a single option by using multiple validator entries in the `VALIDATOR()` macro:
 
 ```c
 OPTION_INT('p', "port", HELP("Port number"), 
-          RANGE(1, 65535),                   // Range validator
-          VALIDATOR(even_validator, NULL),   // Custom validator
+          VALIDATOR(V_RANGE(1, 65535), V_EVEN()),  // Multiple validators
           DEFAULT(8080))
 ```
 
@@ -173,6 +193,7 @@ ARGUS_REPORT_ERROR(argus, error_code, format_string, ...);
     ```
 
 Common error codes include:
+
 - `ARGUS_ERROR_INVALID_VALUE`: Value doesn't meet requirements
 - `ARGUS_ERROR_INVALID_RANGE`: Value outside allowed range
 - `ARGUS_ERROR_INVALID_FORMAT`: Value has incorrect format
