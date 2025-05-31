@@ -5,9 +5,10 @@
 #include "argus/regex.h"
 
 // Test function for even numbers
-int test_even_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
+int test_even_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 {
     (void)data;
+    argus_option_t *option = (argus_option_t *)option_ptr;
     int number = option->value.as_int;
     if (number % 2 != 0) {
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be an even number");
@@ -16,9 +17,10 @@ int test_even_validator(argus_t *argus, argus_option_t *option, validator_data_t
 }
 
 // Test function for positive numbers
-int test_positive_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
+int test_positive_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 {
     (void)data;
+    argus_option_t *option = (argus_option_t *)option_ptr;
     int number = option->value.as_int;
     if (number <= 0) {
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be a positive number");
@@ -27,9 +29,10 @@ int test_positive_validator(argus_t *argus, argus_option_t *option, validator_da
 }
 
 // Test function for alphanumeric validation
-int test_alphanumeric_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
+int test_alphanumeric_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 {
     (void)data;
+    argus_option_t *option = (argus_option_t *)option_ptr;
     const char *str = option->value.as_string;
     if (!str) return ARGUS_SUCCESS;
     
@@ -42,34 +45,60 @@ int test_alphanumeric_validator(argus_t *argus, argus_option_t *option, validato
     return ARGUS_SUCCESS;
 }
 
+// Test function for divisibility
+int test_divisible_validator(argus_t *argus, void *option_ptr, validator_data_t data)
+{
+    argus_option_t *option = (argus_option_t *)option_ptr;
+    int divisor = (int)data.custom;
+    int value = option->value.as_int;
+    
+    if (value % divisor != 0) {
+        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
+                          "Value must be divisible by %d", divisor);
+    }
+    
+    return ARGUS_SUCCESS;
+}
+
+#define V_EVEN() \
+    MAKE_VALIDATOR(test_even_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+#define V_POSITIVE() \
+    MAKE_VALIDATOR(test_positive_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+#define V_ALPHANUMERIC() \
+    MAKE_VALIDATOR(test_alphanumeric_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+#define V_DIVISIBLE_BY(_divisor_) \
+    MAKE_VALIDATOR(test_divisible_validator, _V_DATA_CUSTOM_(_divisor_), ORDER_POST)
+
 // Define test options with validators
 ARGUS_OPTIONS(
     test_options,
     HELP_OPTION(),
     OPTION_INT('p', "port", HELP("Port number"), 
-                DEFAULT(8080), RANGE(1, 65535)),
+                DEFAULT(8080), VALIDATOR(V_RANGE(1, 65535))),
     OPTION_STRING('l', "level", HELP("Log level"), 
                 DEFAULT("info"), 
                 CHOICES_STRING("debug", "info", "warning", "error")),
     OPTION_STRING('e', "email", HELP("Email address"), 
-                REGEX(MAKE_REGEX("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", 
-                    "Enter email format"))),
+                VALIDATOR(V_REGEX(MAKE_REGEX("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", 
+                    "Enter email format")))),
     // Add LENGTH validator test option
     OPTION_STRING('u', "username", HELP("Username"), 
-                LENGTH(3, 16)),
+                VALIDATOR(V_LENGTH(3, 16))),
     // Add COUNT validator test option
     OPTION_ARRAY_STRING('t', "tags", HELP("Tags"), 
-                COUNT(2, 5)),
+                VALIDATOR(V_COUNT(2, 5))),
                 
     // Multiple validators: test both even and positive
     OPTION_INT('n', "even-positive", HELP("Even positive number"),
-                VALIDATOR(test_even_validator, NULL),
-                VALIDATOR2(test_positive_validator, NULL)),
+                VALIDATOR(V_EVEN(), V_POSITIVE())),
                 
     // Multiple validators: length and alphanumeric
     OPTION_STRING('a', "alphanum", HELP("Alphanumeric username"),
-                LENGTH(3, 8),
-                VALIDATOR2(test_alphanumeric_validator, NULL)),
+                VALIDATOR(V_LENGTH(3, 8), V_ALPHANUMERIC())),
+                
+    // Custom validator with data
+    OPTION_INT('d', "divisible", HELP("Number divisible by 5"),
+                VALIDATOR(V_DIVISIBLE_BY(5), V_RANGE(1, 100))),
 )
 
 // Test for range validation
@@ -224,7 +253,7 @@ Test(validators_integration, count_validation_success)
 
 Test(validators_integration, count_validation_failure_too_few)
 {
-    // No tags (too few)
+    // Too few tags
     char *argv[] = {"test", "-t", "tag1"};
     int argc = sizeof(argv) / sizeof(char*);
 
@@ -348,6 +377,65 @@ Test(validators_integration, string_multiple_validators_both_fail)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_neq(status, ARGUS_SUCCESS, "Username that violates both validators should fail");
+    
+    argus_free(&argus);
+}
+
+// Tests for custom validator with data
+Test(validators_integration, custom_validator_with_data_success)
+{
+    // Valid number divisible by 5
+    char *argv[] = {"test", "-d", "25"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
+    
+    cr_assert_eq(status, ARGUS_SUCCESS, "Number divisible by 5 should pass validation");
+    cr_assert_eq(argus_get(argus, "divisible").as_int, 25);
+    
+    argus_free(&argus);
+}
+
+Test(validators_integration, custom_validator_with_data_failure)
+{
+    // Invalid: not divisible by 5
+    char *argv[] = {"test", "-d", "23"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
+    
+    cr_assert_neq(status, ARGUS_SUCCESS, "Number not divisible by 5 should fail validation");
+    
+    argus_free(&argus);
+}
+
+Test(validators_integration, custom_validator_with_range_both_pass)
+{
+    // Valid: divisible by 5 and in range
+    char *argv[] = {"test", "-d", "50"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
+    
+    cr_assert_eq(status, ARGUS_SUCCESS, "Valid number should pass both validators");
+    cr_assert_eq(argus_get(argus, "divisible").as_int, 50);
+    
+    argus_free(&argus);
+}
+
+Test(validators_integration, custom_validator_range_fails)
+{
+    // Invalid: divisible by 5 but out of range
+    char *argv[] = {"test", "-d", "105"};
+    int argc = sizeof(argv) / sizeof(char*);
+
+    argus_t argus = argus_init(test_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
+    
+    cr_assert_neq(status, ARGUS_SUCCESS, "Out of range number should fail validation");
     
     argus_free(&argus);
 }

@@ -47,6 +47,8 @@ typedef enum argus_error_type_e
 
     /* Internal errors */
     ARGUS_ERROR_MEMORY,
+    ARGUS_ERROR_INTERNAL,
+    ARGUS_ERROR_UNSUPPORTED,
 
     /* Value errors */
     ARGUS_ERROR_INVALID_VALUE,

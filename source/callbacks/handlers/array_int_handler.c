@@ -23,7 +23,7 @@ typedef struct
 {
     int start;
     int end;
-} int_range_t;
+} int_argus_range_t;
 
 const char *search_range_separator(const char *value, const char *separators)
 {
@@ -47,7 +47,7 @@ const char *search_range_separator(const char *value, const char *separators)
  * @param value String to parse
  * @return 0 on success, -1 on error
  */
-static int parse_int_range(int_range_t *range, const char *value)
+static int parse_int_range(int_argus_range_t *range, const char *value)
 {
     const char *range_separator = search_range_separator(value, "-:");
     if (range_separator != NULL) {
@@ -76,7 +76,7 @@ static int parse_int_range(int_range_t *range, const char *value)
 /**
  * Add a range of integers to the option's value array
  */
-static void add_range_values(argus_option_t *option, const int_range_t *range)
+static void add_range_values(argus_option_t *option, const int_argus_range_t *range)
 {
     for (int i = range->start; i <= range->end; i++) {
         adjust_array_size(option);
@@ -90,7 +90,7 @@ static void add_range_values(argus_option_t *option, const int_range_t *range)
  */
 static int set_value(argus_t *argus, argus_option_t *option, char *value)
 {
-    int_range_t range;
+    int_argus_range_t range;
 
     if (parse_int_range(&range, value) != 0) {
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,

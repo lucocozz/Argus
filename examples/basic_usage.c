@@ -21,13 +21,13 @@ ARGUS_OPTIONS(
     
     // String option with only long name (no short name)
     OPTION_STRING(0, "output", HELP("Output file"), 
-                 DEFAULT("output.txt"), 
+                 DEFAULT("output.txt"),
                  HINT("FILE")),
     
     // Integer option with only short name (no long name)
     OPTION_INT('p', NULL, HELP("Port number"), 
                DEFAULT(8080), 
-               RANGE(1, 65535)),
+               VALIDATOR(V_RANGE(1, 65535))),
 
     // Required positional argument
     POSITIONAL_STRING("input", HELP("Input file")),

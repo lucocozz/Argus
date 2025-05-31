@@ -15,13 +15,14 @@
  *
  * @return Status code (0 for success, non-zero for error)
  */
-int regex_validator(argus_t *argus, const char *value, validator_data_t data)
+int regex_validator(argus_t *argus, void *value_ptr, validator_data_t data)
 {
 #ifndef ARGUS_REGEX
-    (void)(value);
+    (void)(value_ptr);
     (void)(data);
     ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "regex support is not available");
 #else
+    const char *value   = (const char *)value_ptr;
     const char *pattern = data.regex.pattern;
     if (!pattern) {
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Regular expression pattern is NULL");

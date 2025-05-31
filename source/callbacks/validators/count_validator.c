@@ -1,8 +1,10 @@
 #include "argus/errors.h"
 #include "argus/types.h"
 
-int count_validator(argus_t *argus, argus_option_t *option, validator_data_t data)
+int count_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 {
+    argus_option_t *option = (argus_option_t *)option_ptr;
+
     if (data.range.min < 0 || data.range.max < 0) {
         ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_RANGE, "Range is negative");
     }
