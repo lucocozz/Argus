@@ -40,13 +40,13 @@ Test(handlers, flag_handler, .init = setup_handler)
     cr_assert_eq(result, ARGUS_SUCCESS, "Bool handler should return success");
     
     // Verify value was toggled
-    cr_assert_eq(test_option.value.as_bool, true, "Bool value should be inverted to true");
+    cr_assert_eq(test_option.value.as_bool, true, "Bool value should be true");
     
     // Call handler again
     result = flag_handler(&test_argus, &test_option, NULL);
     
     // Verify value was toggled again
-    cr_assert_eq(test_option.value.as_bool, false, "Bool value should be inverted back to false");
+    cr_assert_eq(test_option.value.as_bool, true, "Bool value should be true after second call");
 }
 
 

@@ -259,9 +259,9 @@ Test(validators_integration, count_validation_failure_too_few)
 
     argus_t argus = argus_init(test_options, "test", "1.0.0");
     int status = argus_parse(&argus, argc, argv);
-    
+
     cr_assert_neq(status, ARGUS_SUCCESS, "Too few tags should fail validation");
-    
+
     argus_free(&argus);
 }
 
@@ -276,7 +276,7 @@ Test(validators_integration, count_validation_failure_too_many)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_neq(status, ARGUS_SUCCESS, "Too many tags should fail validation");
-    
+
     argus_free(&argus);
 }
 
