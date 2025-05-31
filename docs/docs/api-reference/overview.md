@@ -322,5 +322,5 @@ int main(int argc, char **argv)
 
 ## See Also
 
-- **[Regex Patterns](patterns/regex-patterns)** - Built-in validation patterns
-- **[Error Codes](patterns/error-codes)** - Complete error code reference
+- **[Regex Patterns](./regex-patterns)** - Built-in validation patterns
+- **[Error Codes](./error-codes)** - Complete error code reference

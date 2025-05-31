@@ -687,7 +687,6 @@ int deploy_action(argus_t *argus, void *data)
 
 - **[Collections](collections)** - Work with arrays and maps in subcommands
 - **[Custom Handlers](../advanced/custom-handlers)** - Process complex subcommand data
-- **[Nested Commands](../advanced/nested-commands)** - Advanced multi-level hierarchies
 - **[Validation](validation)** - Validate subcommand options
 
 :::tip Command Design
