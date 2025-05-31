@@ -1,0 +1,595 @@
+/**
+ * Docusaurus Combined Theme - Dark by default, Light option
+ * Terminal-style modern documentation theme
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ===== DARK THEME (default) ===== */
+:root {
+  /* Main colors - Dark theme */
+  --terminal-green: #00ff41;
+  --terminal-green-bright: #39ff14;
+  --terminal-green-dim: #00cc33;
+  --terminal-black: #0a0a0a;
+  --terminal-dark: #121212;
+  --terminal-darker: #1a1a1a;
+  --terminal-gray: #333333;
+  --terminal-light-gray: #666666;
+  --terminal-text: #e0e0e0;
+  --terminal-text-dim: #a0a0a0;
+  
+  /* Docusaurus variable overrides */
+  --ifm-color-primary: var(--terminal-green);
+  --ifm-color-primary-dark: var(--terminal-green-dim);
+  --ifm-color-primary-darker: #00aa2b;
+  --ifm-color-primary-darkest: #008822;
+  --ifm-color-primary-light: var(--terminal-green-bright);
+  --ifm-color-primary-lighter: #55ff55;
+  --ifm-color-primary-lightest: #77ff77;
+
+  --ifm-font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+  
+  --ifm-background-color: var(--terminal-black);
+  --ifm-background-surface-color: var(--terminal-dark);
+  --ifm-navbar-background-color: var(--terminal-black);
+  --ifm-footer-background-color: var(--terminal-black);
+  
+  --ifm-color-content: var(--terminal-text);
+  --ifm-color-content-secondary: var(--terminal-text-dim);
+  --ifm-heading-color: var(--terminal-green-bright);
+  
+  --ifm-navbar-height: 60px;
+  --ifm-navbar-padding-vertical: 0.75rem;
+  --ifm-navbar-padding-horizontal: 1.5rem;
+  
+  --ifm-global-radius: 6px;
+  --ifm-button-border-radius: 4px;
+  --ifm-code-border-radius: 4px;
+  
+  --ifm-toc-border-color: var(--terminal-gray);
+  --ifm-blockquote-border-left-color: var(--terminal-green);
+}
+
+/* Body styling - Dark */
+body {
+  background-color: var(--terminal-black) !important;
+  color: var(--terminal-text) !important;
+  font-family: var(--ifm-font-family-base);
+}
+
+/* Navigation bar - Dark */
+.navbar {
+  background-color: var(--terminal-black) !important;
+  border-bottom: 1px solid var(--terminal-gray);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.navbar__title {
+  color: var(--terminal-green-bright) !important;
+  font-weight: 700;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.navbar__link {
+  color: var(--terminal-text) !important;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+}
+
+.navbar__link:hover {
+  color: var(--terminal-green-bright) !important;
+  background-color: rgba(0, 255, 65, 0.1);
+}
+
+/* Logo styling */
+.navbar__logo {
+  height: 36px;
+  width: auto;
+  transition: transform 0.2s ease;
+}
+
+.navbar__logo:hover {
+  transform: scale(1.05);
+}
+
+/* Sidebar - Dark */
+.theme-doc-sidebar-container {
+  background-color: var(--terminal-black) !important;
+  border-right: 1px solid var(--terminal-gray);
+}
+
+.menu__link {
+  color: var(--terminal-text-dim) !important;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.menu__link:hover {
+  background-color: rgba(0, 255, 65, 0.1) !important;
+  color: var(--terminal-green-bright) !important;
+}
+
+.menu__link--active {
+  background-color: rgba(0, 255, 65, 0.15) !important;
+  color: var(--terminal-green-bright) !important;
+  border-left: 3px solid var(--terminal-green);
+  font-weight: 600;
+}
+
+/* Main content area - Dark */
+.main-wrapper {
+  background-color: var(--terminal-black) !important;
+}
+
+.theme-doc-markdown {
+  background-color: var(--terminal-black) !important;
+  max-width: none;
+}
+
+/* Remove card styling from article containers */
+article {
+  max-width: none;
+  background-color: transparent;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* Content padding */
+.theme-doc-markdown .markdown {
+  padding: 2rem;
+}
+
+/* Typography - Dark */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--terminal-green-bright) !important;
+  font-weight: 600;
+  font-family: var(--ifm-font-family-monospace);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  border-bottom: 2px solid var(--terminal-green);
+  padding-bottom: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  font-size: 1.75rem;
+  border-bottom: 1px solid var(--terminal-gray);
+  padding-bottom: 0.25rem;
+}
+
+h3 {
+  font-size: 1.375rem;
+}
+
+p {
+  color: var(--terminal-text) !important;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* Code styling - Dark with terminal window frame */
+code {
+  background-color: var(--terminal-darker) !important;
+  color: var(--terminal-green-bright) !important;
+  border: 1px solid var(--terminal-gray);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.85em;
+}
+
+/* Terminal-style code block frame */
+.theme-code-block {
+  background-color: var(--terminal-darker) !important;
+  border: 2px solid #00cc3327;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.2), 
+              0 4px 12px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Terminal window control buttons */
+.theme-code-block::after {
+  content: '● ● ●';
+  position: absolute;
+  top: 2px;
+  left: 12px;
+  color: #00cc3327;
+  font-size: 12px;
+  z-index: 1;
+}
+
+/* Code block content */
+pre {
+  background-color: var(--terminal-dark) !important;
+  border: none !important;
+  padding: 2rem 1rem 1rem 1rem !important;
+  margin: 0 !important;
+  position: relative;
+  z-index: 0;
+}
+
+pre code {
+  background: transparent !important;
+  border: none;
+  padding: 0;
+  color: var(--terminal-text) !important;
+}
+
+/* Syntax highlighting - Dark theme */
+.token.comment { color: var(--terminal-light-gray) !important; }
+.token.string { color: var(--terminal-green-dim) !important; }
+.token.keyword { color: #ff6b6b !important; }
+.token.function { color: #4ecdc4 !important; }
+.token.number { color: #feca57 !important; }
+.token.operator { color: var(--terminal-text) !important; }
+.token.punctuation { color: var(--terminal-text-dim) !important; }
+
+/* Button styling - Dark */
+.button {
+  background-color: transparent !important;
+  border: 2px solid var(--terminal-green) !important;
+  color: var(--terminal-green) !important;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.button:hover {
+  background-color: var(--terminal-green-bright) !important;
+  border-color: var(--terminal-green-bright) !important;
+  color: var(--terminal-black) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+  text-shadow: none;
+}
+
+.button--primary {
+  background-color: var(--terminal-green) !important;
+  color: var(--terminal-black) !important;
+  border-color: var(--terminal-green) !important;
+}
+
+/* Link styling - Dark */
+a {
+  color: var(--terminal-green-bright) !important;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--terminal-green-bright) !important;
+  text-decoration: underline;
+}
+
+/* Table styling - Dark */
+table {
+  background-color: var(--terminal-dark) !important;
+  border: 1px solid var(--terminal-gray);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+th {
+  background-color: var(--terminal-darker) !important;
+  color: var(--terminal-green-bright) !important;
+  font-weight: 600;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--terminal-green);
+  font-family: var(--ifm-font-family-monospace);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+td {
+  background-color: var(--terminal-dark) !important;
+  color: var(--terminal-text) !important;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--terminal-gray);
+}
+
+/* Hero section - Dark */
+.hero {
+  background: linear-gradient(135deg, var(--terminal-black) 0%, var(--terminal-dark) 100%) !important;
+  border-bottom: 1px solid var(--terminal-gray);
+  color: var(--terminal-text) !important;
+}
+
+.hero__title {
+  color: var(--terminal-green-bright) !important;
+  font-family: var(--ifm-font-family-monospace) !important;
+  text-shadow: 0 0 20px var(--terminal-green);
+  animation: terminal-glow 2.5s ease-in-out infinite;
+}
+
+/* Terminal glow animation for hero title */
+@keyframes terminal-glow {
+  0% { text-shadow: 0 0 5px var(--terminal-green); }
+  50% { text-shadow: 0 0 15px var(--terminal-green), 0 0 25px var(--terminal-green); }
+  100% { text-shadow: 0 0 5px var(--terminal-green); }
+}
+
+/* ===== LIGHT THEME (data-theme='light') ===== */
+[data-theme='light'] {
+  /* Light theme color variables */
+  --light-primary: #047857;
+  --light-primary-hover: #065f46;
+  --light-primary-light: #10b981;
+  --light-accent: #0891b2;
+  --light-accent-hover: #0e7490;
+  --light-bg: #ffffff;
+  --light-bg-secondary: #f8fafc;
+  --light-bg-tertiary: #f1f5f9;
+  --light-surface: #ffffff;
+  --light-border: #e2e8f0;
+  --light-border-strong: #cbd5e1;
+  --light-text: #1e293b;
+  --light-text-secondary: #475569;
+  --light-text-muted: #64748b;
+  --light-code-bg: #f1f5f9;
+  --light-code-border: #e2e8f0;
+  --light-code-text: #374151;
+  
+  /* Override Docusaurus variables for light theme */
+  --ifm-color-primary: var(--light-primary);
+  --ifm-color-primary-dark: var(--light-primary-hover);
+  --ifm-color-primary-darker: #064e3b;
+  --ifm-color-primary-darkest: #022c22;
+  --ifm-color-primary-light: var(--light-primary-light);
+  --ifm-color-primary-lighter: #34d399;
+  --ifm-color-primary-lightest: #6ee7b7;
+
+  --ifm-background-color: var(--light-bg);
+  --ifm-background-surface-color: var(--light-surface);
+  --ifm-navbar-background-color: var(--light-bg);
+  --ifm-footer-background-color: var(--light-bg-secondary);
+  --ifm-color-content: var(--light-text);
+  --ifm-color-content-secondary: var(--light-text-secondary);
+  --ifm-heading-color: var(--light-text);
+  --ifm-toc-border-color: var(--light-border);
+  --ifm-blockquote-border-left-color: var(--light-primary);
+}
+
+/* Body styling - Light */
+[data-theme='light'] body {
+  background-color: var(--light-bg) !important;
+  color: var(--light-text) !important;
+}
+
+/* Navigation bar - Light */
+[data-theme='light'] .navbar {
+  background-color: var(--light-bg) !important;
+  border-bottom: 1px solid var(--light-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] .navbar__title {
+  color: var(--light-primary) !important;
+}
+
+[data-theme='light'] .navbar__link {
+  color: var(--light-text-secondary) !important;
+}
+
+[data-theme='light'] .navbar__link:hover {
+  color: var(--light-primary) !important;
+  background-color: var(--light-bg-tertiary);
+}
+
+/* Sidebar - Light */
+[data-theme='light'] .theme-doc-sidebar-container {
+  background-color: var(--light-bg) !important;
+  border-right: 1px solid var(--light-border);
+}
+
+[data-theme='light'] .menu__link {
+  color: var(--light-text-secondary) !important;
+}
+
+[data-theme='light'] .menu__link:hover {
+  background-color: var(--light-bg-tertiary) !important;
+  color: var(--light-primary) !important;
+}
+
+[data-theme='light'] .menu__link--active {
+  background-color: var(--light-bg-secondary) !important;
+  color: var(--light-primary) !important;
+  border-left: 3px solid var(--light-primary);
+}
+
+/* Main content - Light */
+[data-theme='light'] .main-wrapper {
+  background-color: var(--light-bg) !important;
+}
+
+[data-theme='light'] .theme-doc-markdown {
+  background-color: var(--light-bg) !important;
+}
+
+/* Typography - Light */
+[data-theme='light'] h1, 
+[data-theme='light'] h2, 
+[data-theme='light'] h3, 
+[data-theme='light'] h4, 
+[data-theme='light'] h5, 
+[data-theme='light'] h6 {
+  color: var(--light-text) !important;
+}
+
+[data-theme='light'] h1 {
+  color: var(--light-primary) !important;
+  border-bottom: 2px solid var(--light-primary);
+}
+
+[data-theme='light'] h2 {
+  color: var(--light-primary) !important;
+  border-bottom: 1px solid var(--light-border);
+}
+
+[data-theme='light'] h3 {
+  color: var(--light-accent) !important;
+}
+
+[data-theme='light'] p {
+  color: var(--light-text) !important;
+}
+
+/* Code styling - Light with terminal window frame */
+[data-theme='light'] code {
+  background-color: var(--light-code-bg) !important;
+  color: var(--light-code-text) !important;
+  border: 1px solid var(--light-code-border);
+}
+
+/* Light theme terminal-style code block frame */
+[data-theme='light'] .theme-code-block {
+  background-color: var(--light-code-bg) !important;
+  border: 2px solid var(--light-primary);
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(4, 120, 87, 0.1), 
+              0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Light theme terminal window title bar */
+[data-theme='light'] .theme-code-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: linear-gradient(90deg, var(--light-bg-secondary) 0%, var(--light-border) 50%, var(--light-bg-secondary) 100%);
+  border-bottom: 1px solid var(--light-primary);
+}
+
+/* Light theme terminal window control buttons */
+[data-theme='light'] .theme-code-block::after {
+  content: '● ● ●';
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  color: var(--light-primary);
+  font-size: 12px;
+  z-index: 1;
+}
+
+/* Light theme code block content */
+[data-theme='light'] pre {
+  background-color: var(--light-code-bg) !important;
+  border: none !important;
+  padding: 2rem 1rem 1rem 1rem !important;
+  margin: 0 !important;
+  position: relative;
+  z-index: 0;
+}
+
+[data-theme='light'] pre code {
+  color: var(--light-code-text) !important;
+}
+
+/* Syntax highlighting - Light theme */
+[data-theme='light'] .token.comment { color: #6b7280 !important; }
+[data-theme='light'] .token.string { color: #058059 !important; }
+[data-theme='light'] .token.keyword { color: #c22323 !important; }
+[data-theme='light'] .token.function { color: #0888a8 !important; }
+[data-theme='light'] .token.number { color: #c76c05 !important; }
+[data-theme='light'] .token.operator { color: var(--light-text) !important; }
+[data-theme='light'] .token.punctuation { color: var(--light-text-secondary) !important; }
+
+/* Button styling - Light */
+[data-theme='light'] .button {
+  background-color: transparent !important;
+  border: 2px solid var(--light-primary) !important;
+  color: var(--light-primary) !important;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+[data-theme='light'] .button:hover {
+  background-color: var(--light-primary-hover) !important;
+  box-shadow: 0 0 10px rgba(4, 120, 87, 0.5);
+  color: var(--light-bg) !important;
+  text-shadow: none;
+}
+
+[data-theme='light'] .button--primary {
+  background-color: var(--light-primary) !important;
+  color: var(--light-bg) !important;
+  border-color: var(--light-primary) !important;
+}
+
+/* Link styling - Light */
+[data-theme='light'] a {
+  color: var(--light-primary) !important;
+}
+
+[data-theme='light'] a:hover {
+  color: var(--light-primary-hover) !important;
+}
+
+/* Table styling - Light */
+[data-theme='light'] table {
+  background-color: var(--light-surface) !important;
+  border: 1px solid var(--light-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='light'] th {
+  background-color: var(--light-bg-secondary) !important;
+  color: var(--light-text) !important;
+  border-bottom: 2px solid var(--light-primary);
+}
+
+[data-theme='light'] td {
+  background-color: var(--light-surface) !important;
+  color: var(--light-text) !important;
+  border-bottom: 1px solid var(--light-border);
+}
+
+[data-theme='light'] tr:hover {
+  background-color: var(--light-bg-tertiary) !important;
+}
+
+/* Hero section - Light */
+[data-theme='light'] .hero {
+  background: linear-gradient(135deg, var(--light-bg) 0%, var(--light-bg-secondary) 100%) !important;
+  border-bottom: 1px solid var(--light-border);
+  color: var(--light-text) !important;
+}
+
+[data-theme='light'] .hero__title {
+  color: var(--light-primary) !important;
+  text-shadow: none;
+  animation: none;
+}
