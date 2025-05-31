@@ -40,6 +40,12 @@ static int validate_default_value(argus_t *argus, argus_option_t *option)
 {
     int status = ARGUS_SUCCESS;
 
+    if (option->have_default && option->value_type == VALUE_TYPE_FLAG) {
+        ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_DEFAULT,
+                            "Option '%s' cannot have a default value for flag type", option->name);
+        status = ARGUS_ERROR_INVALID_DEFAULT;
+    }
+
     if (option->choices_count > 0 && option->have_default) {
         bool valid_default = false;
         for (size_t i = 0; i < option->choices_count && !valid_default; ++i) {
