@@ -23,13 +23,18 @@ int argus_parse(argus_t *argus, int argc, char **argv)
         for (size_t i = 0; i < argus->context.subcommand_depth; ++i)
             printf(" %s", argus->context.subcommand_stack[i]->name);
         printf(" --help' for more information.\n");
+        argus_free(argus);
         return (status);
     }
 
     status = load_env_vars(argus);
-    if (status != ARGUS_SUCCESS)
+    if (status != ARGUS_SUCCESS) {
+        argus_free(argus);
         return (status);
+    }
 
     status = post_parse_validation(argus);
+    if (status != ARGUS_SUCCESS)
+        argus_free(argus);
     return (status);
 }

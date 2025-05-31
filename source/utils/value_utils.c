@@ -16,6 +16,8 @@ void free_option_value(argus_option_t *option)
         option->free_handler(option);
     else
         free(option->value.as_ptr);
+    option->is_allocated = false;
+    option->value.as_ptr = NULL;
 }
 
 argus_value_t choices_to_value(argus_valtype_t type, argus_value_t choices, size_t choices_count,

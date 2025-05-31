@@ -6,6 +6,6 @@ int flag_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     UNUSED(argus);
     UNUSED(arg);
-    option->value.as_bool = !option->value.as_bool;
+    option->value.as_bool = true;
     return (ARGUS_SUCCESS);
 }
