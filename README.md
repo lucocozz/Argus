@@ -1,274 +1,207 @@
 <p align="center">
-  <img src="docs/assets/argus-logo.webp" alt="argus logo" width="200">
+  <img src="docs/static/img/argus-logo.webp" alt="argus logo" width="200">
 </p>
 
 <h1 align="center">Argus</h1>
 
 <p align="center">
-  <strong>Modern C library for command-line argument parsing with an elegant, macro-based API</strong>
+  <strong>Modern C library for command-line argument parsing with an elegant, declarative API</strong>
 </p>
 
 <p align="center">
   <a href="https://github.com/lucocozz/argus/actions/workflows/ci-complete.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/ci-complete.yml/badge.svg" alt="CI/CD Pipeline"></a>
   <a href="https://github.com/lucocozz/argus/actions/workflows/codeql.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/codeql.yml/badge.svg" alt="CodeQL Analysis"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-  <a href="https://conan.io/center/argus"><img src="https://img.shields.io/badge/Conan-package-blue" alt="Conan Package"></a>
-  <a href="https://vcpkg.io/en/packages.html"><img src="https://img.shields.io/badge/vcpkg-package-blue" alt="vcpkg Package"></a>
+  <a href="https://argus.readthedocs.io"><img src="https://img.shields.io/badge/docs-latest-blue.svg" alt="Documentation"></a>
 </p>
 
 ---
 
-## 📋 Overview
+## Why Argus?
 
-**argus** is a powerful C library that simplifies command-line argument parsing with a modern, expressive API:
+Replace tedious argument parsing with declarative definitions:
 
 ```c
-// Define options with a clean, declarative syntax
+// Old way - verbose and error-prone
+int opt;
+while ((opt = getopt(argc, argv, "vo:p:")) != -1) {
+    switch (opt) {
+        case 'v': verbose = 1; break;
+        case 'o': output = optarg; break;
+        case 'p': port = atoi(optarg); break;
+    }
+}
+// + manual validation, help generation, error handling...
+
+// Argus way - declarative and complete
 ARGUS_OPTIONS(
     options,
     HELP_OPTION(),
-    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
-    OPTION_INT('p', "port", HELP("Port number"), RANGE(1, 65535), DEFAULT(8080))
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("result.txt")),
+    OPTION_INT('p', "port", HELP("Port number"), VALIDATOR(V_RANGE(1, 65535)))
 )
 ```
 
-Designed for both simplicity and flexibility, argus enables developers to create sophisticated command-line interfaces with minimal effort.
+## Core Features
 
-## ⚡ Quick Start
+- **🎯 Type Safety** - Strong typing with automatic validation
+- **📖 Auto Help** - Beautiful help generation from definitions  
+- **🔧 Subcommands** - Git/Docker style nested commands
+- **📦 Collections** - Arrays and maps for multiple values
+- **🌍 Environment** - Seamless env var integration
+- **✅ Validation** - Built-in validators + regex patterns
 
-### Installation
+## Quick Start
 
+**Install:**
 ```bash
-# Using package managers
-conan install argus/1.0.0@
+# Package managers
 vcpkg install argus
+conan install argus/1.0.0
 
-# From source with Meson
-git clone https://github.com/lucocozz/argus.git
-cd argus
-meson setup builddir && meson compile -C builddir
-sudo meson install -C builddir
+# From source
+git clone https://github.com/lucocozz/argus.git && cd argus
+meson setup build && meson compile -C build && sudo meson install -C build
 ```
 
-### Basic Usage
-
+**Create your first CLI:**
 ```c
-#include "argus.h"
-#include <stdio.h>
+#include <argus.h>
 
-// Define options
 ARGUS_OPTIONS(
     options,
     HELP_OPTION(),
-    VERSION_OPTION(),
-    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
-    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("result.txt")),
     POSITIONAL_STRING("input", HELP("Input file"))
 )
 
 int main(int argc, char **argv)
 {
-    // Initialize and parse
-    argus_t argus = argus_init(options, "my_program", "1.0.0");
-    if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS) {
+    argus_t argus = argus_init(options, "my_tool", "1.0.0");
+    
+    if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS)
         return 1;
-    }
-
-    // Access values
-    const char *input = argus_get(argus, "input").as_string;
-    const char *output = argus_get(argus, "output").as_string;
+    
+    // Type-safe access
     bool verbose = argus_get(argus, "verbose").as_bool;
-
-    printf("Input: %s\nOutput: %s\nVerbose: %s\n", 
-           input, output, verbose ? "yes" : "no");
-
+    const char *input = argus_get(argus, "input").as_string;
+    
+    printf("Processing %s\n", input);
+    
     argus_free(&argus);
     return 0;
 }
 ```
 
-## ✨ Key Features
-
-| Feature | Description | Example |
-|---------|-------------|---------|
-| **Typed Options** | Type-safe options with strong validation | `OPTION_INT('p', "port", RANGE(1, 65535))` |
-| **Subcommands** | Git/Docker style nested commands | `SUBCOMMAND("add", add_options, ACTION(add_command))` |
-| **Collections** | Arrays and maps for multiple values | `OPTION_ARRAY_INT('n', "nums", FLAGS(FLAG_SORTED))` |
-| **Environment Variables** | Auto integration with env vars | `OPTION_STRING('h', "host", ENV_VAR("HOST"))` |
-| **Regex Validation** | Pattern-based validation | `OPTION_STRING('e', "email", REGEX(ARGUS_RE_EMAIL))` |
-| **Command Abbreviations** | GitLab-style command shortening | `program ins` → `program install` |
-| **Flexible Formats** | Support multiple CLI conventions | `--opt=val`, `-o val`, `-oval`, etc. |
-| **Auto Documentation** | Generated help & usage text | `--help` generates formatted documentation |
-
-## 📦 Installation Options
-
-### Dependencies
-
-- **PCRE2**: Required only for regex validation support
-  - Can be disabled with `-Dregex=false` option
-
-### Package Managers
-
-#### Conan
-
+**Build and test:**
 ```bash
-# Basic installation
-conan install argus/1.0.0@
-
-# Without regex support
-conan install argus/1.0.0@ -o argus:regex=false
+gcc my_tool.c -o my_tool -largus
+./my_tool --help    # See auto-generated help
+./my_tool input.txt # Run your tool
 ```
 
-#### vcpkg
+## Real-World Examples
 
-```bash
-# Full installation
-vcpkg install argus
-
-# Core functionality only (no regex)
-vcpkg install argus[core]
-```
-
-### Build From Source
-
-#### Meson (Recommended)
-
-```bash
-git clone https://github.com/lucocozz/argus.git
-cd argus
-meson setup builddir
-meson compile -C builddir
-sudo meson install -C builddir  # Optional
-```
-
-#### Using Just (Development)
-
-```bash
-git clone https://github.com/lucocozz/argus.git
-cd argus
-just build          # Build libraries
-just test           # Run tests
-just examples       # Build examples
-just install        # Install system-wide
-```
-
-#### Installer Script
-
-```bash
-# Download and run installer
-curl -LO https://github.com/lucocozz/argus/releases/download/v1.0.0/argus-1.0.0.tar.gz
-tar -xzf argus-1.0.0.tar.gz
-cd argus-1.0.0
-./install.sh        # System-wide installation
-# or
-./install.sh --local # Local installation in ~/.local
-```
-
-## 🔥 Advanced Examples
-
-### Environment Variables
+<details>
+<summary><strong>Git-like Tool</strong></summary>
 
 ```c
-ARGUS_OPTIONS(
-    options,
-    // Auto-generated APP_HOST environment variable
-    OPTION_STRING('H', "host", HELP("Server hostname"),
-                 FLAGS(FLAG_AUTO_ENV), DEFAULT("localhost")),
-    
-    // Use specific environment variable with override capability
-    OPTION_INT('p', "port", HELP("Server port"), 
-               ENV_VAR("SERVICE_PORT"), FLAGS(FLAG_ENV_OVERRIDE))
+// Subcommands with their own options
+ARGUS_OPTIONS(add_options,
+    HELP_OPTION(),
+    OPTION_FLAG('f', "force", HELP("Force add")),
+    POSITIONAL_STRING("files", HELP("Files to add"))
 )
 
-// Set env variables: APP_HOST=example.com SERVICE_PORT=9000
-```
+ARGUS_OPTIONS(options,
+    HELP_OPTION(),
+    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
+    SUBCOMMAND("add", add_options, HELP("Add files"), ACTION(add_command)),
+    SUBCOMMAND("status", status_options, HELP("Show status"), ACTION(status_command))
+)
 
-### Subcommands with Actions
+// Usage: ./vcs add --force file.txt
+//        ./vcs status --verbose
+```
+</details>
+
+<details>
+<summary><strong>Configuration Tool</strong></summary>
 
 ```c
-int add_command(argus_t *argus, void *data) {
-    const char* file = argus_get(*argus, "file").as_string;
-    bool force = argus_get(*argus, "force").as_bool;
-    printf("Adding %s (force: %s)\n", file, force ? "yes" : "no");
-    return 0;
-}
-
-ARGUS_OPTIONS(
-    add_options,
-    OPTION_FLAG('f', "force", HELP("Force add operation")),
-    POSITIONAL_STRING("file", HELP("File to add"))
+ARGUS_OPTIONS(options,
+    HELP_OPTION(),
+    // Array of tags
+    OPTION_ARRAY_STRING('t', "tags", HELP("Resource tags")),
+    // Key-value environment variables  
+    OPTION_MAP_STRING('e', "env", HELP("Environment variables")),
+    // Email validation with regex
+    OPTION_STRING('n', "notify", HELP("Notification email"),
+                 VALIDATOR(V_REGEX(ARGUS_RE_EMAIL)))
 )
 
-ARGUS_OPTIONS(
-    options,
-    SUBCOMMAND("add", add_options, HELP("Add a file"), ACTION(add_command))
-)
-
-// Usage: program add --force file.txt
+// Usage: ./config --tags=web,api --env=DEBUG=1,PORT=8080 --notify=admin@company.com
 ```
+</details>
 
-### Collection Types
+<details>
+<summary><strong>Server Application</strong></summary>
 
 ```c
-ARGUS_OPTIONS(
-    options,
-    // Array of integers with sorting and uniqueness
-    OPTION_ARRAY_INT('n', "numbers", HELP("List of numbers"),
-                   FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
-    
-    // Map of environment variables
-    OPTION_MAP_STRING('e', "env", HELP("Environment variables"),
-                     FLAGS(FLAG_SORTED_KEY))
+ARGUS_OPTIONS(options,
+    HELP_OPTION(),
+    // Load from environment with fallback
+    OPTION_STRING('H', "host", HELP("Bind address"), 
+                 ENV_VAR("HOST"), DEFAULT("0.0.0.0")),
+    OPTION_INT('p', "port", HELP("Port number"),
+              ENV_VAR("PORT"), VALIDATOR(V_RANGE(1, 65535)), DEFAULT(8080)),
+    // Choice validation
+    OPTION_STRING('l', "level", HELP("Log level"),
+                 CHOICES_STRING("debug", "info", "warn", "error"), DEFAULT("info"))
 )
 
-// Usage: 
-// --numbers=1,2,3,1 -> [1,2,3]
-// --env=USER=alice,HOME=/home
+// Usage: ./server --host 0.0.0.0 --port 8080 --level debug
+// Or:    HOST=api.example.com PORT=9000 ./server
 ```
+</details>
 
-## 📚 Documentation
+## Documentation
 
-For detailed documentation, visit [argus.readthedocs.io](https://argus.readthedocs.io/).
+📚 **[Full Documentation](https://argus.readthedocs.io)** - Complete guides and API reference  
+🚀 **[Quick Start Guide](https://argus.readthedocs.io/getting-started/quickstart)** - Get running in 5 minutes  
+💡 **[Examples](https://argus.readthedocs.io/examples)** - Real-world usage patterns  
+🔧 **[API Reference](https://argus.readthedocs.io/api-reference)** - Complete function and macro documentation  
 
-The documentation covers:
-- Complete API reference
-- Detailed guides for all features
-- Advanced usage examples
-- Detailed validator documentation
-- Best practices
+## Comparison
 
-## 🔍 Comparison
-
-| Feature | argus | getopt | argp | argtable3 |
+| Feature | Argus | getopt | argp | argtable3 |
 |---------|-------|--------|------|-----------|
-| Concise macro API | ✅ | ❌ | ❌ | ❌ |
+| Declarative API | ✅ | ❌ | ❌ | ❌ |
 | Type Safety | ✅ | ❌ | ❌ | ✅ |
-| Nested Subcommands | ✅ | ❌ | ❌ | ❌ |
-| Environment Variables | ✅ | ❌ | ❌ | ❌ |
-| Collections (Arrays/Maps) | ✅ | ❌ | ❌ | ❌ |
-| Command Abbreviations | ✅ | ❌ | ❌ | ❌ |
-| Regex Validation | ✅ | ❌ | ❌ | ❌ |
-| Learning Curve | Low | Medium | High | Medium |
+| Auto Help | ✅ | ❌ | ✅ | ✅ |
+| Subcommands | ✅ | ❌ | ❌ | ❌ |
+| Environment Vars | ✅ | ❌ | ❌ | ❌ |
+| Collections | ✅ | ❌ | ❌ | ❌ |
+| Validation | ✅ | ❌ | ❌ | ❌ |
+| Learning Curve | Low | High | High | Medium |
 
-## 🚀 Roadmap
+## Requirements
 
-- 📄 **Config files**: JSON/YAML config loading
-- 🪶 **Lightweight version**: Minimal footprint option
-- 🎨 **Themed help**: Customizable colored help
-- 📁 **Shell completion**: Auto-generated tab completion
-- 🔗 **Alias support**: Command and option aliases
-- 📦 **Plugin system**: Extensibility mechanisms
+- **C11 compatible compiler** (GCC 13+, Clang 14+)
+- **Optional:** PCRE2 for regex validation (disable with `-Dregex=false`)
 
-## 👥 Contributing
+## Contributing
 
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-## 📜 License
+## License
 
 MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
 <p align="center">
-  <i>Built with ❤️ by <a href="https://github.com/lucocozz">lucocozz</a></i>
+  <sub>Built with ❤️ by <a href="https://github.com/lucocozz">lucocozz</a></sub>
 </p>

@@ -52,6 +52,8 @@ Mkfile.old
 dkms.conf
 
 .build/
+build/
+buildir/
 .vscode/
 a.out
 .idea/
