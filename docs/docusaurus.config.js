@@ -123,8 +123,8 @@ const config = {
       respectPrefersColorScheme: true,
     },
     algolia: {
-      appId: 'YOUR_APP_ID',
-      apiKey: 'YOUR_SEARCH_API_KEY',
+      appId: 'Z686PG1DUX',
+      apiKey: '8a592f2cd2ef4e5c88c46aca825d1a3e',
       indexName: 'argus',
       contextualSearch: true,
       searchPagePath: 'search',
