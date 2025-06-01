@@ -5,6 +5,7 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  SECRETS_SCAN_OMIT_KEYS = "ALGOLIA_APP_ID,ALGOLIA_API_KEY"
 
 [[redirects]]
   from = "/*"
