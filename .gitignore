@@ -63,3 +63,5 @@ packaging/conan/test_package/build/
 packaging/conan/test_package/CMakeUserPresets.json
 *.pyc
 .mypy_cache
+subprojects/packagecache/
+subprojects/pcre*/

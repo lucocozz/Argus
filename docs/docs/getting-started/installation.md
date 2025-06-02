@@ -127,9 +127,13 @@ Argus has minimal dependencies:
 
 | Dependency | Required | Purpose | Notes |
 |------------|----------|---------|-------|
-| **PCRE2** | Optional | Regex validation | Can disable with `-Dregex=false` |
+| **PCRE2** ℹ️ | Optional | Regex validation | Can disable with `-Dregex=false` |
 | **Meson** | Build only | Build system | Version 1.1.0+ required |
 | **Ninja** | Build only | Backend | Recommended for faster builds |
+
+:::info PCRE2 Auto-Installation
+PCRE2 is automatically downloaded and built when installing Argus (via any method). No manual installation required!
+:::
 
 ## Configuration Options
 
@@ -273,20 +277,6 @@ gcc main.c -I/usr/local/include -largus -o myapp
 
 # Check installation
 find /usr -name "argus.h" 2>/dev/null
-```
-
-</details>
-
-<details>
-<summary><strong>PCRE2 not found</strong></summary>
-
-```bash
-# Install PCRE2 development package
-sudo apt install libpcre2-dev  # Ubuntu/Debian
-sudo dnf install pcre2-devel   # Fedora/RHEL
-
-# Or disable regex support
-meson setup builddir -Dregex=false
 ```
 
 </details>
