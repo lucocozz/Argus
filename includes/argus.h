@@ -18,6 +18,6 @@
 /**
  * ARGUS_VERSION - Library version
  */
-#define ARGUS_VERSION "1.0.0"
+#define ARGUS_VERSION "0.1.0"
 
 #endif /* ARGUS_H */

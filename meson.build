@@ -1,12 +1,12 @@
 project(
     'argus', 'c',
-    version: '1.0.0',
+    version: '0.1.0',
     license: 'MIT',
     default_options: [
         'warning_level=3',
         'werror=true',
         'c_std=gnu11',
-        'buildtype=debugoptimized',
+        'buildtype=release',
     ],
     meson_version: '>=1.1.0',
 )
@@ -53,7 +53,7 @@ argus_lib = both_libraries(
     include_directories: inc_dirs,
     dependencies: regex ? [pcre2_dep] : [],
     version: meson.project_version(),
-    soversion: '1',
+    soversion: '0',
     install: true,
     vs_module_defs: 'argus.def',
 )

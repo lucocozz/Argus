@@ -57,9 +57,9 @@ jobs:
       shell: pwsh
       run: |
         if ("${{ matrix.regex }}" -eq "true") {
-          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=true -Dexamples=false
+          meson setup .build -Dregex=true -Dexamples=false
         } else {
-          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=false -Dexamples=false
+          meson setup .build -Dregex=false -Dexamples=false
         }
 
     - name: Configure project with GCC
@@ -68,9 +68,9 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE
         if [ "${{ matrix.regex }}" = "true" ]; then
-          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=true -Dexamples=false
+          meson setup .build -Dregex=true -Dexamples=false
         else
-          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=false -Dexamples=false
+          meson setup .build -Dregex=false -Dexamples=false
         fi
 
     - name: Build project with MSVC
@@ -95,9 +95,9 @@ jobs:
         fi
         
         if [ "${{ matrix.regex }}" = "true" ]; then
-          meson setup --wipe .build --buildtype=${{ matrix.build-type }} -Dregex=true -Dexamples=true
+          meson setup --wipe .build -Dregex=true -Dexamples=true
         else
-          meson setup --wipe .build --buildtype=${{ matrix.build-type }} -Dregex=false -Dexamples=true
+          meson setup --wipe .build -Dregex=false -Dexamples=true
         fi
 
     - name: Build examples with GCC
@@ -112,8 +112,8 @@ jobs:
         mkdir -p artifacts/lib
         mkdir -p artifacts/include
 
-        if (Test-Path ".build/*argus-1.dll") {
-          cp .build/*argus-1.dll artifacts/lib/libargus-1.dll
+        if (Test-Path ".build/*argus-0.dll") {
+          cp .build/*argus-0.dll artifacts/lib/libargus-0.dll
         }
         
         if (Test-Path ".build/libargus.a") {
