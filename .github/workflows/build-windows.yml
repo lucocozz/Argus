@@ -43,40 +43,21 @@ jobs:
           mingw-w64-x86_64-toolchain
           ninja
           pkg-config
-          mingw-w64-x86_64-pcre2
           mingw-w64-x86_64-meson
+          mingw-w64-x86_64-pcre2
       
     - name: Setup MSVC environment
       if: matrix.compiler == 'msvc'
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x64
-    
-    - name: Install Regex dependencies
-      if: matrix.regex && matrix.compiler == 'msvc'
-      run: |
-        git clone https://github.com/microsoft/vcpkg.git ${{ github.workspace }}/vcpkg
-        cd ${{ github.workspace }}/vcpkg
-        ./bootstrap-vcpkg.bat
-        ./vcpkg integrate install
-        ./vcpkg install pcre2:x64-windows
-        
-        $vcpkgInclude = "${{ github.workspace }}/vcpkg/installed/x64-windows/include"
-        $vcpkgLib = "${{ github.workspace }}/vcpkg/installed/x64-windows/lib"
-        
-        $vcpkgInclude = $vcpkgInclude -replace '\\', '/'
-        $vcpkgLib = $vcpkgLib -replace '\\', '/'
-        
-        echo "VCPKG_INCLUDE=$vcpkgInclude" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "VCPKG_LIB=$vcpkgLib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      shell: pwsh
 
     - name: Configure project with MSVC
       if: matrix.compiler == 'msvc'
       shell: pwsh
       run: |
         if ("${{ matrix.regex }}" -eq "true") {
-          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=true -Dpcre2_include_dir="$env:VCPKG_INCLUDE" -Dpcre2_lib_dir="$env:VCPKG_LIB" -Dexamples=false
+          meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=true -Dexamples=false
         } else {
           meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=false -Dexamples=false
         }

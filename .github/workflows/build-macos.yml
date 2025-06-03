@@ -25,9 +25,6 @@ jobs:
       run: |
         brew update
         brew install meson ninja pkg-config
-        if [ "${{ matrix.regex }}" = "true" ]; then
-          brew install pcre2
-        fi
 
     - name: Configure project
       run: meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=${{ matrix.regex }} -Dexamples=false

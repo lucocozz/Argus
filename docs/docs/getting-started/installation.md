@@ -2,6 +2,10 @@
 
 Get Argus up and running on your system quickly with multiple installation options.
 
+:::warning Work in Progress
+Only manual installation is available at the moment. Package manager support is coming soon.
+:::
+
 ## Quick Install
 
 import Tabs from '@theme/Tabs';
@@ -12,17 +16,44 @@ import TabItem from '@theme/TabItem';
 
 ### Package Managers
 
+<Tabs>
+<TabItem value="vcpkg" label="vcpkg">
+
 ```bash
-# Using vcpkg
 vcpkg install argus
 # Without Regex support (removes PCRE2 dependency)
 vcpkg install argus[core]
+```
 
-# Using Conan
+</TabItem>
+<TabItem value="conan" label="Conan">
+
+```bash
 conan install argus/1.0.0
 # Without Regex support (removes PCRE2 dependency)
 conan install argus/1.0.0 -o argus:regex=False
 ```
+
+</TabItem>
+<TabItem value="meson" label="Meson">
+
+```bash
+meson install argus
+# Without Regex support (removes PCRE2 dependency)
+meson install argus -Dregex=false
+```
+
+</TabItem>
+<TabItem value="xrepo" label="XRepo">
+
+```bash
+xrepo install argus
+# Without Regex support (removes PCRE2 dependency)
+xrepo install "regex=false" argus
+```
+
+</TabItem>
+</Tabs>
 
 ### System Packages
 
@@ -53,20 +84,44 @@ sudo meson install -C builddir
 
 ### Package Managers
 
-```bash
-# Using Homebrew
-brew install argus
+<Tabs>
+<TabItem value="vcpkg" label="vcpkg">
 
-# Using vcpkg
+```bash
 vcpkg install argus
 # Without Regex support (removes PCRE2 dependency)
 vcpkg install argus[core]
+```
 
-# Using Conan
+</TabItem>
+<TabItem value="conan" label="Conan">
+
+```bash
 conan install argus/1.0.0
 # Without Regex support (removes PCRE2 dependency)
 conan install argus/1.0.0 -o argus:regex=False
 ```
+
+</TabItem>
+<TabItem value="meson" label="Meson">
+
+```bash
+meson install argus
+# Without Regex support (removes PCRE2 dependency)
+meson install argus -Dregex=false
+```
+
+</TabItem>
+<TabItem value="xrepo" label="XRepo">
+
+```bash
+xrepo install argus
+# Without Regex support (removes PCRE2 dependency)
+xrepo install "regex=false" argus
+```
+
+</TabItem>
+</Tabs>
 
 ### From Source
 
@@ -87,24 +142,50 @@ sudo meson install -C builddir
 
 ### Package Managers
 
+<Tabs>
+<TabItem value="vcpkg" label="vcpkg">
+
 ```bash
-# Using vcpkg (recommended)
 vcpkg install argus
 # Without Regex support (removes PCRE2 dependency)
 vcpkg install argus[core]
+```
 
-# Using Conan
+</TabItem>
+<TabItem value="conan" label="Conan">
+
+```bash
 conan install argus/1.0.0
 # Without Regex support (removes PCRE2 dependency)
 conan install argus/1.0.0 -o argus:regex=False
 ```
+
+</TabItem>
+<TabItem value="meson" label="Meson">
+
+```bash
+meson install argus
+# Without Regex support (removes PCRE2 dependency)
+meson install argus -Dregex=false
+```
+
+</TabItem>
+<TabItem value="xrepo" label="XRepo">
+
+```bash
+xrepo install argus
+# Without Regex support (removes PCRE2 dependency)
+xrepo install "regex=false" argus
+```
+
+</TabItem>
+</Tabs>
 
 ### From Source (MinGW/MSYS2)
 
 ```bash
 # Install dependencies
 pacman -S mingw-w64-x86_64-meson mingw-w64-x86_64-ninja
-pacman -S mingw-w64-x86_64-pcre2
 
 # Build
 git clone https://github.com/lucocozz/argus.git
@@ -127,9 +208,13 @@ Argus has minimal dependencies:
 
 | Dependency | Required | Purpose | Notes |
 |------------|----------|---------|-------|
-| **PCRE2** | Optional | Regex validation | Can disable with `-Dregex=false` |
+| **PCRE2** ℹ️ | Optional | Regex validation | Can disable with `-Dregex=false` |
 | **Meson** | Build only | Build system | Version 1.1.0+ required |
 | **Ninja** | Build only | Backend | Recommended for faster builds |
+
+:::info PCRE2 Auto-Installation
+PCRE2 is automatically downloaded and built when installing Argus (via any method). No manual installation required!
+:::
 
 ## Configuration Options
 
@@ -223,7 +308,11 @@ target("myapp")
 <TabItem value="meson" label="Meson">
 
 ```meson title="meson.build"
-argus_dep = dependency('argus', version: '>=1.0.0')
+argus_project = subproject('argus', version: '>=1.0.0')
+# Without Regex support
+argus_project = subproject('argus', version: '>=1.0.0', default_options: ['regex=false'])
+
+argus_dep = argus_project.get_variable('argus_dep')
 
 executable('myapp', 'main.c', 
           dependencies: [argus_dep])
@@ -273,20 +362,6 @@ gcc main.c -I/usr/local/include -largus -o myapp
 
 # Check installation
 find /usr -name "argus.h" 2>/dev/null
-```
-
-</details>
-
-<details>
-<summary><strong>PCRE2 not found</strong></summary>
-
-```bash
-# Install PCRE2 development package
-sudo apt install libpcre2-dev  # Ubuntu/Debian
-sudo dnf install pcre2-devel   # Fedora/RHEL
-
-# Or disable regex support
-meson setup builddir -Dregex=false
 ```
 
 </details>

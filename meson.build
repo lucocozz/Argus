@@ -27,47 +27,26 @@ if is_windows
     # endif
 endif
 
-
-# Include directories
 inc_dirs = include_directories('includes')
 
-# Build library
 subdir('source')
 
-# Handle regex dependency
 regex = get_option('regex')
 if not regex
     pcre2_dep = dependency('', required: false)
 else
     add_project_arguments('-DARGUS_REGEX', language: 'c')
     
-    # Custom PCRE2 path handling (useful for Windows/vcpkg)
-    pcre2_include_dir = get_option('pcre2_include_dir')
-    pcre2_lib_dir = get_option('pcre2_lib_dir')
+    # Essayer d'abord de trouver PCRE2 via pkg-config (système)
+    pcre2_dep = dependency('libpcre2-8', required: false)
     
-    if pcre2_include_dir != '' and pcre2_lib_dir != ''
-        message('Using explicitly provided PCRE2 paths')
-        message('Include dir: ' + pcre2_include_dir)
-        message('Library dir: ' + pcre2_lib_dir)
-        pcre2_lib = cc.find_library('pcre2-8', dirs: pcre2_lib_dir)
-        if pcre2_lib.found()
-            pcre2_dep = declare_dependency(
-                compile_args: ['-I' + pcre2_include_dir],
-                dependencies: pcre2_lib
-            )
-        else
-            error('PCRE2 library not found in specified directory')
-        endif
-    else
-        # Try standard dependency resolution
-        pcre2_dep = dependency(['libpcre2-8', 'pcre2'], required: false, version: '>=10.00')
-        if not pcre2_dep.found()
-            error('PCRE2 dependency is required for regex support.')
-        endif
+    # Si non trouvé, utiliser le subproject
+    if not pcre2_dep.found()
+        pcre2_project = subproject('pcre2', default_options: ['werror=false'])
+        pcre2_dep = pcre2_project.get_variable('libpcre2_8')
     endif
 endif
 
-# Create both static and shared libraries from sources
 argus_lib = both_libraries(
     'argus',
     argus_sources,
@@ -79,14 +58,12 @@ argus_lib = both_libraries(
     vs_module_defs: 'argus.def',
 )
 
-# Create dependency object for internal usage
 argus_dep = declare_dependency(
     link_with: argus_lib,
     include_directories: inc_dirs,
     dependencies: regex ? [pcre2_dep] : [],
 )
 
-# Install headers (public API only)
 install_headers('includes/argus.h')
 install_subdir(
     'includes/argus',
@@ -94,17 +71,14 @@ install_subdir(
     exclude_directories: ['internal']
 )
 
-# Tests if enabled
 if get_option('tests')
     subdir('tests')
 endif
 
-# Examples if enabled
 if get_option('examples')
     subdir('examples')
 endif
 
-# Benchmarks if enabled
 if get_option('benchmarks')
     subdir('benchmarks')
 endif

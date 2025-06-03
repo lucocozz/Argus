@@ -1,0 +1,37 @@
+name: Generate Hashes
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*' ]
+
+jobs:
+  generate-hashes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install meson
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y meson ninja-build
+
+      - name: Calculate hashes
+        run: |
+          meson setup .build
+          meson dist -C .build --formats=gztar
+          
+          cd .build/meson-dist
+          ARCHIVE=$(ls *.tar.gz)
+          SHA256=$(sha256sum "$ARCHIVE" | cut -d' ' -f1)
+          SHA512=$(sha512sum "$ARCHIVE" | cut -d' ' -f1)
+
+          echo "SHA256=$SHA256" >> $GITHUB_ENV
+          echo "SHA512=$SHA512" >> $GITHUB_ENV
+
+      - name: Print hashes
+        run: |
+          echo "SHA256: ${{ env.SHA256 }}"
+          echo "SHA512: ${{ env.SHA512 }}"
