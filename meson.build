@@ -37,8 +37,14 @@ if not regex
 else
     add_project_arguments('-DARGUS_REGEX', language: 'c')
     
-    pcre2_project = subproject('pcre2', default_options: ['werror=false'])
-    pcre2_dep = pcre2_project.get_variable('libpcre2_8')
+    # Essayer d'abord de trouver PCRE2 via pkg-config (système)
+    pcre2_dep = dependency('libpcre2-8', required: false)
+    
+    # Si non trouvé, utiliser le subproject
+    if not pcre2_dep.found()
+        pcre2_project = subproject('pcre2', default_options: ['werror=false'])
+        pcre2_dep = pcre2_project.get_variable('libpcre2_8')
+    endif
 endif
 
 argus_lib = both_libraries(
