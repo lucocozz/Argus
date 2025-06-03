@@ -6,7 +6,7 @@ project(
         'warning_level=3',
         'werror=true',
         'c_std=gnu11',
-        'buildtype=debugoptimized',
+        'buildtype=release',
     ],
     meson_version: '>=1.1.0',
 )

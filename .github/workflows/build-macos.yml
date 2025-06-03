@@ -27,7 +27,7 @@ jobs:
         brew install meson ninja pkg-config
 
     - name: Configure project
-      run: meson setup .build --buildtype=${{ matrix.build-type }} -Dregex=${{ matrix.regex }} -Dexamples=false
+      run: meson setup .build -Dregex=${{ matrix.regex }} -Dexamples=false
       env:
         CC: ${{ matrix.compiler }}
 
@@ -39,7 +39,7 @@ jobs:
     - name: Configure examples
       run: |
         rm -rf .build/meson-info
-        meson setup --wipe .build --buildtype=${{ matrix.build-type }} -Dregex=${{ matrix.regex }} -Dexamples=true
+        meson setup --wipe .build -Dregex=${{ matrix.regex }} -Dexamples=true
       env:
         CC: ${{ matrix.compiler }}
 

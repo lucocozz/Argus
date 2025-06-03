@@ -74,7 +74,7 @@ sudo pacman -S argus
 ```bash
 git clone https://github.com/lucocozz/argus.git
 cd argus
-meson setup builddir --buildtype=release # -Dregex=false
+meson setup builddir # -Dregex=false
 meson compile -C builddir
 sudo meson install -C builddir
 ```
@@ -132,7 +132,7 @@ brew install meson ninja pcre2
 # Build and install
 git clone https://github.com/lucocozz/argus.git
 cd argus
-meson setup builddir --buildtype=release # -Dregex=false
+meson setup builddir # -Dregex=false
 meson compile -C builddir
 sudo meson install -C builddir
 ```
@@ -190,7 +190,7 @@ pacman -S mingw-w64-x86_64-meson mingw-w64-x86_64-ninja
 # Build
 git clone https://github.com/lucocozz/argus.git
 cd argus
-meson setup builddir --buildtype=release # -Dregex=false
+meson setup builddir # -Dregex=false
 meson compile -C builddir
 meson install -C builddir
 ```
@@ -228,7 +228,7 @@ When building from source, customize your installation:
 meson setup builddir -Dregex=false
 
 # Release build for production
-meson setup builddir --buildtype=release
+meson setup builddir
 
 # Install to custom location
 meson setup builddir --prefix=/opt/argus
