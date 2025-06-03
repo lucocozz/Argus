@@ -112,8 +112,8 @@ jobs:
         mkdir -p artifacts/lib
         mkdir -p artifacts/include
 
-        if (Test-Path ".build/*argus-1.dll") {
-          cp .build/*argus-1.dll artifacts/lib/libargus-1.dll
+        if (Test-Path ".build/*argus-0.dll") {
+          cp .build/*argus-0.dll artifacts/lib/libargus-0.dll
         }
         
         if (Test-Path ".build/libargus.a") {

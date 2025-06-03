@@ -58,7 +58,7 @@ ARGUS_OPTIONS(
 ```bash
 # Package managers
 vcpkg install argus
-conan install argus/1.0.0
+conan install argus/0.1.0
 
 # From source
 git clone https://github.com/lucocozz/argus.git && cd argus

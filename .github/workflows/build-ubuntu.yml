@@ -54,7 +54,7 @@ jobs:
         mkdir -p artifacts/include
 
         cp .build/libargus.a artifacts/lib/
-        cp .build/libargus.so.1.0.0 artifacts/lib/
+        cp .build/libargus.so.0.1.0 artifacts/lib/
 
         cp -r includes/argus artifacts/include/
         cp includes/argus.h artifacts/include/

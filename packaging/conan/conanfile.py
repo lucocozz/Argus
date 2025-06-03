@@ -6,7 +6,7 @@ import os
 
 class ArgusConan(ConanFile):
     name = "argus"
-    version = "1.0.0"
+    version = "0.1.0"
     description = "Modern C library for command-line argument parsing with an elegant, macro-based API"
     topics = ("conan", "argus", "libargus", "command-line", "arguments", "parser", "cli", "argparse")
     url = "https://github.com/lucocozz/argus"

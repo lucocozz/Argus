@@ -4,7 +4,7 @@ package("argus")
     set_license("MIT")
 
     add_urls("https://github.com/lucocozz/argus/archive/refs/tags/v$(version).tar.gz")
-    add_versions("1.0.0", "HASH_TO_REPLACE")
+    add_versions("0.1.0", "HASH_TO_REPLACE")
 
     add_configs("regex", {description = "Enable regex validation support using PCRE2", default = true, type = "boolean"})
 

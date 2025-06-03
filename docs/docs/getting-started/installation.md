@@ -29,9 +29,9 @@ vcpkg install argus[core]
 <TabItem value="conan" label="Conan">
 
 ```bash
-conan install argus/1.0.0
+conan install argus/0.1.0
 # Without Regex support (removes PCRE2 dependency)
-conan install argus/1.0.0 -o argus:regex=False
+conan install argus/0.1.0 -o argus:regex=False
 ```
 
 </TabItem>
@@ -97,9 +97,9 @@ vcpkg install argus[core]
 <TabItem value="conan" label="Conan">
 
 ```bash
-conan install argus/1.0.0
+conan install argus/0.1.0
 # Without Regex support (removes PCRE2 dependency)
-conan install argus/1.0.0 -o argus:regex=False
+conan install argus/0.1.0 -o argus:regex=False
 ```
 
 </TabItem>
@@ -155,9 +155,9 @@ vcpkg install argus[core]
 <TabItem value="conan" label="Conan">
 
 ```bash
-conan install argus/1.0.0
+conan install argus/0.1.0
 # Without Regex support (removes PCRE2 dependency)
-conan install argus/1.0.0 -o argus:regex=False
+conan install argus/0.1.0 -o argus:regex=False
 ```
 
 </TabItem>
@@ -263,7 +263,7 @@ ARGUS_OPTIONS(
 
 int main(int argc, char **argv)
 {
-    argus_t argus = argus_init(options, "test", "1.0.0");
+    argus_t argus = argus_init(options, "test", "0.1.0");
     int status = argus_parse(&argus, argc, argv);
     
     if (status == ARGUS_SUCCESS)
@@ -297,7 +297,7 @@ target_include_directories(myapp PRIVATE ${ARGUS_INCLUDE_DIRS})
 <TabItem value="xmake" label="XMake">
 
 ```lua title="xmake.lua"
-add_requires("argus >=1.0.0")
+add_requires("argus >=0.1.0")
 target("myapp")
     set_kind("binary")
     add_files("main.c")
@@ -308,9 +308,9 @@ target("myapp")
 <TabItem value="meson" label="Meson">
 
 ```meson title="meson.build"
-argus_project = subproject('argus', version: '>=1.0.0')
+argus_project = subproject('argus', version: '>=0.1.0')
 # Without Regex support
-argus_project = subproject('argus', version: '>=1.0.0', default_options: ['regex=false'])
+argus_project = subproject('argus', version: '>=0.1.0', default_options: ['regex=false'])
 
 argus_dep = argus_project.get_variable('argus_dep')
 
