@@ -84,7 +84,6 @@ argus_option_t       *find_option_by_lname(argus_option_t *options, const char *
 argus_option_t       *find_option_by_name(argus_option_t *options, const char *name);
 argus_option_t       *find_option_by_sname(argus_option_t *options, char sname);
 argus_option_t       *find_positional(argus_option_t *options, int position);
-argus_option_t       *find_subcommand(argus_option_t *options, const char *name);
 argus_option_t       *find_option_by_active_path(argus_t argus, const char *option_path);
 const argus_option_t *get_active_options(argus_t *argus);
 

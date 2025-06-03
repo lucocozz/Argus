@@ -1,6 +1,7 @@
 #include <criterion/criterion.h>
 #include "argus/internal/utils.h"
 #include "argus/internal/context.h"
+#include "argus/internal/parsing.h"
 #include "argus.h"
 
 // Mock options for testing
@@ -143,21 +144,6 @@ Test(parsing, find_positional)
     cr_assert_null(option, "Should return NULL for nonexistent positional index");
 }
 
-Test(parsing, find_subcommand, .init = setup_subcommands)
-{
-    argus_option_t* option = find_subcommand(cmd_options, "sub");
-    cr_assert_not_null(option, "Should find subcommand");
-    cr_assert_str_eq(option->name, "sub", "Should find correct subcommand");
-    cr_assert_eq(option->type, TYPE_SUBCOMMAND, "Found option should be subcommand");
-    
-    option = find_subcommand(cmd_options, "nested");
-    cr_assert_not_null(option, "Should find nested subcommand");
-    cr_assert_str_eq(option->name, "nested", "Should find correct nested subcommand");
-    
-    option = find_subcommand(cmd_options, "nonexistent");
-    cr_assert_null(option, "Should return NULL for nonexistent subcommand");
-}
-
 Test(parsing, find_option_by_active_path, .init = setup_subcommands)
 {
     // Test finding option at root level
@@ -179,7 +165,7 @@ Test(parsing, find_option_by_active_path, .init = setup_subcommands)
     cr_assert_null(option, "Should return NULL for invalid path");
     
     // Test with active subcommand
-    argus_option_t* sub_cmd = find_subcommand(cmd_options, "sub");
+    argus_option_t *sub_cmd = find_subcommand(&test_argus, cmd_options, "sub");
     context_push_subcommand(&test_argus, sub_cmd);
     
     // Now we should be able to find the subcommand option
@@ -203,7 +189,7 @@ Test(parsing, get_active_options, .init = setup_subcommands)
     cr_assert_eq(options, cmd_options, "Should initially return root options");
     
     // Push a subcommand
-    argus_option_t* sub_cmd = find_subcommand(cmd_options, "sub");
+    argus_option_t* sub_cmd = find_subcommand(&test_argus, cmd_options, "sub");
     context_push_subcommand(&test_argus, sub_cmd);
     
     // Now should get subcommand options

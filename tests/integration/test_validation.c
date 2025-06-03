@@ -34,6 +34,13 @@ ARGUS_OPTIONS(
     OPTION_STRING('v', "verbose", HELP("Duplicate option")), // Same name and same short option
 )
 
+ARGUS_OPTIONS(
+    mixed_subcommand_positional, // Intentionally invalid, mix subcommands and positionals
+    HELP_OPTION(),
+    SUBCOMMAND("cmd", valid_options, HELP("Test subcommand")),
+    POSITIONAL_STRING("input", HELP("Input file")),
+)
+
 // Contexte argus pour les tests
 static argus_t test_argus;
 
@@ -185,6 +192,14 @@ Test(validation, validate_duplicate_options, .init = setup_validation)
 	fprintf(stderr, "result: %d\n", result);
 	fprintf(stderr, "count: %ld\n", test_argus.error_stack.count);
     cr_assert_neq(result, ARGUS_SUCCESS, "Structure with duplicate options should fail validation");
+    cr_assert_gt(test_argus.error_stack.count, 0, "Errors should be reported");
+}
+
+// Test for validating a structure with mixed subcommands and positionals
+Test(validation, validate_mixed_subcommand_positional, .init = setup_validation)
+{
+    int result = validate_structure(&test_argus, mixed_subcommand_positional);
+    cr_assert_neq(result, ARGUS_SUCCESS, "Structure with mixed subcommands and positionals should fail validation");
     cr_assert_gt(test_argus.error_stack.count, 0, "Errors should be reported");
 }
 
