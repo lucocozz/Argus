@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "argus/errors.h"
 #include "argus/internal/compiler.h"
 #include "argus/internal/context.h"
 #include "argus/internal/cross_platform.h"
@@ -38,15 +39,6 @@ argus_option_t *find_positional(argus_option_t *options, int position)
                 return (&options[i]);
             pos_index++;
         }
-    }
-    return (NULL);
-}
-
-argus_option_t *find_subcommand(argus_option_t *options, const char *name)
-{
-    for (int i = 0; options[i].type != TYPE_NONE; ++i) {
-        if (options[i].type == TYPE_SUBCOMMAND && starts_with(name, options[i].name) != NULL)
-            return (&options[i]);
     }
     return (NULL);
 }

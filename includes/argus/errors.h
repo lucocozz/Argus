@@ -13,6 +13,8 @@
 #include "argus/types.h"
 #include <stddef.h>
 
+#define ARGUS_AMBIGUOUS_SUBCOMMAND ((argus_option_t *)-1)
+
 /**
  * Error codes returned by argus functions
  */
@@ -41,6 +43,7 @@ typedef enum argus_error_type_e
     ARGUS_ERROR_EXCLUSIVE_GROUP,
     ARGUS_ERROR_INVALID_CHOICE,
     ARGUS_ERROR_INVALID_RANGE,
+    ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND,
 
     /* Execution errors */
     ARGUS_ERROR_NO_COMMAND,
@@ -97,7 +100,7 @@ static inline void argus_collect_error(argus_t *argus, int code, const char *fmt
     argus_push_error(argus, error);
 }
 
-static inline int argus_report_error(argus_t *argus, int code, const char *fmt, ...)
+static inline void argus_report_error(argus_t *argus, const char *fmt, ...)
 {
     va_list args;
 
@@ -109,7 +112,6 @@ static inline int argus_report_error(argus_t *argus, int code, const char *fmt, 
 
     fprintf(stderr, "\n");
     argus->error_stack.count++;
-    return code;
 }
 
 /**
@@ -122,6 +124,10 @@ static inline int argus_report_error(argus_t *argus, int code, const char *fmt, 
  * ARGUS_REPORT_ERROR - Report an error and return
  * This version uses an inline function to handle the variadic arguments correctly
  */
-#define ARGUS_REPORT_ERROR(argus, code, ...) return argus_report_error(argus, code, __VA_ARGS__)
+#define ARGUS_REPORT_ERROR(argus, code, ...)                                                       \
+    do {                                                                                           \
+        argus_report_error(argus, __VA_ARGS__);                                                    \
+        return (code);                                                                             \
+    } while (0)
 
 #endif /* ARGUS_ERRORS_H */

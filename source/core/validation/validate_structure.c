@@ -53,13 +53,26 @@ static int is_unique(argus_t *argus, argus_option_t *option, argus_option_t *oth
 
 int validate_structure(argus_t *argus, argus_option_t *options)
 {
-    bool have_helper         = false;
-    bool optional_positional = false;
-    int  status              = ARGUS_SUCCESS;
+    bool has_helper              = false;
+    bool has_optional_positional = false;
+    bool has_subcommands         = false;
+    bool has_positionals         = false;
+    int  status                  = ARGUS_SUCCESS;
 
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         argus_option_t *option = &options[i];
         context_set_option(argus, option);
+
+        if (options[i].type == TYPE_SUBCOMMAND)
+            has_subcommands = true;
+        if (options[i].type == TYPE_POSITIONAL)
+            has_positionals = true;
+        if (has_subcommands && has_positionals) {
+            ARGUS_COLLECT_ERROR(
+                argus, ARGUS_ERROR_MALFORMED_OPTION,
+                "Cannot mix subcommands and positional arguments at the same level");
+            status = ARGUS_ERROR_MALFORMED_OPTION;
+        }
 
         int result = ensure_validity(argus, options, option);
         if (result != ARGUS_SUCCESS)
@@ -77,19 +90,19 @@ int validate_structure(argus_t *argus, argus_option_t *options)
         }
 
         if (option->type == TYPE_OPTION && strcmp(option->name, "help") == 0)
-            have_helper = true;
+            has_helper = true;
 
         // Checking bad order of positional arguments. Required positional arguments must be before
         // optional positional arguments
         if (option->type == TYPE_POSITIONAL && (option->flags & FLAG_REQUIRED) &&
-            optional_positional) {
+            has_optional_positional) {
             ARGUS_COLLECT_ERROR(
                 argus, ARGUS_ERROR_INVALID_POSITION,
                 "Required positional must be before all optional positional arguments");
             status = ARGUS_ERROR_INVALID_POSITION;
         }
         if (option->type == TYPE_POSITIONAL && (option->flags & FLAG_REQUIRED) == 0)
-            optional_positional = true;
+            has_optional_positional = true;
 
         // Validate sub_options recursively
         if (option->type == TYPE_SUBCOMMAND && option->sub_options != NULL) {
@@ -98,7 +111,7 @@ int validate_structure(argus_t *argus, argus_option_t *options)
             context_pop_subcommand(argus);
         }
     }
-    if (!have_helper) {
+    if (!has_helper) {
         ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_MISSING_HELP, "Missing 'help' option");
         status = ARGUS_ERROR_MISSING_HELP;
     }
