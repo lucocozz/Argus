@@ -44,6 +44,15 @@ meson install argus -Dregex=false
 ```
 
 </TabItem>
+<TabItem value="xrepo" label="XRepo">
+
+```bash
+xrepo install argus
+# Without Regex support (removes PCRE2 dependency)
+xrepo install "regex=false" argus
+```
+
+</TabItem>
 </Tabs>
 
 ### System Packages
@@ -103,6 +112,15 @@ meson install argus -Dregex=false
 ```
 
 </TabItem>
+<TabItem value="xrepo" label="XRepo">
+
+```bash
+xrepo install argus
+# Without Regex support (removes PCRE2 dependency)
+xrepo install "regex=false" argus
+```
+
+</TabItem>
 </Tabs>
 
 ### From Source
@@ -149,6 +167,15 @@ conan install argus/1.0.0 -o argus:regex=False
 meson install argus
 # Without Regex support (removes PCRE2 dependency)
 meson install argus -Dregex=false
+```
+
+</TabItem>
+<TabItem value="xrepo" label="XRepo">
+
+```bash
+xrepo install argus
+# Without Regex support (removes PCRE2 dependency)
+xrepo install "regex=false" argus
 ```
 
 </TabItem>
