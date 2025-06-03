@@ -192,6 +192,15 @@ ARGUS_OPTIONS(options,
 - **C11 compatible compiler** (GCC 13+, Clang 14+)
 - **Optional:** PCRE2 for regex validation (disable with `-Dregex=false`)
 
+## Roadmap
+
+- 📄 Config files - JSON/YAML configuration loading
+- 🪶 Lightweight version - Minimal footprint option for embedded systems
+- 🎨 Themed help - Customizable colored help output
+- 📁 Shell completion - Auto-generated tab completion for bash/zsh/fish
+- 🔗 Alias support - Command and option aliases for better UX
+- 📦 Plugin system - Extensibility mechanisms for custom handlers
+
 ## Contributing
 
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
