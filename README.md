@@ -158,8 +158,8 @@ ARGUS_OPTIONS(options,
     OPTION_INT('p', "port", HELP("Port number"),
               ENV_VAR("PORT"), VALIDATOR(V_RANGE(1, 65535)), DEFAULT(8080)),
     // Choice validation
-    OPTION_STRING('l', "level", HELP("Log level"),
-                 CHOICES_STRING("debug", "info", "warn", "error"), DEFAULT("info"))
+    OPTION_STRING('l', "level", HELP("Log level"), DEFAULT("info"),
+                 VALIDATOR(V_CHOICES_STRING("debug", "info", "warn", "error")))
 )
 
 // Usage: ./server --host 0.0.0.0 --port 8080 --level debug

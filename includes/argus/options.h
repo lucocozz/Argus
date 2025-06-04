@@ -41,6 +41,9 @@ ARGUS_API int range_validator(argus_t *argus, void *option_ptr, validator_data_t
 ARGUS_API int length_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 ARGUS_API int count_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 ARGUS_API int regex_validator(argus_t *argus, void *value_ptr, validator_data_t data);
+ARGUS_API int choices_string_validator(argus_t *argus, void *option_ptr, validator_data_t data);
+ARGUS_API int choices_int_validator(argus_t *argus, void *option_ptr, validator_data_t data);
+ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 
 /*
  * Support macro for character to string conversion
@@ -92,20 +95,29 @@ ARGUS_API int regex_validator(argus_t *argus, void *value_ptr, validator_data_t 
 #define V_REGEX(re) \
     MAKE_VALIDATOR(regex_validator, ((validator_data_t){ .regex = (re) }), ORDER_PRE)
 
-/*
- * Choice macros for different types
- */
-#define CHOICES_INT(...) \
-    .choices = (argus_value_t){ .as_array_int = (long long[]){ __VA_ARGS__ } }, \
-    .choices_count = sizeof((long long[]){ __VA_ARGS__ }) / sizeof(long long)
+#define V_CHOICES_STRING(...) \
+    MAKE_VALIDATOR(choices_string_validator, \
+        ((validator_data_t){ .choices = { \
+            .as_strings = (char*[]){ __VA_ARGS__ }, \
+            .count = sizeof((char*[]){ __VA_ARGS__ }) / sizeof(char*), \
+            .type = VALUE_TYPE_STRING \
+        }}), ORDER_POST)
 
-#define CHOICES_STRING(...) \
-    .choices = (argus_value_t){ .as_array_string = (char*[]){ __VA_ARGS__ } }, \
-    .choices_count = sizeof((char*[]){ __VA_ARGS__ }) / sizeof(char*)
+#define V_CHOICES_INT(...) \
+    MAKE_VALIDATOR(choices_int_validator, \
+        ((validator_data_t){ .choices = { \
+            .as_ints = (long long[]){ __VA_ARGS__ }, \
+            .count = sizeof((long long[]){ __VA_ARGS__ }) / sizeof(long long), \
+            .type = VALUE_TYPE_INT \
+        }}), ORDER_POST)
 
-#define CHOICES_FLOAT(...) \
-    .choices = (argus_value_t){ .as_float_array = (double[]){ __VA_ARGS__ } }, \
-    .choices_count = sizeof((double[]){ __VA_ARGS__ }) / sizeof(double)
+#define V_CHOICES_FLOAT(...) \
+    MAKE_VALIDATOR(choices_float_validator, \
+        ((validator_data_t){ .choices = { \
+            .as_floats = (double[]){ __VA_ARGS__ }, \
+            .count = sizeof((double[]){ __VA_ARGS__ }) / sizeof(double), \
+            .type = VALUE_TYPE_FLOAT \
+        }}), ORDER_POST)
 
 /*
  * Base option definition macros

@@ -42,3 +42,6 @@ EXPORTS
     length_validator
     count_validator
     regex_validator
+    choices_string_validator
+    choices_int_validator
+    choices_float_validator

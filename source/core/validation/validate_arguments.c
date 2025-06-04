@@ -46,20 +46,20 @@ static int validate_default_value(argus_t *argus, argus_option_t *option)
         status = ARGUS_ERROR_INVALID_DEFAULT;
     }
 
-    if (option->choices_count > 0 && option->have_default) {
-        bool valid_default = false;
-        for (size_t i = 0; i < option->choices_count && !valid_default; ++i) {
-            argus_value_t choice =
-                choices_to_value(option->value_type, option->choices, option->choices_count, i);
-            valid_default = (cmp_value(option->value_type, option->value, choice) == 0);
-        }
-        if (!valid_default) {
-            ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_DEFAULT,
-                                "Default value of option '%s' must be one of the available choices",
-                                option->name);
-            status = ARGUS_ERROR_INVALID_DEFAULT;
-        }
-    }
+    // if (option->choices_count > 0 && option->have_default) {
+    //     bool valid_default = false;
+    //     for (size_t i = 0; i < option->choices_count && !valid_default; ++i) {
+    //         argus_value_t choice =
+    //             choices_to_value(option->value_type, option->choices, option->choices_count, i);
+    //         valid_default = (cmp_value(option->value_type, option->value, choice) == 0);
+    //     }
+    //     if (!valid_default) {
+    //         ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_DEFAULT,
+    //                             "Default value of option '%s' must be one of the available choices",
+    //                             option->name);
+    //         status = ARGUS_ERROR_INVALID_DEFAULT;
+    //     }
+    // }
 
     return (status);
 }
@@ -160,21 +160,21 @@ int validate_positional(argus_t *argus, argus_option_t *option)
         status = ARGUS_ERROR_INVALID_FLAG;
     }
 
-    if (option->choices_count > 0 && option->have_default) {
-        bool valid_default = false;
-        for (size_t i = 0; i < option->choices_count && !valid_default; ++i) {
-            argus_value_t choice =
-                choices_to_value(option->value_type, option->choices, option->choices_count, i);
-            valid_default = (cmp_value(option->value_type, option->value, choice) == 0);
-        }
-        if (!valid_default) {
-            ARGUS_COLLECT_ERROR(
-                argus, ARGUS_ERROR_INVALID_DEFAULT,
-                "Default value of positional option '%s' must be one of the available choices",
-                option->name);
-            status = ARGUS_ERROR_INVALID_DEFAULT;
-        }
-    }
+    // if (option->choices_count > 0 && option->have_default) {
+    //     bool valid_default = false;
+    //     for (size_t i = 0; i < option->choices_count && !valid_default; ++i) {
+    //         argus_value_t choice =
+    //             choices_to_value(option->value_type, option->choices, option->choices_count, i);
+    //         valid_default = (cmp_value(option->value_type, option->value, choice) == 0);
+    //     }
+    //     if (!valid_default) {
+    //         ARGUS_COLLECT_ERROR(
+    //             argus, ARGUS_ERROR_INVALID_DEFAULT,
+    //             "Default value of positional option '%s' must be one of the available choices",
+    //             option->name);
+    //         status = ARGUS_ERROR_INVALID_DEFAULT;
+    //     }
+    // }
 
     return (status);
 }

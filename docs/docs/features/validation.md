@@ -185,17 +185,17 @@ ARGUS_OPTIONS(
     
     // Log level with predefined choices
     OPTION_STRING('l', "level", HELP("Log level"),
-                  CHOICES_STRING("debug", "info", "warn", "error"),
+                  VALIDATOR(V_CHOICES_STRING("debug", "info", "warn", "error")),
                   DEFAULT("info")),
     
     // Output format choices
     OPTION_STRING('f', "format", HELP("Output format"),
-                  CHOICES_STRING("json", "xml", "yaml", "csv"),
+                  VALIDATOR(V_CHOICES_STRING("json", "xml", "yaml", "csv")),
                   DEFAULT("json")),
     
     // Compression algorithm
     OPTION_STRING('c', "compression", HELP("Compression type"),
-                  CHOICES_STRING("gzip", "bzip2", "lzma")),
+                  VALIDATOR(V_CHOICES_STRING("gzip", "bzip2", "lzma"))),
 )
 ```
 
@@ -217,12 +217,12 @@ ARGUS_OPTIONS(
     
     // Predefined integer values
     OPTION_INT('m', "mode", HELP("Operating mode"),
-               CHOICES_INT(1, 2, 3, 5, 8),
+               VALIDATOR(V_CHOICES_INT(1, 2, 3, 5, 8)),
                DEFAULT(1)),
     
     // Quality presets
     OPTION_FLOAT('q', "quality", HELP("Quality preset"),
-                 CHOICES_FLOAT(0.1, 0.5, 0.8, 1.0),
+                 VALIDATOR(V_CHOICES_FLOAT(0.1, 0.5, 0.8, 1.0)),
                  DEFAULT(0.8)),
 )
 ```
@@ -353,9 +353,8 @@ ARGUS_OPTIONS(
     
     // Combine range and choices (value must be in range AND in choices)
     OPTION_INT('p', "port", HELP("Common HTTP ports"),
-               VALIDATOR(V_RANGE(1, 65535)),
-               CHOICES_INT(80, 443, 8080, 8443)),
-    
+               VALIDATOR(V_RANGE(1, 65535), V_CHOICES_INT(80, 443, 8080, 8443))),
+
     // Combine length and regex validation
     OPTION_STRING('u', "username", HELP("Valid username"),
                   VALIDATOR(V_LENGTH(3, 20), V_REGEX(RE_USERNAME))),
@@ -421,7 +420,7 @@ OPTION_STRING('u', "username", HELP("Username"),
 
 // 4. Provide sensible defaults for choices
 OPTION_STRING('l', "level", HELP("Log level"),
-              CHOICES_STRING("debug", "info", "warn", "error"),
+              VALIDATOR(V_CHOICES_STRING("debug", "info", "warn", "error")),
               DEFAULT("info"))
 ```
 
@@ -466,7 +465,7 @@ ARGUS_OPTIONS(
     
     // Choice validation
     OPTION_STRING('l', "level", HELP("Log level"),
-                  CHOICES_STRING("debug", "info", "warn", "error"),
+                  VALIDATOR(V_CHOICES_STRING("debug", "info", "warn", "error"))),
                   DEFAULT("info")),
     
     // Regex validation with predefined pattern

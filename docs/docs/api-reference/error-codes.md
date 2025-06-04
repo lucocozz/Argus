@@ -152,7 +152,7 @@ OPTION_STRING('e', "email", VALIDATOR(V_REGEX(ARGUS_RE_EMAIL)))
 
 ### Choice Validation
 ```c
-OPTION_STRING('f', "format", CHOICES_STRING("json", "xml"))
+OPTION_STRING('f', "format", VALIDATOR(V_CHOICES_STRING("json", "xml")))
 // Error: "Cannot be set to 'pdf'. Choose from ["json", "xml"]"
 ```
 

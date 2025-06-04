@@ -176,7 +176,7 @@ OPTION_STRING('e', "email", HELP("Email"), VALIDATOR(V_REGEX(ARGUS_RE_EMAIL)))
 
 // Multiple choices
 OPTION_STRING('l', "level", HELP("Log level"), 
-              CHOICES_STRING("debug", "info", "warn", "error"))
+              VALIDATOR(V_CHOICES_STRING("debug", "info", "warn", "error")))
 ```
 
 </TabItem>

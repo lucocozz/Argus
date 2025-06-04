@@ -6,28 +6,28 @@
 #include "argus/internal/utils.h"
 #include "argus/types.h"
 
-static int validate_choices(argus_t *argus, argus_option_t *option)
-{
-    if (option->choices_count > 0) {
-        bool valid_choices = false;
-        for (size_t i = 0; i < option->choices_count && !valid_choices; ++i) {
-            argus_value_t choice =
-                choices_to_value(option->value_type, option->choices, option->choices_count, i);
-            valid_choices = (cmp_value(option->value_type, option->value, choice) == 0);
-        }
-        if (!valid_choices) {
-            fprintf(stderr, "%s: The '%s' option cannot be set to '", argus->program_name,
-                    option->name);
-            print_value(stderr, option->value_type, option->value);
-            fprintf(stderr, "'. Please choose from ");
-            print_value_array(stderr, option->value_type, option->choices.as_ptr,
-                              option->choices_count);
-            fprintf(stderr, "\n");
-            return (ARGUS_ERROR_INVALID_CHOICE);
-        }
-    }
-    return (ARGUS_SUCCESS);
-}
+// static int validate_choices(argus_t *argus, argus_option_t *option)
+// {
+//     if (option->choices_count > 0) {
+//         bool valid_choices = false;
+//         for (size_t i = 0; i < option->choices_count && !valid_choices; ++i) {
+//             argus_value_t choice =
+//                 choices_to_value(option->value_type, option->choices, option->choices_count, i);
+//             valid_choices = (cmp_value(option->value_type, option->value, choice) == 0);
+//         }
+//         if (!valid_choices) {
+//             fprintf(stderr, "%s: The '%s' option cannot be set to '", argus->program_name,
+//                     option->name);
+//             print_value(stderr, option->value_type, option->value);
+//             fprintf(stderr, "'. Please choose from ");
+//             print_value_array(stderr, option->value_type, option->choices.as_ptr,
+//                               option->choices_count);
+//             fprintf(stderr, "\n");
+//             return (ARGUS_ERROR_INVALID_CHOICE);
+//         }
+//     }
+//     return (ARGUS_SUCCESS);
+// }
 
 static int validate_required(argus_t *argus, argus_option_t *options, argus_option_t *option)
 {
@@ -95,7 +95,8 @@ static int validate_options_set(argus_t *argus, argus_option_t *options)
                                "Required positional argument missing: '%s'", option->name);
         }
 
-        if (option->is_set) {
+        if (option->is_set)
+        {
             int status;
 
             if (current_group_is_exclusive) {
@@ -112,9 +113,9 @@ static int validate_options_set(argus_t *argus, argus_option_t *options)
             if (status != ARGUS_SUCCESS)
                 return (status);
 
-            status = validate_choices(argus, option);
-            if (status != ARGUS_SUCCESS)
-                return (status);
+            // status = validate_choices(argus, option);
+            // if (status != ARGUS_SUCCESS)
+            //     return (status);
 
             status = validate_required(argus, options, option);
             if (status != ARGUS_SUCCESS)

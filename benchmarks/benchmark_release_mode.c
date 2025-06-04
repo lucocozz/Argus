@@ -20,14 +20,18 @@ ARGUS_OPTIONS(
     
     GROUP_START("Output Options", GROUP_DESC("Options related to output")),
         OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
-        OPTION_STRING('f', "format", HELP("Output format"), CHOICES_STRING("text", "json", "xml", "binary")),
+        OPTION_STRING('f', "format", HELP("Output format"),
+            VALIDATOR(V_CHOICES_STRING("text", "json", "xml", "binary"))),
         OPTION_FLAG('s', "silent", HELP("Suppress output"), CONFLICTS("verbose")),
     GROUP_END(),
     
     GROUP_START("Processing Options", GROUP_DESC("Options controlling processing")),
-        OPTION_INT('l', "level", HELP("Processing level"), RANGE(1, 10), DEFAULT(5)),
-        OPTION_INT('j', "jobs", HELP("Number of parallel jobs"), RANGE(1, 100), DEFAULT(4)),
-        OPTION_FLOAT('t', "threshold", HELP("Processing threshold"), DEFAULT(0.5)),
+        OPTION_INT('l', "level", HELP("Processing level"),
+            VALIDATOR(V_RANGE(1, 10)), DEFAULT(5)),
+        OPTION_INT('j', "jobs", HELP("Number of parallel jobs"),
+            VALIDATOR(V_RANGE(1, 100)), DEFAULT(4)),
+        OPTION_FLOAT('t', "threshold", HELP("Processing threshold"),
+            VALIDATOR(V_RANGE(0.0, 1.0)), DEFAULT(0.5)),
         OPTION_MAP_STRING('D', "define", HELP("Define variables"), FLAGS(FLAG_SORTED_KEY)),
     GROUP_END(),
     

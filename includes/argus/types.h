@@ -184,12 +184,30 @@ typedef struct regex_data_s
 } regex_data_t;
 
 /**
+ * choices_data_t - Data structure for choice validation
+ *
+ * This structure holds an array of valid choices for an option.
+ * It is used to validate that the provided value matches one of the choices.
+ */
+typedef struct choices_data_s
+{
+    union {
+        char     **as_strings;
+        long long *as_ints;
+        double    *as_floats;
+    };
+    size_t          count;
+    argus_valtype_t type;
+} choices_data_t;
+
+/**
  * validator_data_u - Data used by validator functions
  */
 union validator_data_u {
-    uintptr_t     custom; /* Custom validator data */
-    argus_range_t range;  /* Range limits */
-    regex_data_t  regex;  /* Regex pattern and info */
+    uintptr_t      custom;  /* Custom validator data */
+    argus_range_t  range;   /* Range limits */
+    regex_data_t   regex;   /* Regex pattern and info */
+    choices_data_t choices; /* Choices for validation */
 };
 
 /* Callback function types */
@@ -235,8 +253,6 @@ struct argus_option_s
     bool            is_allocated;
     argus_value_t   default_value;
     bool            have_default;
-    argus_value_t   choices;
-    size_t          choices_count;
     size_t          value_count;
     size_t          value_capacity;
     char           *env_name;
@@ -247,9 +263,9 @@ struct argus_option_s
     validator_entry_t  **validators;
 
     /* Dependencies metadata */
+    const char **conflicts;
     const char **
         requires;
-    const char **conflicts;
 
     /* Flags and state metadata */
     argus_optflags_t flags;

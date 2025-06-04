@@ -30,11 +30,11 @@ int validate_subcommand(argus_t *argus, argus_option_t *option)
         status = ARGUS_ERROR_INVALID_FLAG;
     }
 
-    if (option->choices_count > 0) {
-        ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE,
-                            "Subcommand '%s' cannot have choices", option->name);
-        status = ARGUS_ERROR_INVALID_CHOICE;
-    }
+    // if (option->choices_count > 0) {
+    //     ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE,
+    //                         "Subcommand '%s' cannot have choices", option->name);
+    //     status = ARGUS_ERROR_INVALID_CHOICE;
+    // }
 
     return (status);
 }

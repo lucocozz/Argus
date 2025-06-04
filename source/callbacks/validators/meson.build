@@ -3,4 +3,5 @@ validators_sources = files([
 	'length_validator.c',
 	'count_validator.c',
 	'regex_validator.c',
+	'choices_validator.c',
 ])

@@ -370,49 +370,49 @@ static void print_option_description(const argus_option_t *option, size_t paddin
         }
     }
 
-    // Append choices if any
-    if (option->choices_count > 0) {
-        char choices_buf[256] = {0};
-        snprintf(choices_buf, sizeof(choices_buf), " [");
+    // // Append choices if any
+    // if (option->choices_count > 0) {
+    //     char choices_buf[256] = {0};
+    //     snprintf(choices_buf, sizeof(choices_buf), " [");
 
-        for (size_t i = 0; i < option->choices_count; ++i) {
-            char item[64] = {0};
+    //     for (size_t i = 0; i < option->choices_count; ++i) {
+    //         char item[64] = {0};
 
-            if (i > 0)
-                safe_strncat(choices_buf, sizeof(choices_buf), ", ",
-                             sizeof(choices_buf) - strlen(choices_buf) - 1);
+    //         if (i > 0)
+    //             safe_strncat(choices_buf, sizeof(choices_buf), ", ",
+    //                          sizeof(choices_buf) - strlen(choices_buf) - 1);
 
-            switch (option->value_type) {
-                case VALUE_TYPE_INT:
-                    snprintf(item, sizeof(item), "%lld", option->choices.as_array_int[i]);
-                    break;
-                case VALUE_TYPE_STRING:
-                    snprintf(item, sizeof(item), "%s", option->choices.as_array_string[i]);
-                    break;
-                case VALUE_TYPE_FLOAT:
-                    snprintf(item, sizeof(item), "%.2f", option->choices.as_array_float[i]);
-                    break;
-                default:
-                    break;
-            }
+    //         switch (option->value_type) {
+    //             case VALUE_TYPE_INT:
+    //                 snprintf(item, sizeof(item), "%lld", option->choices.as_array_int[i]);
+    //                 break;
+    //             case VALUE_TYPE_STRING:
+    //                 snprintf(item, sizeof(item), "%s", option->choices.as_array_string[i]);
+    //                 break;
+    //             case VALUE_TYPE_FLOAT:
+    //                 snprintf(item, sizeof(item), "%.2f", option->choices.as_array_float[i]);
+    //                 break;
+    //             default:
+    //                 break;
+    //         }
 
-            safe_strncat(choices_buf, sizeof(choices_buf), item,
-                         sizeof(choices_buf) - strlen(choices_buf) - 1);
-        }
+    //         safe_strncat(choices_buf, sizeof(choices_buf), item,
+    //                      sizeof(choices_buf) - strlen(choices_buf) - 1);
+    //     }
 
-        safe_strncat(choices_buf, sizeof(choices_buf), "]",
-                     sizeof(choices_buf) - strlen(choices_buf) - 1);
+    //     safe_strncat(choices_buf, sizeof(choices_buf), "]",
+    //                  sizeof(choices_buf) - strlen(choices_buf) - 1);
 
-        // Allocate new buffer for combined description
-        size_t desc_size = strlen(description) + strlen(choices_buf) + 1;
-        char  *new_desc  = malloc(desc_size);
-        if (new_desc) {
-            safe_strcpy(new_desc, desc_size, description);
-            safe_strcat(new_desc, desc_size, choices_buf);
-            free(description);
-            description = new_desc;
-        }
-    }
+    //     // Allocate new buffer for combined description
+    //     size_t desc_size = strlen(description) + strlen(choices_buf) + 1;
+    //     char  *new_desc  = malloc(desc_size);
+    //     if (new_desc) {
+    //         safe_strcpy(new_desc, desc_size, description);
+    //         safe_strcat(new_desc, desc_size, choices_buf);
+    //         free(description);
+    //         description = new_desc;
+    //     }
+    // }
 
     // Append default value if any
     if (option->have_default && option->value_type != VALUE_TYPE_FLAG) {
