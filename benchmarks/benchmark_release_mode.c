@@ -21,8 +21,8 @@ ARGUS_OPTIONS(
     GROUP_START("Output Options", GROUP_DESC("Options related to output")),
         OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
         OPTION_STRING('f', "format", HELP("Output format"),
-            VALIDATOR(V_CHOICES_STRING("text", "json", "xml", "binary"))),
-        OPTION_FLAG('s', "silent", HELP("Suppress output"), CONFLICTS("verbose")),
+            VALIDATOR(V_CHOICE_STR("text", "json", "xml", "binary"))),
+        OPTION_FLAG('s', "silent", HELP("Suppress output"), CONFLICT("verbose")),
     GROUP_END(),
     
     GROUP_START("Processing Options", GROUP_DESC("Options controlling processing")),

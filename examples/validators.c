@@ -176,7 +176,7 @@ ARGUS_OPTIONS(
     // Built-in choices validator
     OPTION_STRING('l', "log-level", HELP("Log level"), 
                 DEFAULT("info"), 
-                VALIDATOR(V_CHOICES_STRING("debug", "info", "warning", "error"))),
+                VALIDATOR(V_CHOICE_STR("debug", "info", "warning", "error"))),
 
     // Custom validator using custom data parameter (int)
     OPTION_INT('n', "number", HELP("Number (must be divisible by 5)"), 

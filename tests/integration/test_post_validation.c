@@ -9,10 +9,10 @@
 ARGUS_OPTIONS(
     validation_options,
     HELP_OPTION(),
-    OPTION_FLAG('v', "verbose", HELP("Verbose output"), CONFLICTS("quiet")),
-    OPTION_FLAG('q', "quiet", HELP("Quiet mode"), CONFLICTS("verbose")),
-    OPTION_STRING('u', "username", HELP("Username"), REQUIRES("password")),
-    OPTION_STRING('p', "password", HELP("Password"), REQUIRES("username")),
+    OPTION_FLAG('v', "verbose", HELP("Verbose output"), CONFLICT("quiet")),
+    OPTION_FLAG('q', "quiet", HELP("Quiet mode"), CONFLICT("verbose")),
+    OPTION_STRING('u', "username", HELP("Username"), REQUIRE("password")),
+    OPTION_STRING('p', "password", HELP("Password"), REQUIRE("username")),
     POSITIONAL_STRING("input", HELP("Input file")),
 )
 

@@ -7,9 +7,9 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
     OPTION_INT('i', "int", HELP("Integer option"), VALIDATOR(V_RANGE(1, 100))),
     OPTION_STRING('r', "required", HELP("Required option"), FLAGS(FLAG_REQUIRED)),
-    OPTION_STRING('c', "choice", HELP("Choice option"), VALIDATOR(V_CHOICES_STRING("one", "two", "three"))),
-    OPTION_FLAG('a', "flag-a", HELP("Flag A"), CONFLICTS("flag-b")),
-    OPTION_FLAG('b', "flag-b", HELP("Flag B"), CONFLICTS("flag-a")),
+    OPTION_STRING('c', "choice", HELP("Choice option"), VALIDATOR(V_CHOICE_STR("one", "two", "three"))),
+    OPTION_FLAG('a', "flag-a", HELP("Flag A"), CONFLICT("flag-b")),
+    OPTION_FLAG('b', "flag-b", HELP("Flag B"), CONFLICT("flag-a")),
 )
 
 void setup_error_capture(void) {

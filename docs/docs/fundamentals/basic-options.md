@@ -280,7 +280,7 @@ ARGUS_OPTIONS(
     
     // Multiple choice validation
     OPTION_STRING('l', "level", HELP("Log level"), 
-                 VALIDATOR(V_CHOICES_STRING("debug", "info", "warn", "error"))),
+                 VALIDATOR(V_CHOICE_STR("debug", "info", "warn", "error"))),
 )
 ```
 
@@ -338,7 +338,7 @@ ARGUS_OPTIONS(
     OPTION_STRING('o', "output", HELP("Output directory"), 
                  DEFAULT("./output"), HINT("DIR")),
     OPTION_STRING('\0', "format", HELP("Output format"), 
-                 DEFAULT("json"), VALIDATOR(V_CHOICES_STRING("json", "xml", "csv"))),
+                 DEFAULT("json"), VALIDATOR(V_CHOICE_STR("json", "xml", "csv"))),
 
     // Numeric options  
     OPTION_INT('t', "threads", HELP("Number of worker threads"), 

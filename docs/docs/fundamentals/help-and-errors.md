@@ -152,7 +152,7 @@ ARGUS_OPTIONS(
     
     // Choices shown automatically  
     OPTION_STRING('l', "level", HELP("Log level"),
-                  VALIDATOR(V_CHOICES_STRING("debug", "info", "warn", "error")),
+                  VALIDATOR(V_CHOICE_STR("debug", "info", "warn", "error")),
                   DEFAULT("info")),
     
     // Length validation shown

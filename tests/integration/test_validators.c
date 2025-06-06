@@ -77,7 +77,7 @@ ARGUS_OPTIONS(
                 DEFAULT(8080), VALIDATOR(V_RANGE(1, 65535))),
     OPTION_STRING('l', "level", HELP("Log level"), 
                 DEFAULT("info"), 
-                VALIDATOR(V_CHOICES_STRING("debug", "info", "warning", "error"))),
+                VALIDATOR(V_CHOICE_STR("debug", "info", "warning", "error"))),
     OPTION_STRING('e', "email", HELP("Email address"), 
                 VALIDATOR(V_REGEX(MAKE_REGEX("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", 
                     "Enter email format")))),

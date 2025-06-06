@@ -18,7 +18,7 @@ ARGUS_OPTIONS(
     OPTION_INT('c', "count", HELP("Processing iterations"), 
                VALIDATOR(V_RANGE(1, 100)), DEFAULT(1)),
     OPTION_STRING('f', "format", HELP("Output format"),
-                  VALIDATOR(V_CHOICES_STRING("text", "json", "xml")), DEFAULT("text")),
+                  VALIDATOR(V_CHOICE_STR("text", "json", "xml")), DEFAULT("text")),
 
     POSITIONAL_STRING("input", HELP("Input file to process")),
 )

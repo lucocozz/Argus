@@ -1,7 +1,7 @@
 /**
  * Advanced options example for argus
  * 
- * Demonstrates dependencies (REQUIRES), conflicts (CONFLICTS),
+ * Demonstrates dependencies (REQUIRE), conflicts (CONFLICT),
  * and exclusive option groups (FLAG_EXCLUSIVE)
  */
 
@@ -28,19 +28,19 @@ ARGUS_OPTIONS(
     // Compression level requires one of the compression options
     OPTION_INT('l', "level", HELP("Compression level"), 
                DEFAULT(6), VALIDATOR(V_RANGE(1, 9)),
-               REQUIRES("gzip", "bzip2", "lzma")),
+               REQUIRE("gzip", "bzip2", "lzma")),
     
     // Options that conflict with each other
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output"), 
-               CONFLICTS("quiet")),
+               CONFLICT("quiet")),
     OPTION_FLAG('q', "quiet", HELP("Suppress all output"), 
-               CONFLICTS("verbose")),
+               CONFLICT("verbose")),
     
     // Options that require each other
     OPTION_STRING('u', "username", HELP("Username for authentication"), 
-                REQUIRES("password")),
+                REQUIRE("password")),
     OPTION_STRING('p', "password", HELP("Password for authentication"), 
-                REQUIRES("username")),
+                REQUIRE("username")),
 )
 
 int main(int argc, char **argv)

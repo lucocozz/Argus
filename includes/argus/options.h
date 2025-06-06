@@ -64,8 +64,8 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
 #define ACTION(fn)              .action = (argus_action_t)(fn)
 #define FREE_HANDLER(fn)        .free_handler = (argus_free_handler_t)(fn)
 #define HINT(_hint)             .hint = _hint
-#define REQUIRES(...)           .requires = (const char*[]){__VA_ARGS__, NULL}
-#define CONFLICTS(...)          .conflicts = (const char*[]){__VA_ARGS__, NULL}
+#define REQUIRE(...)           .requires = (const char*[]){__VA_ARGS__, NULL}
+#define CONFLICT(...)          .conflicts = (const char*[]){__VA_ARGS__, NULL}
 #define GROUP_DESC(desc)        .help = desc
 #define HELP(desc)              .help = desc
 #define FLAGS(_flags)           .flags = _flags
@@ -95,7 +95,7 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
 #define V_REGEX(re) \
     MAKE_VALIDATOR(regex_validator, ((validator_data_t){ .regex = (re) }), ORDER_PRE)
 
-#define V_CHOICES_STRING(...) \
+#define V_CHOICE_STR(...) \
     MAKE_VALIDATOR(choices_string_validator, \
         ((validator_data_t){ .choices = { \
             .as_strings = (char*[]){ __VA_ARGS__ }, \
@@ -103,7 +103,7 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
             .type = VALUE_TYPE_STRING \
         }}), ORDER_POST)
 
-#define V_CHOICES_INT(...) \
+#define V_CHOICE_INT(...) \
     MAKE_VALIDATOR(choices_int_validator, \
         ((validator_data_t){ .choices = { \
             .as_ints = (long long[]){ __VA_ARGS__ }, \
@@ -111,7 +111,7 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
             .type = VALUE_TYPE_INT \
         }}), ORDER_POST)
 
-#define V_CHOICES_FLOAT(...) \
+#define V_CHOICE_FLOAT(...) \
     MAKE_VALIDATOR(choices_float_validator, \
         ((validator_data_t){ .choices = { \
             .as_floats = (double[]){ __VA_ARGS__ }, \
