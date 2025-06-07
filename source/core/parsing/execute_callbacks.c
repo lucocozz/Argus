@@ -32,6 +32,6 @@ int execute_callbacks(argus_t *argus, argus_option_t *option, char *value)
         option->value_count = 1;
 
     if (option->flags & FLAG_EXIT)
-        return (ARGUS_SOULD_EXIT);
+        return (ARGUS_SHOULD_EXIT);
     return (ARGUS_SUCCESS);
 }

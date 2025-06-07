@@ -40,7 +40,7 @@ Test(error, argus_push_error, .init = setup_error)
         .code = ARGUS_ERROR_INVALID_ARGUMENT,
         .context = {.option_name = "test_option", .group_name = NULL, .subcommand_name = NULL},
     };
-    strcpy(error.message, "Test error message");
+    snprintf(error.message, sizeof(error.message), "Test error message");
     
     // Add error to the stack
     argus_push_error(&test_argus, error);

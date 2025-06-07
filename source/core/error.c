@@ -9,6 +9,8 @@ const char *argus_strerror(argus_error_type_t error)
     switch (error) {
         case ARGUS_SUCCESS:
             return "Success";
+        case ARGUS_SHOULD_EXIT:
+            return "Should exit";
         case ARGUS_ERROR_DUPLICATE_OPTION:
             return "Duplicate option";
         case ARGUS_ERROR_INVALID_HANDLER:

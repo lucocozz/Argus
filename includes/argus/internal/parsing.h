@@ -23,7 +23,7 @@
  * @return Status code
  */
 int             parse_args(argus_t *argus, argus_option_t *options, int argc, char **argv);
-argus_option_t *find_subcommand(argus_t *argus, argus_option_t *options, const char *name);
+int find_subcommand(argus_t *argus, argus_option_t *options, const char *name, argus_option_t **result);
 
 /**
  * Handle different types of arguments

@@ -13,15 +13,13 @@
 #include "argus/types.h"
 #include <stddef.h>
 
-#define ARGUS_AMBIGUOUS_SUBCOMMAND ((argus_option_t *)-1)
-
 /**
  * Error codes returned by argus functions
  */
 typedef enum argus_error_type_e
 {
     ARGUS_SUCCESS = 0,
-    ARGUS_SOULD_EXIT,
+    ARGUS_SHOULD_EXIT,
 
     /* Structure errors */
     ARGUS_ERROR_DUPLICATE_OPTION,

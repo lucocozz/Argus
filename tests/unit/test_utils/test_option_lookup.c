@@ -165,7 +165,8 @@ Test(parsing, find_option_by_active_path, .init = setup_subcommands)
     cr_assert_null(option, "Should return NULL for invalid path");
     
     // Test with active subcommand
-    argus_option_t *sub_cmd = find_subcommand(&test_argus, cmd_options, "sub");
+    argus_option_t *sub_cmd = NULL;
+    find_subcommand(&test_argus, cmd_options, "sub", &sub_cmd);
     context_push_subcommand(&test_argus, sub_cmd);
     
     // Now we should be able to find the subcommand option
@@ -189,7 +190,8 @@ Test(parsing, get_active_options, .init = setup_subcommands)
     cr_assert_eq(options, cmd_options, "Should initially return root options");
     
     // Push a subcommand
-    argus_option_t* sub_cmd = find_subcommand(&test_argus, cmd_options, "sub");
+    argus_option_t* sub_cmd = NULL;
+    find_subcommand(&test_argus, cmd_options, "sub", &sub_cmd);
     context_push_subcommand(&test_argus, sub_cmd);
     
     // Now should get subcommand options

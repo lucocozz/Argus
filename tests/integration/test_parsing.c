@@ -143,12 +143,16 @@ Test(parsing, handle_positional, .init = setup_parsing)
 
 Test(parsing, find_subcommand, .init = setup_subcmd_parsing)
 {
-    argus_option_t* option = find_subcommand(&test_argus, cmd_options, "sub");
+    argus_option_t* option = NULL;
+    int result = find_subcommand(&test_argus, cmd_options, "sub", &option);
+    cr_assert_eq(result, ARGUS_SUCCESS, "Should successfully find subcommand");
     cr_assert_not_null(option, "Should find subcommand");
     cr_assert_str_eq(option->name, "sub", "Should find correct subcommand");
     cr_assert_eq(option->type, TYPE_SUBCOMMAND, "Found option should be subcommand");
     
-    option = find_subcommand(&test_argus, cmd_options, "nonexistent");
+    option = NULL;
+    result = find_subcommand(&test_argus, cmd_options, "nonexistent", &option);
+    cr_assert_eq(result, ARGUS_SUCCESS, "Should return success even for nonexistent");
     cr_assert_null(option, "Should return NULL for nonexistent subcommand");
 }
 
@@ -156,7 +160,9 @@ Test(parsing, find_subcommand, .init = setup_subcmd_parsing)
 Test(parsing, find_subcommand_ambiguous, .init = setup_ambiguous_parsing)
 {
     // Test exact match - should work fine
-    argus_option_t* option = find_subcommand(&test_argus, ambiguous_cmd_options, "start");
+    argus_option_t* option = NULL;
+    int result = find_subcommand(&test_argus, ambiguous_cmd_options, "start", &option);
+    cr_assert_eq(result, ARGUS_SUCCESS, "Should successfully find exact match");
     cr_assert_not_null(option, "Should find exact match subcommand");
     cr_assert_str_eq(option->name, "start", "Should find 'start' subcommand");
     cr_assert_eq(test_argus.error_stack.count, 0, "No errors for exact match");
@@ -165,17 +171,19 @@ Test(parsing, find_subcommand_ambiguous, .init = setup_ambiguous_parsing)
     test_argus.error_stack.count = 0;
     
     // Test ambiguous match - "sta" matches both "start" and "status"
-    option = find_subcommand(&test_argus, ambiguous_cmd_options, "sta");
-    cr_assert_eq(option, ARGUS_AMBIGUOUS_SUBCOMMAND, "Should return ARGUS_AMBIGUOUS_SUBCOMMAND for ambiguous match");
+    option = NULL;
+    result = find_subcommand(&test_argus, ambiguous_cmd_options, "sta", &option);
+    cr_assert_eq(result, ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND, "Should return error for ambiguous match");
     cr_assert_eq(test_argus.error_stack.count, 1, "Should report one error for ambiguous match");
     
     // Reset error stack
     test_argus.error_stack.count = 0;
     
     // Test unambiguous partial match - "sto" only matches "stop"
-    option = find_subcommand(&test_argus, ambiguous_cmd_options, "sto");
+    option = NULL;
+    result = find_subcommand(&test_argus, ambiguous_cmd_options, "sto", &option);
+    cr_assert_eq(result, ARGUS_SUCCESS, "Should successfully find unambiguous partial match");
     cr_assert_not_null(option, "Should find unambiguous partial match");
-    cr_assert_neq(option, ARGUS_AMBIGUOUS_SUBCOMMAND, "Should not be ambiguous");
     cr_assert_str_eq(option->name, "stop", "Should find 'stop' subcommand");
     cr_assert_eq(test_argus.error_stack.count, 0, "No errors for unambiguous partial match");
 }
@@ -184,7 +192,9 @@ Test(parsing, find_subcommand_ambiguous, .init = setup_ambiguous_parsing)
 Test(parsing, find_subcommand_remove_ambiguity, .init = setup_remove_parsing)
 {
     // Test exact match "remove" - should work fine
-    argus_option_t* option = find_subcommand(&test_argus, remove_cmd_options, "remove");
+    argus_option_t* option = NULL;
+    int result = find_subcommand(&test_argus, remove_cmd_options, "remove", &option);
+    cr_assert_eq(result, ARGUS_SUCCESS, "Should successfully find 'remove'");
     cr_assert_not_null(option, "Should find exact match 'remove' subcommand");
     cr_assert_str_eq(option->name, "remove", "Should find 'remove' subcommand");
     cr_assert_eq(test_argus.error_stack.count, 0, "No errors for exact match 'remove'");
@@ -193,7 +203,9 @@ Test(parsing, find_subcommand_remove_ambiguity, .init = setup_remove_parsing)
     test_argus.error_stack.count = 0;
     
     // Test exact match "remove-all" - should work fine
-    option = find_subcommand(&test_argus, remove_cmd_options, "remove-all");
+    option = NULL;
+    result = find_subcommand(&test_argus, remove_cmd_options, "remove-all", &option);
+    cr_assert_eq(result, ARGUS_SUCCESS, "Should successfully find 'remove-all'");
     cr_assert_not_null(option, "Should find exact match 'remove-all' subcommand");
     cr_assert_str_eq(option->name, "remove-all", "Should find 'remove-all' subcommand");
     cr_assert_eq(test_argus.error_stack.count, 0, "No errors for exact match 'remove-all'");
@@ -202,8 +214,9 @@ Test(parsing, find_subcommand_remove_ambiguity, .init = setup_remove_parsing)
     test_argus.error_stack.count = 0;
     
     // Test ambiguous match "rem" - should detect ambiguity
-    option = find_subcommand(&test_argus, remove_cmd_options, "rem");
-    cr_assert_eq(option, ARGUS_AMBIGUOUS_SUBCOMMAND, "Should return ARGUS_AMBIGUOUS_SUBCOMMAND for 'rem'");
+    option = NULL;
+    result = find_subcommand(&test_argus, remove_cmd_options, "rem", &option);
+    cr_assert_eq(result, ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND, "Should return error for ambiguous 'rem'");
     cr_assert_eq(test_argus.error_stack.count, 1, "Should report one error for ambiguous 'rem' match");
 }
 
@@ -214,7 +227,9 @@ Test(parsing, handle_subcommand, .init = setup_subcmd_parsing)
     int argc = sizeof(argv) / sizeof(char *);
     
     // Find subcommand to use
-    argus_option_t *subcmd = find_subcommand(&test_argus, cmd_options, "sub");
+    argus_option_t *subcmd = NULL;
+    int find_result = find_subcommand(&test_argus, cmd_options, "sub", &subcmd);
+    cr_assert_eq(find_result, ARGUS_SUCCESS, "Should successfully find subcommand");
     cr_assert_not_null(subcmd, "Subcommand should exist");
     
     // Handle subcommand
