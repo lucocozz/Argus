@@ -273,6 +273,10 @@ struct argus_option_s
     /* Subcommand metadata */
     argus_action_t         action;
     struct argus_option_s *sub_options;
+
+    /* Context metadata */
+    int     line;
+    char   *file;
 };
 
 #define MULTI_VALUE_INITIAL_CAPACITY 8
@@ -337,8 +341,8 @@ struct argus_s
     {
         const char           *option;
         const char           *group;
-        const argus_option_t *subcommand_stack[MAX_SUBCOMMAND_DEPTH];
-        size_t                subcommand_depth;
+    const argus_option_t *subcommand_stack[MAX_SUBCOMMAND_DEPTH];
+    size_t                subcommand_depth;
     } context;
 };
 
