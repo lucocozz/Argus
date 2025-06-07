@@ -55,8 +55,8 @@ static int validate_default_value(argus_t *argus, argus_option_t *option)
     //     }
     //     if (!valid_default) {
     //         ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_DEFAULT,
-    //                             "Default value of option '%s' must be one of the available choices",
-    //                             option->name);
+    //                             "Default value of option '%s' must be one of the available
+    //                             choices", option->name);
     //         status = ARGUS_ERROR_INVALID_DEFAULT;
     //     }
     // }
@@ -68,39 +68,39 @@ static int validate_dependencies(argus_t *argus, argus_option_t *options, argus_
 {
     int status = ARGUS_SUCCESS;
 
-    if (option->requires != NULL && option->conflicts != NULL) {
-        for (int i = 0; option->requires[i] != NULL; ++i) {
-            for (int j = 0; option->conflicts[j] != NULL; ++j) {
-                if (strcmp(option->requires[i], option->conflicts[j]) == 0) {
+    if (option->require != NULL && option->conflict != NULL) {
+        for (int i = 0; option->require[i] != NULL; ++i) {
+            for (int j = 0; option->conflict[j] != NULL; ++j) {
+                if (strcmp(option->require[i], option->conflict[j]) == 0) {
                     ARGUS_COLLECT_ERROR(
                         argus, ARGUS_ERROR_INVALID_DEPENDENCY,
                         "Option '%s' cannot require and conflict with the same option: '%s'",
-                        option->name, option->requires[i]);
+                        option->name, option->require[i]);
                     status = ARGUS_ERROR_INVALID_DEPENDENCY;
                 }
             }
         }
     }
 
-    if (option->requires != NULL) {
-        for (int i = 0; option->requires[i] != NULL; ++i) {
-            argus_option_t *required = find_option_by_name(options, option->requires[i]);
+    if (option->require != NULL) {
+        for (int i = 0; option->require[i] != NULL; ++i) {
+            argus_option_t *required = find_option_by_name(options, option->require[i]);
             if (required == NULL) {
                 ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_DEPENDENCY,
                                     "Required option not found '%s' in option '%s'",
-                                    option->requires[i], option->name);
+                                    option->require[i], option->name);
                 status = ARGUS_ERROR_INVALID_DEPENDENCY;
             }
         }
     }
 
-    if (option->conflicts != NULL) {
-        for (int i = 0; option->conflicts[i] != NULL; ++i) {
-            argus_option_t *conflict = find_option_by_name(options, option->conflicts[i]);
+    if (option->conflict != NULL) {
+        for (int i = 0; option->conflict[i] != NULL; ++i) {
+            argus_option_t *conflict = find_option_by_name(options, option->conflict[i]);
             if (conflict == NULL) {
                 ARGUS_COLLECT_ERROR(argus, ARGUS_ERROR_INVALID_DEPENDENCY,
                                     "Conflicting option not found '%s' in option '%s'",
-                                    option->conflicts[i], option->name);
+                                    option->conflict[i], option->name);
                 status = ARGUS_ERROR_INVALID_DEPENDENCY;
             }
         }

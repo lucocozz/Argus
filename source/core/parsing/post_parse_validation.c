@@ -31,13 +31,13 @@
 
 static int validate_required(argus_t *argus, argus_option_t *options, argus_option_t *option)
 {
-    if (option->requires) {
-        for (int j = 0; option->requires[j] != NULL; ++j) {
-            argus_option_t *required = find_option_by_name(options, option->requires[j]);
+    if (option->require) {
+        for (int j = 0; option->require[j] != NULL; ++j) {
+            argus_option_t *required = find_option_by_name(options, option->require[j]);
             if (required && !required->is_set) {
                 ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MISSING_REQUIRED,
                                    "Required option is missing: '%s' with option '%s'",
-                                   option->requires[j], option->name);
+                                   option->require[j], option->name);
             }
         }
     }
@@ -46,9 +46,9 @@ static int validate_required(argus_t *argus, argus_option_t *options, argus_opti
 
 static int validate_conflicts(argus_t *argus, argus_option_t *options, argus_option_t *option)
 {
-    if (option->conflicts) {
-        for (int j = 0; option->conflicts[j] != NULL; ++j) {
-            argus_option_t *conflict = find_option_by_name(options, option->conflicts[j]);
+    if (option->conflict) {
+        for (int j = 0; option->conflict[j] != NULL; ++j) {
+            argus_option_t *conflict = find_option_by_name(options, option->conflict[j]);
             if (conflict && conflict->is_set) {
                 ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_CONFLICTING_OPTIONS,
                                    "Conflict between '%s' and '%s'", option->name, conflict->name);
@@ -95,8 +95,7 @@ static int validate_options_set(argus_t *argus, argus_option_t *options)
                                "Required positional argument missing: '%s'", option->name);
         }
 
-        if (option->is_set)
-        {
+        if (option->is_set) {
             int status;
 
             if (current_group_is_exclusive) {

@@ -263,9 +263,8 @@ struct argus_option_s
     validator_entry_t  **validators;
 
     /* Dependencies metadata */
-    const char **conflicts;
-    const char **
-        requires;
+    const char **conflict;
+    const char **require;
 
     /* Flags and state metadata */
     argus_optflags_t flags;

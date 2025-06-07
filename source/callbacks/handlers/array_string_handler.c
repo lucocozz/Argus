@@ -12,13 +12,13 @@
 static int set_value(argus_option_t *option, char *value)
 {
     adjust_array_size(option);
-    if (option->value_capacity == 0) // adjust_array_size failed
+    if (option->value_capacity == 0)  // adjust_array_size failed
         return ARGUS_ERROR_MEMORY;
-    
+
     char *dup_value = safe_strdup(value);
     if (dup_value == NULL)
         return ARGUS_ERROR_MEMORY;
-    
+
     option->value.as_array[option->value_count].as_string = dup_value;
     option->value_count++;
     return ARGUS_SUCCESS;

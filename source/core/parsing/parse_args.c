@@ -6,7 +6,8 @@
 #include "argus/internal/utils.h"
 #include "argus/types.h"
 
-int find_subcommand(argus_t *argus, argus_option_t *options, const char *name, argus_option_t **result)
+int find_subcommand(argus_t *argus, argus_option_t *options, const char *name,
+                    argus_option_t **result)
 {
     argus_option_t *subcommand = NULL;
 
@@ -82,7 +83,7 @@ int parse_args(argus_t *argus, argus_option_t *options, int argc, char **argv)
         }
 
         argus_option_t *subcommand = NULL;
-        status = find_subcommand(argus, options, arg, &subcommand);
+        status                     = find_subcommand(argus, options, arg, &subcommand);
         if (status != ARGUS_SUCCESS)
             return status;
         if (subcommand != NULL) {

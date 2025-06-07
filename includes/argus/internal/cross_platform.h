@@ -66,11 +66,11 @@ static inline char *safe_strcpy(char *dest, size_t dest_size, const char *src)
 {
     if (dest == NULL || src == NULL || dest_size == 0)
         return NULL;
-    
+
     size_t src_len = strlen(src);
     if (src_len >= dest_size)
-        return NULL; // Buffer too small
-    
+        return NULL;  // Buffer too small
+
     return strcpy(dest, src);
 }
 
@@ -78,11 +78,11 @@ static inline char *safe_strncpy(char *dest, size_t dest_size, const char *src, 
 {
     if (dest == NULL || src == NULL || dest_size == 0)
         return NULL;
-    
+
     size_t copy_len = (count < dest_size - 1) ? count : dest_size - 1;
     strncpy(dest, src, copy_len);
-    dest[copy_len] = '\0'; // Ensure null termination
-    
+    dest[copy_len] = '\0';  // Ensure null termination
+
     return dest;
 }
 
@@ -90,13 +90,13 @@ static inline char *safe_strcat(char *dest, size_t dest_size, const char *src)
 {
     if (dest == NULL || src == NULL || dest_size == 0)
         return NULL;
-    
+
     size_t dest_len = strlen(dest);
-    size_t src_len = strlen(src);
-    
+    size_t src_len  = strlen(src);
+
     if (dest_len + src_len >= dest_size)
-        return NULL; // Buffer too small
-    
+        return NULL;  // Buffer too small
+
     return strcat(dest, src);
 }
 
@@ -104,16 +104,16 @@ static inline char *safe_strncat(char *dest, size_t dest_size, const char *src, 
 {
     if (dest == NULL || src == NULL || dest_size == 0)
         return NULL;
-    
-    size_t dest_len = strlen(dest);
-    size_t available = dest_size - dest_len - 1; // -1 for null terminator
-    
+
+    size_t dest_len  = strlen(dest);
+    size_t available = dest_size - dest_len - 1;  // -1 for null terminator
+
     if (available == 0)
-        return NULL; // No space available
-    
+        return NULL;  // No space available
+
     size_t copy_len = (count < available) ? count : available;
     strncat(dest, src, copy_len);
-    
+
     return dest;
 }
 

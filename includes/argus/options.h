@@ -64,8 +64,8 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
 #define ACTION(fn)              .action = (argus_action_t)(fn)
 #define FREE_HANDLER(fn)        .free_handler = (argus_free_handler_t)(fn)
 #define HINT(_hint)             .hint = _hint
-#define REQUIRE(...)           .requires = (const char*[]){__VA_ARGS__, NULL}
-#define CONFLICT(...)          .conflicts = (const char*[]){__VA_ARGS__, NULL}
+#define REQUIRE(...)            .require = (const char*[]){__VA_ARGS__, NULL}
+#define CONFLICT(...)           .conflict = (const char*[]){__VA_ARGS__, NULL}
 #define GROUP_DESC(desc)        .help = desc
 #define HELP(desc)              .help = desc
 #define FLAGS(_flags)           .flags = _flags
