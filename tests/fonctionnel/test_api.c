@@ -50,7 +50,7 @@ Test(api, argus_init)
     cr_assert_str_eq(argus.program_name, "test_program", "Program name should be set correctly");
     cr_assert_str_eq(argus.version, "1.0.0", "Version should be set correctly");
     cr_assert_eq(argus.options, api_test_options, "Options should be set correctly");
-    cr_assert_eq(argus.errno, 0, "Error stack should be empty");
+    cr_assert_eq(argus.error_code, 0, "Error stack should be empty");
     
     // Clean up
     argus_free(&argus);

@@ -12,7 +12,7 @@ void argus_free(argus_t *argus);
 int argus_parse(argus_t *argus, int argc, char **argv)
 {
     int status   = parse_args(argus, argus->options, argc - 1, &argv[1]);
-    argus->errno = status;
+    argus->error_code = status;
     if (status == ARGUS_SHOULD_EXIT) {
         argus_free(argus);
         exit(ARGUS_SUCCESS);

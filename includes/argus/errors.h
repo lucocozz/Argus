@@ -46,6 +46,10 @@ typedef enum argus_error_type_e
 
     /* Execution errors */
     ARGUS_ERROR_NO_COMMAND,
+    ARGUS_ERROR_NO_VALUE,
+    ARGUS_ERROR_INVALID_TYPE,
+    ARGUS_ERROR_INVALID_INDEX,
+    ARGUS_ERROR_INVALID_KEY,
 
     /* Internal errors */
     ARGUS_ERROR_MEMORY,
@@ -112,12 +116,12 @@ static inline void argus_struct_error(argus_option_t *option, const char *fmt, .
     va_end(args);
 }
 
-static inline void argus_parsing_error(argus_t *argus, argus_error_type_t errno, const char *fmt,
+static inline void argus_parsing_error(argus_t *argus, argus_error_type_t error_type, const char *fmt,
                                        ...)
 {
     va_list args;
 
-    argus->errno = (int)errno;
+    argus->error_code = (int)error_type;
     fprintf(stderr, "%s: ", argus->program_name);
 
     va_start(args, fmt);
@@ -135,6 +139,6 @@ static inline void argus_parsing_error(argus_t *argus, argus_error_type_t errno,
 /**
  * ARGUS_PARSING_ERROR - Report a parsing error
  */
-#define ARGUS_PARSING_ERROR(argus, errno, ...) argus_parsing_error(argus, errno, __VA_ARGS__)
+#define ARGUS_PARSING_ERROR(argus, error_type, ...) argus_parsing_error(argus, error_type, __VA_ARGS__)
 
 #endif /* ARGUS_ERRORS_H */

@@ -6,11 +6,18 @@
 #ifdef _WIN32
     #include <fcntl.h>
     #include <io.h>
+    #ifndef O_BINARY
+        #define O_BINARY 0x00008000
+    #endif
     #define pipe(fds)           _pipe(fds, 4096, O_BINARY)
     #define dup(fd)             _dup(fd)
     #define dup2(fd1, fd2)      _dup2(fd1, fd2)
     #define close(fd)           _close(fd)
     #define read(fd, buf, size) _read(fd, buf, size)
+    // Define standard file descriptors for Windows
+    #define STDIN_FILENO        0
+    #define STDOUT_FILENO       1
+    #define STDERR_FILENO       2
 #else
     #include <unistd.h>
 #endif

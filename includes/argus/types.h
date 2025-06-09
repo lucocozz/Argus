@@ -296,7 +296,7 @@ struct argus_s
     const char *version;
     const char *description;
     const char *env_prefix;
-    int         errno;
+    int         error_code;
 
     /* Internal fields - do not access directly */
     argus_option_t       *options;

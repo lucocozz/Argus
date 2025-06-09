@@ -1,13 +1,17 @@
 #include "argus/internal/utils.h"
 #include "argus/types.h"
+#include "argus/errors.h"
 #include <stddef.h>
 #include <string.h>
 
 argus_value_t argus_get(argus_t argus, const char *option_path)
 {
+    argus.error_code = 0;
     argus_option_t *option = find_option_by_active_path(argus, option_path);
-    if (option == NULL)
+    if (option == NULL) {
+        argus.error_code = ARGUS_ERROR_NO_VALUE;
         return ((argus_value_t){.raw = 0});
+    }
     return (option->value);
 }
 
@@ -29,18 +33,25 @@ size_t argus_count(argus_t argus, const char *option_path)
 
 argus_value_t argus_array_get(argus_t argus, const char *option_path, size_t index)
 {
+    argus.error_code = 0;
     argus_option_t *option = find_option_by_active_path(argus, option_path);
 
-    if (option == NULL)
+    if (option == NULL) {
+        argus.error_code = ARGUS_ERROR_NO_VALUE;
         return ((argus_value_t){.raw = 0});
+    }
 
     // Check if the option is an array type
-    if (!(option->value_type & VALUE_TYPE_ARRAY))
+    if (!(option->value_type & VALUE_TYPE_ARRAY)) {
+        argus.error_code = ARGUS_ERROR_INVALID_TYPE;
         return ((argus_value_t){.raw = 0});
+    }
 
     // Check if the index is valid
-    if (index >= option->value_count)
+    if (index >= option->value_count) {
+        argus.error_code = ARGUS_ERROR_INVALID_INDEX;
         return ((argus_value_t){.raw = 0});
+    }
 
     // Return the element at the specified index
     return option->value.as_array[index];
@@ -48,14 +59,19 @@ argus_value_t argus_array_get(argus_t argus, const char *option_path, size_t ind
 
 argus_value_t argus_map_get(argus_t argus, const char *option_path, const char *key)
 {
+    argus.error_code = 0;
     argus_option_t *option = find_option_by_active_path(argus, option_path);
 
-    if (option == NULL)
+    if (option == NULL) {
+        argus.error_code = ARGUS_ERROR_NO_VALUE;
         return ((argus_value_t){.raw = 0});
+    }
 
     // Check if the option is a map type
-    if (!(option->value_type & VALUE_TYPE_MAP))
+    if (!(option->value_type & VALUE_TYPE_MAP)) {
+        argus.error_code = ARGUS_ERROR_INVALID_TYPE;
         return ((argus_value_t){.raw = 0});
+    }
 
     // Look for the key in the map
     for (size_t i = 0; i < option->value_count; ++i) {
@@ -65,6 +81,7 @@ argus_value_t argus_map_get(argus_t argus, const char *option_path, const char *
     }
 
     // Key not found
+    argus.error_code = ARGUS_ERROR_INVALID_KEY;
     return ((argus_value_t){.raw = 0});
 }
 

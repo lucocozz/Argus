@@ -16,7 +16,7 @@ void setup_handler(void)
 {
     // Initialize argus context
     test_argus.program_name = "test_program";
-    test_argus.errno = 0;
+    test_argus.error_code = 0;
     
     // Initialize test option
     memset(&test_option, 0, sizeof(argus_option_t));
