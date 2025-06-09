@@ -12,8 +12,8 @@ int choices_string_validator(argus_t *argus, void *option_ptr, validator_data_t 
         if (strcmp(option->value.as_string, choices->as_strings[i]) == 0)
             return ARGUS_SUCCESS;
     }
-    ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE,
-        "Value '%s' is not one of the choices", option->value.as_string);
+    ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE, "Value '%s' is not one of the choices",
+                        option->value.as_string);
     return ARGUS_ERROR_INVALID_CHOICE;
 }
 
@@ -27,7 +27,8 @@ int choices_int_validator(argus_t *argus, void *option_ptr, validator_data_t dat
             return ARGUS_SUCCESS;
     }
 
-    ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE, "Value '%lld' is not one of the choices", option->value.as_int);
+    ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE, "Value '%lld' is not one of the choices",
+                        option->value.as_int);
     return ARGUS_ERROR_INVALID_CHOICE;
 }
 
@@ -41,6 +42,7 @@ int choices_float_validator(argus_t *argus, void *option_ptr, validator_data_t d
             return ARGUS_SUCCESS;
     }
 
-    ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE, "Value '%f' is not one of the choices", option->value.as_float);
+    ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE, "Value '%f' is not one of the choices",
+                        option->value.as_float);
     return ARGUS_ERROR_INVALID_CHOICE;
 }

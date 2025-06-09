@@ -1,9 +1,9 @@
 #include "argus/errors.h"
+#include "argus/internal/stream.h"
 #include "argus/internal/utils.h"
 #include "argus/types.h"
 #include <stddef.h>
 #include <string.h>
-
 
 static int validate_default_value(argus_t *argus, argus_option_t *option)
 {
@@ -12,22 +12,25 @@ static int validate_default_value(argus_t *argus, argus_option_t *option)
     if (option->have_default && option->value_type == VALUE_TYPE_FLAG) {
         ARGUS_STRUCT_ERROR(option, "Option type flag cannot have a default value");
         status = ARGUS_ERROR_INVALID_DEFAULT;
-    }
-    else if (option->have_default && option->validators != NULL)
-    {
-        for (size_t i = 0; option->validators[i] != NULL; ++i)
-        {
+    } else if (option->have_default && option->validators != NULL) {
+        for (size_t i = 0; option->validators[i] != NULL; ++i) {
+            redirect_stderr();
             validator_entry_t *validator = option->validators[i];
             if (validator->order == ORDER_PRE && option->value_type == VALUE_TYPE_STRING) {
-                if (validator->func(argus, option->default_value.as_string, validator->data) != ARGUS_SUCCESS)
+                if (validator->func(argus, option->default_value.as_string, validator->data) !=
+                    ARGUS_SUCCESS)
                     status = ARGUS_ERROR_INVALID_DEFAULT;
-            }
-            else if (validator->order == ORDER_POST) {
-                if (validator->func(argus, (void*)option, validator->data) != ARGUS_SUCCESS)
+            } else if (validator->order == ORDER_POST) {
+                if (validator->func(argus, (void *)option, validator->data) != ARGUS_SUCCESS)
                     status = ARGUS_ERROR_INVALID_DEFAULT;
             }
             if (status != ARGUS_SUCCESS) {
-                ARGUS_STRUCT_ERROR(option, "Default value does not pass validations");
+                char *error_message = read_stderr();
+                restore_stderr();
+                ARGUS_STRUCT_ERROR(option, "Default value does not pass validations: \n\t    %s",
+                                   error_message);
+                free(error_message);
+                status = ARGUS_ERROR_INVALID_DEFAULT;
             }
         }
     }
@@ -43,8 +46,9 @@ static int validate_dependencies(argus_option_t *options, argus_option_t *option
         for (int i = 0; option->require[i] != NULL; ++i) {
             for (int j = 0; option->conflict[j] != NULL; ++j) {
                 if (strcmp(option->require[i], option->conflict[j]) == 0) {
-                    ARGUS_STRUCT_ERROR(option,
-                        "Option cannot require and conflict with the same option: '%s'", option->require[i]);
+                    ARGUS_STRUCT_ERROR(
+                        option, "Option cannot require and conflict with the same option: '%s'",
+                        option->require[i]);
                     status = ARGUS_ERROR_INVALID_DEPENDENCY;
                 }
             }
@@ -55,8 +59,8 @@ static int validate_dependencies(argus_option_t *options, argus_option_t *option
         for (int i = 0; option->require[i] != NULL; ++i) {
             argus_option_t *required = find_option_by_name(options, option->require[i]);
             if (required == NULL) {
-                ARGUS_STRUCT_ERROR(option,
-                    "Required option not found '%s' in options", option->require[i]);
+                ARGUS_STRUCT_ERROR(option, "Required option not found '%s' in options",
+                                   option->require[i]);
                 status = ARGUS_ERROR_INVALID_DEPENDENCY;
             }
         }
@@ -66,8 +70,8 @@ static int validate_dependencies(argus_option_t *options, argus_option_t *option
         for (int i = 0; option->conflict[i] != NULL; ++i) {
             argus_option_t *conflict = find_option_by_name(options, option->conflict[i]);
             if (conflict == NULL) {
-                ARGUS_STRUCT_ERROR(option,
-                    "Conflicting option not found '%s' in options", option->conflict[i]);
+                ARGUS_STRUCT_ERROR(option, "Conflicting option not found '%s' in options",
+                                   option->conflict[i]);
                 status = ARGUS_ERROR_INVALID_DEPENDENCY;
             }
         }

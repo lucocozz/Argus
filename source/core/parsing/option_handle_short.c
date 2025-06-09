@@ -16,7 +16,8 @@ int handle_short_option(argus_t *argus, argus_option_t *options, char *arg, char
         char            option_char = arg[i];
         argus_option_t *option      = find_option_by_sname(options, option_char);
         if (option == NULL) {
-            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_ARGUMENT, "Unknown option: '-%c'", option_char);
+            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_ARGUMENT, "Unknown option: '-%c'",
+                                option_char);
             return ARGUS_ERROR_INVALID_ARGUMENT;
         }
 
@@ -31,7 +32,8 @@ int handle_short_option(argus_t *argus, argus_option_t *options, char *arg, char
                 *current_index += 1;
                 value = argv[*current_index];
             } else {
-                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MISSING_VALUE, "Missing value for option: '-%c'", option_char);
+                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MISSING_VALUE,
+                                    "Missing value for option: '-%c'", option_char);
                 return ARGUS_ERROR_MISSING_VALUE;
             }
         }

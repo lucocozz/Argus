@@ -275,8 +275,8 @@ struct argus_option_s
     struct argus_option_s *sub_options;
 
     /* Context metadata */
-    int     line;
-    char   *file;
+    int   line;
+    char *file;
 };
 
 #define MULTI_VALUE_INITIAL_CAPACITY 8

@@ -30,7 +30,7 @@ int validate_subcommand(argus_option_t *option)
         ARGUS_STRUCT_ERROR(option, "Subcommand cannot have a handler");
         status = ARGUS_ERROR_INVALID_HANDLER;
     }
-    
+
     if (option->require != NULL || option->conflict != NULL) {
         ARGUS_STRUCT_ERROR(option, "Subcommand cannot have dependencies");
         status = ARGUS_ERROR_INVALID_DEPENDENCY;

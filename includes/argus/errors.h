@@ -72,37 +72,39 @@ const char *argus_strerror(argus_error_type_t error);
 #include <stdarg.h>
 #include <stdio.h>
 
-
 static inline void argus_struct_error(argus_option_t *option, const char *fmt, ...)
 {
     fprintf(stderr, "%s:%d -> ", option->file, option->line);
-    switch (option->type)
-    {
-    case TYPE_OPTION:
-        fprintf(stderr, "Option [ "); break;
-    case TYPE_GROUP:
-        fprintf(stderr, "Group [ "); break;
-    case TYPE_POSITIONAL:
-        fprintf(stderr, "Positional [ "); break;
-    case TYPE_SUBCOMMAND:
-        fprintf(stderr, "Subcommand [ "); break;
-    case TYPE_NONE:
-        fprintf(stderr, "Unknown [ "); break;
-    default: break;
+    switch (option->type) {
+        case TYPE_OPTION:
+            fprintf(stderr, "Option [ ");
+            break;
+        case TYPE_GROUP:
+            fprintf(stderr, "Group [ ");
+            break;
+        case TYPE_POSITIONAL:
+            fprintf(stderr, "Positional [ ");
+            break;
+        case TYPE_SUBCOMMAND:
+            fprintf(stderr, "Subcommand [ ");
+            break;
+        case TYPE_NONE:
+            fprintf(stderr, "Unknown [ ");
+            break;
+        default:
+            break;
     }
     if (option->name == NULL)
         fprintf(stderr, "unnamed");
-    else if (option->type == TYPE_OPTION)
-    {
+    else if (option->type == TYPE_OPTION) {
         if (option->lname)
             fprintf(stderr, "--%s", option->lname);
-        if (option->sname) 
+        if (option->sname)
             fprintf(stderr, " -%c", option->sname);
-    }
-    else
+    } else
         fprintf(stderr, "%s", option->name);
     fprintf(stderr, " ]:\n\t");
-        
+
     va_list args;
     va_start(args, fmt);
     vfprintf(stderr, fmt, args);
@@ -110,7 +112,8 @@ static inline void argus_struct_error(argus_option_t *option, const char *fmt, .
     va_end(args);
 }
 
-static inline void argus_parsing_error(argus_t *argus, argus_error_type_t errno, const char *fmt, ...)
+static inline void argus_parsing_error(argus_t *argus, argus_error_type_t errno, const char *fmt,
+                                       ...)
 {
     va_list args;
 

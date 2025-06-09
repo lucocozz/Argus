@@ -18,20 +18,23 @@ static int set_kv_pair(argus_t *argus, argus_option_t *option, char *pair)
     // Find the separator '='
     char *separator = strchr(pair, '=');
     if (separator == NULL) {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Invalid key-value format, expected 'key=value': '%s'", pair);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
+                            "Invalid key-value format, expected 'key=value': '%s'", pair);
         return ARGUS_ERROR_INVALID_FORMAT;
     }
 
     // Split the string at the separator
     char *key = safe_strndup(pair, separator - pair);
     if (key == NULL) {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for key '%s'", key);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
+                            key);
         return ARGUS_ERROR_MEMORY;
     }
     char *value = safe_strdup(separator + 1);
     if (value == NULL) {
         free(key);
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for value '%s'", value);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for value '%s'",
+                            value);
         return ARGUS_ERROR_MEMORY;
     }
 

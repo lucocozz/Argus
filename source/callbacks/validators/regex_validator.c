@@ -39,7 +39,7 @@ int regex_validator(argus_t *argus, void *value_ptr, validator_data_t data)
         PCRE2_UCHAR buffer[256];
         pcre2_get_error_message(errorcode, buffer, sizeof(buffer));
         ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Failed to compile regex '%s': %s",
-                           pattern, buffer);
+                            pattern, buffer);
         return ARGUS_ERROR_INVALID_FORMAT;
     }
 
@@ -54,15 +54,15 @@ int regex_validator(argus_t *argus, void *value_ptr, validator_data_t data)
             case PCRE2_ERROR_NOMATCH:
                 if (data.regex.hint && data.regex.hint[0] != '\0') {
                     ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Invalid value '%s': %s",
-                                       value, data.regex.hint);
+                                        value, data.regex.hint);
                 } else {
                     ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                                       "Value '%s' does not match the expected format", value);
+                                        "Value '%s' does not match the expected format", value);
                 }
                 return ARGUS_ERROR_INVALID_VALUE;
             default:
                 ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                                   "Internal error: Regex match failed with error code %d", rc);
+                                    "Internal error: Regex match failed with error code %d", rc);
                 return ARGUS_ERROR_INVALID_FORMAT;
         }
     }

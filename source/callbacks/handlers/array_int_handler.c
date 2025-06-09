@@ -93,7 +93,8 @@ static int set_value(argus_t *argus, argus_option_t *option, char *value)
     int_argus_range_t range;
 
     if (parse_int_range(&range, value) != 0) {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Invalid integer or range format: '%s'", value);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
+                            "Invalid integer or range format: '%s'", value);
         return ARGUS_ERROR_INVALID_FORMAT;
     }
     add_range_values(option, &range);

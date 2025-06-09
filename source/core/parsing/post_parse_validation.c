@@ -12,7 +12,8 @@ static int validate_required(argus_t *argus, argus_option_t *options, argus_opti
             argus_option_t *required = find_option_by_name(options, option->require[j]);
             if (required && !required->is_set) {
                 ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MISSING_REQUIRED,
-                    "Required option is missing: '%s' with option '%s'", option->require[j], option->name);
+                                    "Required option is missing: '%s' with option '%s'",
+                                    option->require[j], option->name);
                 return (ARGUS_ERROR_MISSING_REQUIRED);
             }
         }
@@ -27,7 +28,7 @@ static int validate_conflicts(argus_t *argus, argus_option_t *options, argus_opt
             argus_option_t *conflict = find_option_by_name(options, option->conflict[j]);
             if (conflict && conflict->is_set) {
                 ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_CONFLICTING_OPTIONS,
-                    "Conflict between '%s' and '%s'", option->name, conflict->name);
+                                    "Conflict between '%s' and '%s'", option->name, conflict->name);
                 return (ARGUS_ERROR_CONFLICTING_OPTIONS);
             }
         }
@@ -70,7 +71,7 @@ static int validate_options_set(argus_t *argus, argus_option_t *options)
 
         if (option->type == TYPE_POSITIONAL && (option->flags & FLAG_REQUIRED) && !option->is_set) {
             ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MISSING_REQUIRED,
-                "Required positional argument missing: '%s'", option->name);
+                                "Required positional argument missing: '%s'", option->name);
             return (ARGUS_ERROR_MISSING_REQUIRED);
         }
 
@@ -82,8 +83,8 @@ static int validate_options_set(argus_t *argus, argus_option_t *options)
                     first_set_option_name = option->name;
                 } else {
                     ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_EXCLUSIVE_GROUP,
-                        "Exclusive options group '%s' conflict: '%s' and '%s'",
-                        group_name, first_set_option_name, option->name);
+                                        "Exclusive options group '%s' conflict: '%s' and '%s'",
+                                        group_name, first_set_option_name, option->name);
                     return (ARGUS_ERROR_EXCLUSIVE_GROUP);
                 }
             }

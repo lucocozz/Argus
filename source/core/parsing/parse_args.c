@@ -14,11 +14,12 @@ int find_subcommand(argus_t *argus, argus_option_t *options, const char *name,
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         if (options[i].type == TYPE_SUBCOMMAND && starts_with(name, options[i].name) != NULL) {
             if (subcommand != NULL) {
-                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND, "'%s' is ambigous and could match:\n"
-                                   "  '%s' - %s\n"
-                                   "  '%s' - %s",
-                                   name, subcommand->name, subcommand->help, options[i].name,
-                                   options[i].help);
+                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND,
+                                    "'%s' is ambigous and could match:\n"
+                                    "  '%s' - %s\n"
+                                    "  '%s' - %s",
+                                    name, subcommand->name, subcommand->help, options[i].name,
+                                    options[i].help);
                 return ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND;
             }
             if (subcommand == NULL && strcmp(name, options[i].name) == 0) {

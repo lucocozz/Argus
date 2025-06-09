@@ -11,11 +11,11 @@ argus_t _argus_init_validate(argus_option_t *options, const char *program_name, 
                              bool validate)
 {
     argus_t argus = {
-        .program_name      = program_name,
-        .version           = version,
-        .description       = NULL,
-        .env_prefix        = NULL,
-        .options           = options,
+        .program_name = program_name,
+        .version      = version,
+        .description  = NULL,
+        .env_prefix   = NULL,
+        .options      = options,
     };
 
     if (validate) {

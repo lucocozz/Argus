@@ -36,13 +36,15 @@ int bool_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     UNUSED(argus);
     if (arg == NULL) {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_ARGUMENT, "Invalid argument for option: '%s'", option->name);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_ARGUMENT,
+                            "Invalid argument for option: '%s'", option->name);
         return ARGUS_ERROR_INVALID_ARGUMENT;
     }
 
     int is_bool = string_to_bool(arg);
     if (is_bool == -1) {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_ARGUMENT, "Invalid boolean value: '%s'. Expected 'true' or 'false'", arg);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_ARGUMENT,
+                            "Invalid boolean value: '%s'. Expected 'true' or 'false'", arg);
         return ARGUS_ERROR_INVALID_ARGUMENT;
     }
     option->value.as_bool = is_bool;
