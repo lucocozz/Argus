@@ -21,7 +21,8 @@ typedef enum argus_error_type_e
     ARGUS_SUCCESS = 0,
     ARGUS_SHOULD_EXIT,
 
-    /* Structure errors */
+    /* Validation errors */
+    ARGUS_STRUCT_ERROR,
     ARGUS_ERROR_DUPLICATE_OPTION,
     ARGUS_ERROR_INVALID_HANDLER,
     ARGUS_ERROR_INVALID_DEFAULT,
@@ -59,13 +60,6 @@ typedef enum argus_error_type_e
 } argus_error_type_t;
 
 /**
- * argus_print_error_stack - Print all errors in the error stack
- *
- * @param argus  Argus context
- */
-void argus_print_error_stack(const argus_t *argus);
-
-/**
  * argus_strerror - Get string description of an error code
  *
  * @param error  Error code
@@ -74,34 +68,53 @@ void argus_print_error_stack(const argus_t *argus);
 const char *argus_strerror(argus_error_type_t error);
 
 /* Forward declaration of internal function */
-argus_error_context_t get_error_context(argus_t *argus);
-void                  argus_push_error(argus_t *argus, argus_error_t error);
 
 #include <stdarg.h>
 #include <stdio.h>
 
-#define ARGUS_OK() ((argus_error_t){.code = ARGUS_SUCCESS})
 
-/* Functions that implement the actual error handling logic */
-static inline void argus_collect_error(argus_t *argus, int code, const char *fmt, ...)
+static inline void argus_struct_error(argus_option_t *option, const char *fmt, ...)
 {
-    argus_error_t error;
-    va_list       args;
-
-    error.code    = code;
-    error.context = get_error_context(argus);
-
+    fprintf(stderr, "%s:%d -> ", option->file, option->line);
+    switch (option->type)
+    {
+    case TYPE_OPTION:
+        fprintf(stderr, "Option [ "); break;
+    case TYPE_GROUP:
+        fprintf(stderr, "Group [ "); break;
+    case TYPE_POSITIONAL:
+        fprintf(stderr, "Positional [ "); break;
+    case TYPE_SUBCOMMAND:
+        fprintf(stderr, "Subcommand [ "); break;
+    case TYPE_NONE:
+        fprintf(stderr, "Unknown [ "); break;
+    default: break;
+    }
+    if (option->name == NULL)
+        fprintf(stderr, "unnamed");
+    else if (option->type == TYPE_OPTION)
+    {
+        if (option->lname)
+            fprintf(stderr, "--%s", option->lname);
+        if (option->sname) 
+            fprintf(stderr, " -%c", option->sname);
+    }
+    else
+        fprintf(stderr, "%s", option->name);
+    fprintf(stderr, " ]:\n\t");
+        
+    va_list args;
     va_start(args, fmt);
-    vsnprintf(error.message, ARGUS_MAX_ERROR_MESSAGE_SIZE, fmt, args);
+    vfprintf(stderr, fmt, args);
+    fprintf(stderr, "\n");
     va_end(args);
-
-    argus_push_error(argus, error);
 }
 
-static inline void argus_report_error(argus_t *argus, const char *fmt, ...)
+static inline void argus_parsing_error(argus_t *argus, argus_error_type_t errno, const char *fmt, ...)
 {
     va_list args;
 
+    argus->errno = (int)errno;
     fprintf(stderr, "%s: ", argus->program_name);
 
     va_start(args, fmt);
@@ -109,23 +122,16 @@ static inline void argus_report_error(argus_t *argus, const char *fmt, ...)
     va_end(args);
 
     fprintf(stderr, "\n");
-    argus->error_stack.count++;
 }
 
 /**
- * ARGUS_COLLECT_ERROR - Collect an error in the error stack
- * This version uses an inline function to handle the variadic arguments correctly
+ * ARGUS_STRUCT_ERROR - Report a structure error
  */
-#define ARGUS_COLLECT_ERROR(argus, code, ...) argus_collect_error(argus, code, __VA_ARGS__)
+#define ARGUS_STRUCT_ERROR(option, ...) argus_struct_error(option, __VA_ARGS__)
 
 /**
- * ARGUS_REPORT_ERROR - Report an error and return
- * This version uses an inline function to handle the variadic arguments correctly
+ * ARGUS_PARSING_ERROR - Report a parsing error
  */
-#define ARGUS_REPORT_ERROR(argus, code, ...)                                                       \
-    do {                                                                                           \
-        argus_report_error(argus, __VA_ARGS__);                                                    \
-        return (code);                                                                             \
-    } while (0)
+#define ARGUS_PARSING_ERROR(argus, errno, ...) argus_parsing_error(argus, errno, __VA_ARGS__)
 
 #endif /* ARGUS_ERRORS_H */

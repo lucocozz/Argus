@@ -3,7 +3,6 @@
 #include "argus/errors.h"
 #include "argus/internal/utils.h"
 #include "argus/internal/parsing.h"
-#include "argus/internal/context.h"
 #include "argus.h"
 
 // Options for tests
@@ -55,32 +54,28 @@ void setup_parsing(void)
 {
     test_argus.program_name = "test_program";
     test_argus.options = parse_options;
-    test_argus.error_stack.count = 0;
-    context_init(&test_argus);
+    test_argus.errno = 0;
 }
 
 void setup_subcmd_parsing(void)
 {
     test_argus.program_name = "test_program";
     test_argus.options = cmd_options;
-    test_argus.error_stack.count = 0;
-    context_init(&test_argus);
+    test_argus.errno = 0;
 }
 
 void setup_ambiguous_parsing(void)
 {
     test_argus.program_name = "test_program";
     test_argus.options = ambiguous_cmd_options;
-    test_argus.error_stack.count = 0;
-    context_init(&test_argus);
+    test_argus.errno = 0;
 }
 
 void setup_remove_parsing(void)
 {
     test_argus.program_name = "test_program";
     test_argus.options = remove_cmd_options;
-    test_argus.error_stack.count = 0;
-    context_init(&test_argus);
+    test_argus.errno = 0;
 }
 
 // Test for handle_long_option
@@ -94,7 +89,7 @@ Test(parsing, handle_long_option, .init = setup_parsing)
     int result = handle_long_option(&test_argus, parse_options, "output=test.txt", argv, argc, &current_index);
     
     cr_assert_eq(result, ARGUS_SUCCESS, "Long option with value should be handled successfully");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors should be reported");
+    cr_assert_eq(test_argus.errno, 0, "No errors should be reported");
     
     // Verify that option was correctly set
     argus_option_t *option = find_option_by_name(parse_options, "output");
@@ -113,7 +108,7 @@ Test(parsing, handle_short_option, .init = setup_parsing)
     int result = handle_short_option(&test_argus, parse_options, "o", argv, argc, &current_index);
     
     cr_assert_eq(result, ARGUS_SUCCESS, "Short option with value should be handled successfully");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors should be reported");
+    cr_assert_eq(test_argus.errno, 0, "No errors should be reported");
     cr_assert_eq(current_index, 2, "Index should be advanced to next argument");
     
     // Verify that option was correctly set
@@ -129,7 +124,7 @@ Test(parsing, handle_positional, .init = setup_parsing)
     int result = handle_positional(&test_argus, parse_options, "input.txt", 0);
     
     cr_assert_eq(result, ARGUS_SUCCESS, "Positional argument should be handled successfully");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors should be reported");
+    cr_assert_eq(test_argus.errno, 0, "No errors should be reported");
     
     // Verify that option was correctly set
     argus_option_t *option = find_option_by_name(parse_options, "input");
@@ -165,19 +160,19 @@ Test(parsing, find_subcommand_ambiguous, .init = setup_ambiguous_parsing)
     cr_assert_eq(result, ARGUS_SUCCESS, "Should successfully find exact match");
     cr_assert_not_null(option, "Should find exact match subcommand");
     cr_assert_str_eq(option->name, "start", "Should find 'start' subcommand");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors for exact match");
+    cr_assert_eq(test_argus.errno, 0, "No errors for exact match");
     
     // Reset error stack
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     // Test ambiguous match - "sta" matches both "start" and "status"
     option = NULL;
     result = find_subcommand(&test_argus, ambiguous_cmd_options, "sta", &option);
     cr_assert_eq(result, ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND, "Should return error for ambiguous match");
-    cr_assert_eq(test_argus.error_stack.count, 1, "Should report one error for ambiguous match");
+    cr_assert_neq(test_argus.errno, 0, "Should report one error for ambiguous match");
     
     // Reset error stack
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     // Test unambiguous partial match - "sto" only matches "stop"
     option = NULL;
@@ -185,7 +180,7 @@ Test(parsing, find_subcommand_ambiguous, .init = setup_ambiguous_parsing)
     cr_assert_eq(result, ARGUS_SUCCESS, "Should successfully find unambiguous partial match");
     cr_assert_not_null(option, "Should find unambiguous partial match");
     cr_assert_str_eq(option->name, "stop", "Should find 'stop' subcommand");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors for unambiguous partial match");
+    cr_assert_eq(test_argus.errno, 0, "No errors for unambiguous partial match");
 }
 
 // Test for remove/remove-all ambiguity
@@ -197,10 +192,10 @@ Test(parsing, find_subcommand_remove_ambiguity, .init = setup_remove_parsing)
     cr_assert_eq(result, ARGUS_SUCCESS, "Should successfully find 'remove'");
     cr_assert_not_null(option, "Should find exact match 'remove' subcommand");
     cr_assert_str_eq(option->name, "remove", "Should find 'remove' subcommand");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors for exact match 'remove'");
+    cr_assert_eq(test_argus.errno, 0, "No errors for exact match 'remove'");
     
     // Reset error stack
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     // Test exact match "remove-all" - should work fine
     option = NULL;
@@ -208,16 +203,16 @@ Test(parsing, find_subcommand_remove_ambiguity, .init = setup_remove_parsing)
     cr_assert_eq(result, ARGUS_SUCCESS, "Should successfully find 'remove-all'");
     cr_assert_not_null(option, "Should find exact match 'remove-all' subcommand");
     cr_assert_str_eq(option->name, "remove-all", "Should find 'remove-all' subcommand");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors for exact match 'remove-all'");
+    cr_assert_eq(test_argus.errno, 0, "No errors for exact match 'remove-all'");
     
     // Reset error stack
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     // Test ambiguous match "rem" - should detect ambiguity
     option = NULL;
     result = find_subcommand(&test_argus, remove_cmd_options, "rem", &option);
     cr_assert_eq(result, ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND, "Should return error for ambiguous 'rem'");
-    cr_assert_eq(test_argus.error_stack.count, 1, "Should report one error for ambiguous 'rem' match");
+    cr_assert_neq(test_argus.errno, 0, "Should report one error for ambiguous 'rem' match");
 }
 
 // Test for handle_subcommand
@@ -236,9 +231,9 @@ Test(parsing, handle_subcommand, .init = setup_subcmd_parsing)
     int result = handle_subcommand(&test_argus, subcmd, argc, argv);
     
     cr_assert_eq(result, ARGUS_SUCCESS, "Subcommand should be handled successfully");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors should be reported");
-    cr_assert_eq(test_argus.context.subcommand_depth, 1, "Subcommand depth should be 1");
-    cr_assert_eq(test_argus.context.subcommand_stack[0], subcmd, "Subcommand should be on the stack");
+    cr_assert_eq(test_argus.errno, 0, "No errors should be reported");
+    cr_assert_eq(test_argus.subcommand_depth, 1, "Subcommand depth should be 1");
+    cr_assert_eq(test_argus.subcommand_stack[0], subcmd, "Subcommand should be on the stack");
     
     // Verify that subcommand option was set
     argus_option_t *debug_option = find_option_by_name(sub_parse_options, "debug");
@@ -255,7 +250,7 @@ Test(parsing, parse_args_basic, .init = setup_parsing)
     int result = parse_args(&test_argus, parse_options, argc - 1, &argv[1]);
     
     cr_assert_eq(result, ARGUS_SUCCESS, "Arguments should be parsed successfully");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors should be reported");
+    cr_assert_eq(test_argus.errno, 0, "No errors should be reported");
     
     // Verify that options were correctly set
     argus_option_t *verbose = find_option_by_name(parse_options, "verbose");
@@ -282,7 +277,7 @@ Test(parsing, parse_args_long_options, .init = setup_parsing)
     int result = parse_args(&test_argus, parse_options, argc - 1, &argv[1]);
     
     cr_assert_eq(result, ARGUS_SUCCESS, "Arguments with long options should be parsed successfully");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors should be reported");
+    cr_assert_eq(test_argus.errno, 0, "No errors should be reported");
     
     // Verify that options were correctly set
     argus_option_t *verbose = find_option_by_name(parse_options, "verbose");
@@ -305,7 +300,7 @@ Test(parsing, parse_args_end_options, .init = setup_parsing)
     int result = parse_args(&test_argus, parse_options, argc - 1, &argv[1]);
 
     cr_assert_eq(result, ARGUS_SUCCESS, "Arguments with -- should be parsed successfully");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors should be reported");
+    cr_assert_eq(test_argus.errno, 0, "No errors should be reported");
     
     // Verify that options were correctly set
     argus_option_t *verbose = find_option_by_name(parse_options, "verbose");

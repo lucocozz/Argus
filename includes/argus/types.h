@@ -287,43 +287,6 @@ struct argus_option_s
 #endif
 
 /**
- * Error context - tracks where errors occurred
- */
-typedef struct argus_error_context_s
-{
-    const char *option_name;
-    const char *group_name;
-    const char *subcommand_name;
-} argus_error_context_t;
-
-/**
- * Error structure - contains error details
- */
-#ifndef ARGUS_MAX_ERROR_MESSAGE_SIZE
-    #define ARGUS_MAX_ERROR_MESSAGE_SIZE 256
-#endif
-
-typedef struct argus_error_s
-{
-    argus_error_context_t context;
-    int                   code;
-    char                  message[ARGUS_MAX_ERROR_MESSAGE_SIZE];
-} argus_error_t;
-
-/**
- * Error stack - contains multiple errors
- */
-#ifndef ARGUS_MAX_ERRORS_STACK
-    #define ARGUS_MAX_ERRORS_STACK 16
-#endif
-
-typedef struct argus_error_stack_s
-{
-    argus_error_t errors[ARGUS_MAX_ERRORS_STACK];
-    size_t        count;
-} argus_error_stack_t;
-
-/**
  * argus_s - Main library context
  */
 struct argus_s
@@ -333,17 +296,12 @@ struct argus_s
     const char *version;
     const char *description;
     const char *env_prefix;
+    int         errno;
 
     /* Internal fields - do not access directly */
-    argus_option_t     *options;
-    argus_error_stack_t error_stack;
-    struct
-    {
-        const char           *option;
-        const char           *group;
+    argus_option_t       *options;
     const argus_option_t *subcommand_stack[MAX_SUBCOMMAND_DEPTH];
     size_t                subcommand_depth;
-    } context;
 };
 
 #endif /* ARGUS_TYPES_H */

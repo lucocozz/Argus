@@ -75,8 +75,8 @@ int int_divisible_validator(argus_t *argus, void *option_ptr, validator_data_t d
     int value = option->value.as_int;
     
     if (value % divisor != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "Value must be divisible by %d", divisor);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be divisible by %d", divisor);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     return ARGUS_SUCCESS;
@@ -89,19 +89,19 @@ int domain_validator(argus_t *argus, void *option_ptr, validator_data_t data)
     const char *email = option->value.as_string;
 
     if (domain == NULL) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INTERNAL, 
-                          "Internal error: Domain validator requires a domain");
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INTERNAL, "Internal error: Domain validator requires a domain");
+        return ARGUS_ERROR_INTERNAL;
     }
 
     const char *at = strchr(email, '@');
     if (!at) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "Email must contain '@' symbol");
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Email must contain '@' symbol");
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     if (strcmp(at + 1, domain) != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "Email must use the domain '%s'", domain);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Email must use the domain '%s'", domain);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     return ARGUS_SUCCESS;
@@ -125,20 +125,17 @@ int ip_address_validator(argus_t *argus, void *option_ptr, validator_data_t data
         {
             // 10.0.0.0/8
             if ((ipv4 & 0xFF000000) == 0x0A000000) {
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                                  "Private IP addresses are not allowed (10.0.0.0/8)");
+                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Private IP addresses are not allowed (10.0.0.0/8)");
                 return ARGUS_ERROR_INVALID_VALUE;
             }
             // 172.16.0.0/12
             if ((ipv4 & 0xFFF00000) == 0xAC100000) {
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                                  "Private IP addresses are not allowed (172.16.0.0/12)");
+                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Private IP addresses are not allowed (172.16.0.0/12)");
                 return ARGUS_ERROR_INVALID_VALUE;
             }
             // 192.168.0.0/16
             if ((ipv4 & 0xFFFF0000) == 0xC0A80000) {
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                                  "Private IP addresses are not allowed (192.168.0.0/16)");
+                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Private IP addresses are not allowed (192.168.0.0/16)");
                 return ARGUS_ERROR_INVALID_VALUE;
             }
         }
@@ -151,8 +148,7 @@ int ip_address_validator(argus_t *argus, void *option_ptr, validator_data_t data
             return ARGUS_SUCCESS;
     }
     
-    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                      config->allow_ipv6 ? 
+    ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, config->allow_ipv6 ? 
                       "Invalid IP address format (IPv4 or IPv6)" : 
                       "Invalid IPv4 address format");
     
@@ -175,7 +171,7 @@ ARGUS_OPTIONS(
 
     // Built-in choices validator
     OPTION_STRING('l', "log-level", HELP("Log level"), 
-                DEFAULT("info"), 
+                DEFAULT("info"),
                 VALIDATOR(V_CHOICE_STR("debug", "info", "warning", "error"))),
 
     // Custom validator using custom data parameter (int)

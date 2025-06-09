@@ -2,7 +2,6 @@ subdir('parsing')
 subdir('validation')
 
 core_sources = files([
-	'context.c',
 	'error.c',
 ])
 

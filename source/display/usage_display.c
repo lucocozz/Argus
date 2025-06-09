@@ -28,8 +28,8 @@ void display_usage(argus_t *argus, const argus_option_t *command)
     printf("Usage: %s", argus->program_name);
 
     // Add subcommand chain if any
-    for (size_t i = 0; i < argus->context.subcommand_depth; ++i)
-        printf(" %s", argus->context.subcommand_stack[i]->name);
+    for (size_t i = 0; i < argus->subcommand_depth; ++i)
+        printf(" %s", argus->subcommand_stack[i]->name);
 
     printf(" [OPTIONS]");
 

@@ -29,8 +29,8 @@ int even_validator(argus_t *argus, void *option_ptr, validator_data_t data)
     (void)data; // Unused
     
     if (option->value.as_int % 2 != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                         "Value must be even, got %d", option->value.as_int);
+        ARGUS_PARSING_ERROR(argus, "Value must be even, got %d", option->value.as_int);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     return ARGUS_SUCCESS;
 }
@@ -58,14 +58,14 @@ int email_format_validator(argus_t *argus, void *value_ptr, validator_data_t dat
     // Basic format check
     const char *at = strchr(email, '@');
     if (!at) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                         "Email must contain '@' symbol");
+        ARGUS_PARSING_ERROR(argus, "Email must contain '@' symbol");
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
     
     const char *dot = strchr(at, '.');
     if (!dot) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                         "Email domain must contain '.' symbol");
+        ARGUS_PARSING_ERROR(argus, "Email domain must contain '.' symbol");
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
     
     return ARGUS_SUCCESS;
@@ -96,8 +96,8 @@ int divisible_validator(argus_t *argus, void *option_ptr, validator_data_t data)
     int divisor = (int)data.custom;
     
     if (option->value.as_int % divisor != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                         "Value must be divisible by %d", divisor);
+        ARGUS_PARSING_ERROR(argus, "Value must be divisible by %d", divisor);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     return ARGUS_SUCCESS;
 }
@@ -127,13 +127,14 @@ int advanced_range_validator(argus_t *argus, void *option_ptr, validator_data_t 
     int value = option->value.as_int;
     
     if (!config->allow_zero && value == 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Zero not allowed");
+        ARGUS_PARSING_ERROR(argus, "Zero not allowed");
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     if (value < config->min_value || value > config->max_value) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_RANGE,
-                         "Value %d out of range [%d, %d]", 
+        ARGUS_PARSING_ERROR(argus, "Value %d out of range [%d, %d]", 
                          value, config->min_value, config->max_value);
+        return ARGUS_ERROR_INVALID_RANGE;
     }
     
     return ARGUS_SUCCESS;
@@ -166,9 +167,9 @@ int max_greater_than_min_validator(argus_t *argus, void *option_ptr, validator_d
     int min_value = argus_get(*argus, min_option).as_int;
     
     if (max_value <= min_value) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                         "Max value %d must be greater than min value %d",
+        ARGUS_PARSING_ERROR(argus, "Max value %d must be greater than min value %d",
                          max_value, min_value);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     return ARGUS_SUCCESS;
@@ -200,12 +201,13 @@ int company_email_validator(argus_t *argus, void *option_ptr, validator_data_t d
     
     const char *at = strchr(email, '@');
     if (!at) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Invalid email format");
+        ARGUS_PARSING_ERROR(argus, "Invalid email format");
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
     
     if (strcmp(at + 1, required_domain) != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                         "Email must use domain '%s'", required_domain);
+        ARGUS_PARSING_ERROR(argus, "Email must use domain '%s'", required_domain);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     return ARGUS_SUCCESS;
@@ -239,20 +241,20 @@ int case_validator(argus_t *argus, void *value_ptr, validator_data_t data)
     switch (req) {
         case LOWERCASE:
             if (has_upper) {
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                                 "Value must be lowercase only");
+                ARGUS_PARSING_ERROR(argus, "Value must be lowercase only");
+                return ARGUS_ERROR_INVALID_VALUE;
             }
             break;
         case UPPERCASE:
             if (has_lower) {
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                                 "Value must be uppercase only");
+                ARGUS_PARSING_ERROR(argus, "Value must be uppercase only");
+                return ARGUS_ERROR_INVALID_VALUE;
             }
             break;
         case MIXED:
             if (!has_upper || !has_lower) {
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                                 "Value must contain both upper and lowercase");
+                ARGUS_PARSING_ERROR(argus, "Value must contain both upper and lowercase");
+                return ARGUS_ERROR_INVALID_VALUE;
             }
             break;
     }
@@ -284,13 +286,13 @@ int file_exists_validator(argus_t *argus, void *option_ptr, validator_data_t dat
     if (file) fclose(file);
     
     if (must_exist && !exists) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                         "File '%s' does not exist", filepath);
+        ARGUS_PARSING_ERROR(argus, "File '%s' does not exist", filepath);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     if (!must_exist && exists) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                         "File '%s' already exists", filepath);
+        ARGUS_PARSING_ERROR(argus, "File '%s' already exists", filepath);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     return ARGUS_SUCCESS;
@@ -323,9 +325,9 @@ int array_all_positive_validator(argus_t *argus, void *option_ptr, validator_dat
     for (size_t i = 0; i < option->value_count; i++) {
         int value = option->value.as_array[i].as_int;
         if (value <= 0) {
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                             "All values must be positive, got %d at index %zu", 
+            ARGUS_PARSING_ERROR(argus, "All values must be positive, got %d at index %zu", 
                              value, i);
+            return ARGUS_ERROR_INVALID_VALUE;
         }
     }
     
@@ -374,8 +376,8 @@ int descriptive_validator(argus_t *argus, void *option_ptr, validator_data_t dat
     // Single responsibility
     // Clear error messages
     // Proper error codes
-    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                     "Username must start with a letter and contain only alphanumeric characters");
+    ARGUS_PARSING_ERROR(argus, "Username must start with a letter and contain only alphanumeric characters");
+    return ARGUS_ERROR_INVALID_VALUE;
 }
 
 // ✅ Reusable with parameters
@@ -387,7 +389,8 @@ int bad_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 {
     // Too many responsibilities
     // Vague error message
-    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Invalid input");
+    ARGUS_PARSING_ERROR(argus, "Invalid input");
+    return ARGUS_ERROR_INVALID_VALUE;
 }
 ```
 

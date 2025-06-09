@@ -43,8 +43,10 @@ int url_handler(argus_t *argus, argus_option_t *option, char *arg)
     // Don't need to check if arg is NULL here, as argus will handle it
 
     url_t *url = calloc(1, sizeof(url_t));
-    if (!url)
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+    if (!url) {
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        return ARGUS_ERROR_MEMORY;
+    }
 
     // Assigning the value at the beginning for automatic freeing in case of error
     option->value.as_ptr = url;
@@ -53,13 +55,17 @@ int url_handler(argus_t *argus, argus_option_t *option, char *arg)
     char *protocol_end = strstr(arg, "://");
     if (protocol_end) {
         size_t protocol_len = (size_t)(protocol_end - arg);
-        if (!(url->protocol = safe_strndup(arg, protocol_len)))
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        if (!(url->protocol = safe_strndup(arg, protocol_len))) {
+            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+            return ARGUS_ERROR_MEMORY;
+        }
         arg = protocol_end + 3;
     }
     else {
-        if (!(url->protocol = safe_strdup("http")))
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        if (!(url->protocol = safe_strdup("http"))) {
+            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+            return ARGUS_ERROR_MEMORY;
+        }
     }
     
     char *host_end = strchr(arg, '/');
@@ -74,8 +80,10 @@ int url_handler(argus_t *argus, argus_option_t *option, char *arg)
         url->port = (strcmp(url->protocol, "https") == 0) ? 443 : 80;
     }
     
-    if (!(url->host = safe_strndup(arg, host_len)))
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+    if (!(url->host = safe_strndup(arg, host_len))) {
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        return ARGUS_ERROR_MEMORY;
+    }
     
     arg = host_end ? host_end : (arg + strlen(arg));
     
@@ -85,17 +93,22 @@ int url_handler(argus_t *argus, argus_option_t *option, char *arg)
         if (query_start) {
             if (!(url->path = safe_strndup(arg, query_start - arg)) ||
                 !(url->query = safe_strdup(query_start + 1))) {
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+                return ARGUS_ERROR_MEMORY;
             }
         }
         else {
-            if (!(url->path = safe_strdup(arg)))
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+            if (!(url->path = safe_strdup(arg))) {
+                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+                return ARGUS_ERROR_MEMORY;
+            }
         }
     }
     else {
-        if (!(url->path = safe_strdup("/")))
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        if (!(url->path = safe_strdup("/"))) {
+            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+            return ARGUS_ERROR_MEMORY;
+        }
     }
 
     return ARGUS_SUCCESS;

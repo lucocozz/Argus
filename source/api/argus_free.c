@@ -12,8 +12,8 @@ static void free_options(argus_option_t *options)
 void argus_free(argus_t *argus)
 {
     free_options(argus->options);
-    for (size_t i = 0; i < argus->context.subcommand_depth; ++i) {
-        const argus_option_t *subcommand = argus->context.subcommand_stack[i];
+    for (size_t i = 0; i < argus->subcommand_depth; ++i) {
+        const argus_option_t *subcommand = argus->subcommand_stack[i];
         argus_option_t       *options    = subcommand->sub_options;
         free_options(options);
     }
