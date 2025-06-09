@@ -17,7 +17,7 @@ static argus_t test_argus;
 void setup(void)
 {
     test_argus.program_name = "test_prog";
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
 }
 
 Test(validators, range_validator_valid, .init = setup)
@@ -37,7 +37,7 @@ Test(validators, range_validator_valid, .init = setup)
     cr_assert_eq(range_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Middle value should be valid");
     option.value = val3;
     cr_assert_eq(range_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Max value should be valid");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors should be reported for valid values");
+    cr_assert_eq(test_argus.errno, 0, "No errors should be reported for valid values");
 }
 
 Test(validators, range_validator_invalid, .init = setup)
@@ -52,14 +52,14 @@ Test(validators, range_validator_invalid, .init = setup)
     
     option.value = val1;
     cr_assert_neq(range_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Value below min should fail");
-    cr_assert_eq(test_argus.error_stack.count, 1, "Error should be reported for value below min");
+    cr_assert_neq(test_argus.errno, 0, "Error should be reported for value below min");
     
     // Reset error stack
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     option.value = val2;
     cr_assert_neq(range_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Value above max should fail");
-    cr_assert_eq(test_argus.error_stack.count, 1, "Error should be reported for value above max");
+    cr_assert_neq(test_argus.errno, 0, "Error should be reported for value above max");
 }
 
 Test(validators, range_validator_equal_bounds, .init = setup)
@@ -79,7 +79,7 @@ Test(validators, range_validator_equal_bounds, .init = setup)
     
     option.value = val2;
     cr_assert_neq(range_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Value below equal bounds should fail");
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     option.value = val3;
     cr_assert_neq(range_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Value above equal bounds should fail");
@@ -111,7 +111,7 @@ Test(validators, range_validator_negative_values, .init = setup)
     
     option.value = val4;
     cr_assert_neq(range_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Value below negative min should fail");
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     option.value = val5;
     cr_assert_neq(range_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Value above negative max should fail");
@@ -135,11 +135,11 @@ Test(validators, regex_validator_basic, .init = setup)
     // Invalid cases
     cr_assert_neq(regex_validator(&test_argus, "abc", (validator_data_t){.regex = data}), ARGUS_SUCCESS,
                  "Letters should not match digit pattern");
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     cr_assert_neq(regex_validator(&test_argus, "123abc", (validator_data_t){.regex = data}), ARGUS_SUCCESS,
                  "Mixed content should not match digit pattern");
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     cr_assert_neq(regex_validator(&test_argus, "", (validator_data_t){.regex = data}), ARGUS_SUCCESS,
                  "Empty string should not match digit pattern");
@@ -162,11 +162,11 @@ Test(validators, regex_validator_email, .init = setup)
     // Invalid cases
     cr_assert_neq(regex_validator(&test_argus, "test", (validator_data_t){.regex = data}), ARGUS_SUCCESS,
                  "String without @ should not match email pattern");
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     cr_assert_neq(regex_validator(&test_argus, "test@", (validator_data_t){.regex = data}), ARGUS_SUCCESS,
                  "Partial email should not match pattern");
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     cr_assert_neq(regex_validator(&test_argus, "test@example", (validator_data_t){.regex = data}), ARGUS_SUCCESS,
                  "Email without domain extension should not match pattern");
@@ -182,7 +182,7 @@ Test(validators, regex_validator_null_cases, .init = setup)
     
     cr_assert_neq(regex_validator(&test_argus, "test", (validator_data_t){.regex = null_pattern}), ARGUS_SUCCESS,
                  "NULL pattern should fail");
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     // Valid pattern with NULL value
     regex_data_t valid_pattern = {
@@ -212,7 +212,7 @@ Test(validators, length_validator_valid, .init = setup)
     cr_assert_eq(length_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Middle length should be valid");
     option.value = val3;
     cr_assert_eq(length_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Max length should be valid");
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors should be reported for valid lengths");
+    cr_assert_eq(test_argus.errno, 0, "No errors should be reported for valid lengths");
 }
 
 Test(validators, length_validator_invalid, .init = setup)
@@ -227,14 +227,14 @@ Test(validators, length_validator_invalid, .init = setup)
     
     option.value = val1;
     cr_assert_neq(length_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Length below min should fail");
-    cr_assert_eq(test_argus.error_stack.count, 1, "Error should be reported for length below min");
+    cr_assert_neq(test_argus.errno, 0, "Error should be reported for length below min");
     
     // Reset error stack
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     option.value = val2;
     cr_assert_neq(length_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Length above max should fail");
-    cr_assert_eq(test_argus.error_stack.count, 1, "Error should be reported for length above max");
+    cr_assert_neq(test_argus.errno, 0, "Error should be reported for length above max");
 }
 
 Test(validators, length_validator_edge_cases, .init = setup)
@@ -251,7 +251,7 @@ Test(validators, length_validator_edge_cases, .init = setup)
     argus_value_t val2 = {.as_string = NULL};
     option.value = val2;
     cr_assert_neq(length_validator(&test_argus, &option, data), ARGUS_SUCCESS, "NULL string should fail");
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     // Test with exact same min and max
     validator_data_t data2 = {.range = {.min = 5, .max = 5}};
@@ -277,7 +277,7 @@ Test(validators, count_validator_valid, .init = setup)
     option.value_count = 5;  // Max count
     cr_assert_eq(count_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Max count should be valid");
     
-    cr_assert_eq(test_argus.error_stack.count, 0, "No errors should be reported for valid counts");
+    cr_assert_eq(test_argus.errno, 0, "No errors should be reported for valid counts");
 }
 
 Test(validators, count_validator_invalid, .init = setup)
@@ -289,14 +289,14 @@ Test(validators, count_validator_invalid, .init = setup)
     // Invalid cases
     option.value_count = 0;  // Below min
     cr_assert_neq(count_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Count below min should fail");
-    cr_assert_eq(test_argus.error_stack.count, 1, "Error should be reported for count below min");
+    cr_assert_neq(test_argus.errno, ARGUS_SUCCESS, "Error should be reported for count below min");
     
     // Reset error stack
-    test_argus.error_stack.count = 0;
+    test_argus.errno = 0;
     
     option.value_count = 6;  // Above max
     cr_assert_neq(count_validator(&test_argus, &option, data), ARGUS_SUCCESS, "Count above max should fail");
-    cr_assert_eq(test_argus.error_stack.count, 1, "Error should be reported for count above max");
+    cr_assert_neq(test_argus.errno, 0, "Error should be reported for count above max");
 }
 
 Test(validators, count_validator_zero_allowed, .init = setup)

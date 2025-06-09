@@ -677,8 +677,8 @@ static void print_help_sections(argus_t *argus, help_data_t *data)
         print_subcommand_list(argus, data->subcommands, OPTION_INDENT);
 
         printf("\nRun '%s", argus->program_name);
-        for (size_t i = 0; i < argus->context.subcommand_depth; ++i)
-            printf(" %s", argus->context.subcommand_stack[i]->name);
+        for (size_t i = 0; i < argus->subcommand_depth; ++i)
+            printf(" %s", argus->subcommand_stack[i]->name);
         printf(" COMMAND --help' for more information on a command.\n");
     }
 }

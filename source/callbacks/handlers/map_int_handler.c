@@ -19,15 +19,17 @@ static int set_kv_pair(argus_t *argus, argus_option_t *option, char *pair)
     // Find the separator '='
     char *separator = strchr(pair, '=');
     if (separator == NULL) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                           "Invalid key-value format, expected 'key=value': '%s'", pair);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
+                            "Invalid key-value format, expected 'key=value': '%s'", pair);
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
 
     // Split the string at the separator
     char *key = safe_strndup(pair, separator - pair);
     if (key == NULL) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
-                           key);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
+                            key);
+        return ARGUS_ERROR_MEMORY;
     }
     char *value = separator + 1;
 
@@ -37,8 +39,9 @@ static int set_kv_pair(argus_t *argus, argus_option_t *option, char *pair)
 
     // Check if conversion was successful
     if (*value == '\0' || *endptr != '\0') {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                           "Invalid integer value for key '%s': '%s'", key, value);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
+                            "Invalid integer value for key '%s': '%s'", key, value);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
 
     // Check if the key already exists
@@ -69,8 +72,10 @@ int map_int_handler(argus_t *argus, argus_option_t *option, char *value)
     // Process comma-separated pairs
     if (strchr(value, ',') != NULL) {
         char **pairs = split(value, ",");
-        if (pairs == NULL)
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to split string '%s'", value);
+        if (pairs == NULL) {
+            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to split string '%s'", value);
+            return ARGUS_ERROR_MEMORY;
+        }
 
         for (size_t i = 0; pairs[i] != NULL; ++i) {
             int status = set_kv_pair(argus, option, pairs[i]);

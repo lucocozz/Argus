@@ -3,4 +3,5 @@ utils_sources = files([
 	'value_utils.c',
 	'option_lookup.c',
 	'multi_values.c',
+	'stream.c'
 ])

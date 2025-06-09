@@ -6,26 +6,31 @@
 #include "argus/internal/utils.h"
 #include "argus/types.h"
 
-argus_option_t *find_subcommand(argus_t *argus, argus_option_t *options, const char *name)
+int find_subcommand(argus_t *argus, argus_option_t *options, const char *name,
+                    argus_option_t **result)
 {
     argus_option_t *subcommand = NULL;
 
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         if (options[i].type == TYPE_SUBCOMMAND && starts_with(name, options[i].name) != NULL) {
             if (subcommand != NULL) {
-                ARGUS_REPORT_ERROR(argus, ARGUS_AMBIGUOUS_SUBCOMMAND,
-                                   "'%s' is ambigous and could match:\n"
-                                   "  '%s' - %s\n"
-                                   "  '%s' - %s",
-                                   name, subcommand->name, subcommand->help, options[i].name,
-                                   options[i].help);
+                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND,
+                                    "'%s' is ambigous and could match:\n"
+                                    "  '%s' - %s\n"
+                                    "  '%s' - %s",
+                                    name, subcommand->name, subcommand->help, options[i].name,
+                                    options[i].help);
+                return ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND;
             }
-            if (subcommand == NULL && strcmp(name, options[i].name) == 0)
-                return (&options[i]);
+            if (subcommand == NULL && strcmp(name, options[i].name) == 0) {
+                *result = &options[i];
+                return ARGUS_SUCCESS;
+            }
             subcommand = &options[i];
         }
     }
-    return (subcommand);
+    *result = subcommand;
+    return ARGUS_SUCCESS;
 }
 
 int parse_args(argus_t *argus, argus_option_t *options, int argc, char **argv)
@@ -78,9 +83,10 @@ int parse_args(argus_t *argus, argus_option_t *options, int argc, char **argv)
             continue;
         }
 
-        argus_option_t *subcommand = find_subcommand(argus, options, arg);
-        if (subcommand == ARGUS_AMBIGUOUS_SUBCOMMAND)
-            return (ARGUS_ERROR_AMBIGUOUS_SUBCOMMAND);
+        argus_option_t *subcommand = NULL;
+        status                     = find_subcommand(argus, options, arg, &subcommand);
+        if (status != ARGUS_SUCCESS)
+            return status;
         if (subcommand != NULL) {
             status = handle_subcommand(argus, subcommand, argc - i - 1, &argv[i + 1]);
             return (status);

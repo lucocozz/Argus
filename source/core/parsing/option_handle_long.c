@@ -2,7 +2,6 @@
 #include <string.h>
 
 #include "argus/errors.h"
-#include "argus/internal/context.h"
 #include "argus/internal/cross_platform.h"
 #include "argus/internal/parsing.h"
 #include "argus/internal/utils.h"
@@ -20,10 +19,10 @@ int handle_long_option(argus_t *argus, argus_option_t *options, char *arg, char 
 
     argus_option_t *option = find_option_by_lname(options, option_name);
     if (option == NULL) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_ARGUMENT, "Unknown option: '--%s'",
-                           option_name);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_ARGUMENT, "Unknown option: '--%s'",
+                            option_name);
+        return ARGUS_ERROR_INVALID_ARGUMENT;
     }
-    context_set_option(argus, option);
 
     char *value = NULL;
     if (option->value_type != VALUE_TYPE_FLAG) {
@@ -33,8 +32,9 @@ int handle_long_option(argus_t *argus, argus_option_t *options, char *arg, char 
             *current_index += 1;
             value = argv[*current_index];
         } else {
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MISSING_VALUE, "Missing value for option: '--%s'",
-                               option_name);
+            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MISSING_VALUE,
+                                "Missing value for option: '--%s'", option_name);
+            return ARGUS_ERROR_MISSING_VALUE;
         }
     }
 

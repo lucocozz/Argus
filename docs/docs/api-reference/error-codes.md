@@ -106,20 +106,8 @@ if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS) {
 
 ```c
 // In custom handlers/validators
-ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, 
-                  "Invalid endpoint format '%s'", value);
-
-// Error context is automatic (option name, subcommand, etc.)
-```
-
-### Error Stack
-
-```c
-// View all accumulated errors
-argus_print_error_stack(&argus);
-
-// Clear error stack
-argus_clear_errors(&argus);
+ARGUS_PARSING_ERROR(argus, "Invalid endpoint format '%s'", value);
+return ARGUS_ERROR_INVALID_VALUE;
 ```
 
 ## Validation Errors

@@ -105,8 +105,8 @@ int load_env_vars(argus_t *argus)
     if (status != ARGUS_SUCCESS)
         return (status);
 
-    for (size_t i = 0; i < argus->context.subcommand_depth; ++i) {
-        const argus_option_t *subcommand = argus->context.subcommand_stack[i];
+    for (size_t i = 0; i < argus->subcommand_depth; ++i) {
+        const argus_option_t *subcommand = argus->subcommand_stack[i];
         if (subcommand && subcommand->sub_options) {
             status = load_env(argus, subcommand->sub_options);
             if (status != ARGUS_SUCCESS)

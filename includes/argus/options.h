@@ -55,6 +55,7 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
 /*
  * Optional option fields macros
  */
+#define DEBUG_INFO()            .line = __LINE__, .file = __FILE__
 #define DEFINE_NAME(lname, sname) ((lname) ? (lname) : CHAR_TO_STRING(sname))
 #define DEFAULT(val)            .value = (argus_value_t){ .raw = (uintptr_t)(val) },         \
                                 .default_value = (argus_value_t){ .raw = (uintptr_t)(val) }, \
@@ -64,8 +65,8 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
 #define ACTION(fn)              .action = (argus_action_t)(fn)
 #define FREE_HANDLER(fn)        .free_handler = (argus_free_handler_t)(fn)
 #define HINT(_hint)             .hint = _hint
-#define REQUIRE(...)           .requires = (const char*[]){__VA_ARGS__, NULL}
-#define CONFLICT(...)          .conflicts = (const char*[]){__VA_ARGS__, NULL}
+#define REQUIRE(...)            .require = (const char*[]){__VA_ARGS__, NULL}
+#define CONFLICT(...)           .conflict = (const char*[]){__VA_ARGS__, NULL}
 #define GROUP_DESC(desc)        .help = desc
 #define HELP(desc)              .help = desc
 #define FLAGS(_flags)           .flags = _flags
@@ -125,31 +126,31 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
 #define OPTION_END() (argus_option_t){ \
     .type = TYPE_NONE, \
     .name = NULL, \
-    .value_type = VALUE_TYPE_NONE \
+    .value_type = VALUE_TYPE_NONE, \
+    DEBUG_INFO() \
 }
-
 
 #define OPTION_BASE(_short, _long, _value_type, ...)                                          \
     (argus_option_t) {                                                                        \
         .type = TYPE_OPTION, .name = DEFINE_NAME(_long, _short),                              \
         .sname = _short, .lname = _long, .value_type = _value_type,                           \
-        .free_handler = default_free, ##__VA_ARGS__                                           \
+        .free_handler = default_free, DEBUG_INFO(), ##__VA_ARGS__                             \
     }
 
 #define POSITIONAL_BASE(_name, _value_type, ...)                                               \
     (argus_option_t) {                                                                         \
         .type = TYPE_POSITIONAL, .name = _name, .value_type = _value_type,                     \
-        .free_handler = default_free, .flags = FLAG_REQUIRED, ##__VA_ARGS__                    \
+        .free_handler = default_free, .flags = FLAG_REQUIRED, DEBUG_INFO(), ##__VA_ARGS__     \
     }
 
 #define GROUP_BASE(_name, ...)                                                                 \
     (argus_option_t) {                                                                         \
-        .type = TYPE_GROUP, .name = _name, ##__VA_ARGS__                                       \
+        .type = TYPE_GROUP, .name = _name, DEBUG_INFO(), ##__VA_ARGS__                        \
     }
 
 #define SUBCOMMAND_BASE(_name, sub_opts, ...)                                                  \
     (argus_option_t) {                                                                         \
-        .type = TYPE_SUBCOMMAND, .name = _name, .sub_options = sub_opts, ##__VA_ARGS__         \
+        .type = TYPE_SUBCOMMAND, .name = _name, .sub_options = sub_opts, DEBUG_INFO(), ##__VA_ARGS__  \
     }
 
 // clang-format on
