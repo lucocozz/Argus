@@ -15,15 +15,15 @@ ARGUS_OPTIONS(
     // Standard options
     HELP_OPTION(),
     VERSION_OPTION(),
-    
+
     // Flag option with both short and long names
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
-    
+
     // String option with only long name (no short name)
     OPTION_STRING(0, "output", HELP("Output file"), 
                  DEFAULT("output.txt"),
                  HINT("FILE")),
-    
+
     // Integer option with only short name (no long name)
     OPTION_INT('p', NULL, HELP("Port number"), 
                DEFAULT(8080), 
