@@ -41,6 +41,9 @@ ARGUS_API int range_validator(argus_t *argus, void *option_ptr, validator_data_t
 ARGUS_API int length_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 ARGUS_API int count_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 ARGUS_API int regex_validator(argus_t *argus, void *value_ptr, validator_data_t data);
+ARGUS_API int choices_string_validator(argus_t *argus, void *option_ptr, validator_data_t data);
+ARGUS_API int choices_int_validator(argus_t *argus, void *option_ptr, validator_data_t data);
+ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 
 /*
  * Support macro for character to string conversion
@@ -52,6 +55,7 @@ ARGUS_API int regex_validator(argus_t *argus, void *value_ptr, validator_data_t 
 /*
  * Optional option fields macros
  */
+#define DEBUG_INFO()            .line = __LINE__, .file = __FILE__
 #define DEFINE_NAME(lname, sname) ((lname) ? (lname) : CHAR_TO_STRING(sname))
 #define DEFAULT(val)            .value = (argus_value_t){ .raw = (uintptr_t)(val) },         \
                                 .default_value = (argus_value_t){ .raw = (uintptr_t)(val) }, \
@@ -61,8 +65,8 @@ ARGUS_API int regex_validator(argus_t *argus, void *value_ptr, validator_data_t 
 #define ACTION(fn)              .action = (argus_action_t)(fn)
 #define FREE_HANDLER(fn)        .free_handler = (argus_free_handler_t)(fn)
 #define HINT(_hint)             .hint = _hint
-#define REQUIRES(...)           .requires = (const char*[]){__VA_ARGS__, NULL}
-#define CONFLICTS(...)          .conflicts = (const char*[]){__VA_ARGS__, NULL}
+#define REQUIRE(...)            .require = (const char*[]){__VA_ARGS__, NULL}
+#define CONFLICT(...)           .conflict = (const char*[]){__VA_ARGS__, NULL}
 #define GROUP_DESC(desc)        .help = desc
 #define HELP(desc)              .help = desc
 #define FLAGS(_flags)           .flags = _flags
@@ -92,20 +96,29 @@ ARGUS_API int regex_validator(argus_t *argus, void *value_ptr, validator_data_t 
 #define V_REGEX(re) \
     MAKE_VALIDATOR(regex_validator, ((validator_data_t){ .regex = (re) }), ORDER_PRE)
 
-/*
- * Choice macros for different types
- */
-#define CHOICES_INT(...) \
-    .choices = (argus_value_t){ .as_array_int = (long long[]){ __VA_ARGS__ } }, \
-    .choices_count = sizeof((long long[]){ __VA_ARGS__ }) / sizeof(long long)
+#define V_CHOICE_STR(...) \
+    MAKE_VALIDATOR(choices_string_validator, \
+        ((validator_data_t){ .choices = { \
+            .as_strings = (char*[]){ __VA_ARGS__ }, \
+            .count = sizeof((char*[]){ __VA_ARGS__ }) / sizeof(char*), \
+            .type = VALUE_TYPE_STRING \
+        }}), ORDER_POST)
 
-#define CHOICES_STRING(...) \
-    .choices = (argus_value_t){ .as_array_string = (char*[]){ __VA_ARGS__ } }, \
-    .choices_count = sizeof((char*[]){ __VA_ARGS__ }) / sizeof(char*)
+#define V_CHOICE_INT(...) \
+    MAKE_VALIDATOR(choices_int_validator, \
+        ((validator_data_t){ .choices = { \
+            .as_ints = (long long[]){ __VA_ARGS__ }, \
+            .count = sizeof((long long[]){ __VA_ARGS__ }) / sizeof(long long), \
+            .type = VALUE_TYPE_INT \
+        }}), ORDER_POST)
 
-#define CHOICES_FLOAT(...) \
-    .choices = (argus_value_t){ .as_float_array = (double[]){ __VA_ARGS__ } }, \
-    .choices_count = sizeof((double[]){ __VA_ARGS__ }) / sizeof(double)
+#define V_CHOICE_FLOAT(...) \
+    MAKE_VALIDATOR(choices_float_validator, \
+        ((validator_data_t){ .choices = { \
+            .as_floats = (double[]){ __VA_ARGS__ }, \
+            .count = sizeof((double[]){ __VA_ARGS__ }) / sizeof(double), \
+            .type = VALUE_TYPE_FLOAT \
+        }}), ORDER_POST)
 
 /*
  * Base option definition macros
@@ -113,31 +126,31 @@ ARGUS_API int regex_validator(argus_t *argus, void *value_ptr, validator_data_t 
 #define OPTION_END() (argus_option_t){ \
     .type = TYPE_NONE, \
     .name = NULL, \
-    .value_type = VALUE_TYPE_NONE \
+    .value_type = VALUE_TYPE_NONE, \
+    DEBUG_INFO() \
 }
-
 
 #define OPTION_BASE(_short, _long, _value_type, ...)                                          \
     (argus_option_t) {                                                                        \
         .type = TYPE_OPTION, .name = DEFINE_NAME(_long, _short),                              \
         .sname = _short, .lname = _long, .value_type = _value_type,                           \
-        .free_handler = default_free, ##__VA_ARGS__                                           \
+        .free_handler = default_free, DEBUG_INFO(), ##__VA_ARGS__                             \
     }
 
 #define POSITIONAL_BASE(_name, _value_type, ...)                                               \
     (argus_option_t) {                                                                         \
         .type = TYPE_POSITIONAL, .name = _name, .value_type = _value_type,                     \
-        .free_handler = default_free, .flags = FLAG_REQUIRED, ##__VA_ARGS__                    \
+        .free_handler = default_free, .flags = FLAG_REQUIRED, DEBUG_INFO(), ##__VA_ARGS__     \
     }
 
 #define GROUP_BASE(_name, ...)                                                                 \
     (argus_option_t) {                                                                         \
-        .type = TYPE_GROUP, .name = _name, ##__VA_ARGS__                                       \
+        .type = TYPE_GROUP, .name = _name, DEBUG_INFO(), ##__VA_ARGS__                        \
     }
 
 #define SUBCOMMAND_BASE(_name, sub_opts, ...)                                                  \
     (argus_option_t) {                                                                         \
-        .type = TYPE_SUBCOMMAND, .name = _name, .sub_options = sub_opts, ##__VA_ARGS__         \
+        .type = TYPE_SUBCOMMAND, .name = _name, .sub_options = sub_opts, DEBUG_INFO(), ##__VA_ARGS__  \
     }
 
 // clang-format on

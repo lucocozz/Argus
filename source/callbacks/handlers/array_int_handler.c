@@ -93,8 +93,9 @@ static int set_value(argus_t *argus, argus_option_t *option, char *value)
     int_argus_range_t range;
 
     if (parse_int_range(&range, value) != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                           "Invalid integer or range format: '%s'", value);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
+                            "Invalid integer or range format: '%s'", value);
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
     add_range_values(option, &range);
     return (ARGUS_SUCCESS);
@@ -112,7 +113,8 @@ int array_int_handler(argus_t *argus, argus_option_t *option, char *value)
     if (strchr(value, ',') != NULL) {
         char **splited_values = split(value, ",");
         if (splited_values == NULL) {
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to split string '%s'", value);
+            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to split string '%s'", value);
+            return ARGUS_ERROR_MEMORY;
         }
 
         for (size_t i = 0; splited_values[i] != NULL; ++i) {

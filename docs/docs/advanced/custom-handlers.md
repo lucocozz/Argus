@@ -17,7 +17,7 @@ int handler_function(argus_t *argus, argus_option_t *option, char *arg);
 
 **Return values:**
 - `ARGUS_SUCCESS` (0) - Parsing succeeded
-- Error code - Parsing failed (use `ARGUS_REPORT_ERROR`)
+- Error code - Parsing failed (use `ARGUS_PARSING_ERROR` and return error code)
 
 ## Basic Custom Handler
 
@@ -40,7 +40,8 @@ int endpoint_handler(argus_t *argus, argus_option_t *option, char *arg)
     // Allocate structure
     endpoint_t *endpoint = calloc(1, sizeof(endpoint_t));
     if (!endpoint) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        ARGUS_PARSING_ERROR(argus, "Memory allocation failed");
+        return ARGUS_ERROR_MEMORY;
     }
     
     // Store immediately for automatic cleanup
@@ -50,22 +51,23 @@ int endpoint_handler(argus_t *argus, argus_option_t *option, char *arg)
     // Find separator
     char *colon = strchr(arg, ':');
     if (!colon) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, 
-                          "Invalid format '%s' (expected host:port)", arg);
+        ARGUS_PARSING_ERROR(argus, "Invalid format '%s' (expected host:port)", arg);
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
     
     // Extract host
     size_t host_len = colon - arg;
     endpoint->host = strndup(arg, host_len);
     if (!endpoint->host) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        ARGUS_PARSING_ERROR(argus, "Memory allocation failed");
+        return ARGUS_ERROR_MEMORY;
     }
     
     // Extract and validate port
     long port = strtol(colon + 1, NULL, 10);
     if (port <= 0 || port > 65535) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, 
-                          "Invalid port %ld (must be 1-65535)", port);
+        ARGUS_PARSING_ERROR(argus, "Invalid port %ld (must be 1-65535)", port);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     endpoint->port = (int)port;
@@ -193,7 +195,8 @@ int url_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     url_t *url = calloc(1, sizeof(url_t));
     if (!url) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        ARGUS_PARSING_ERROR(argus, "Memory allocation failed");
+        return ARGUS_ERROR_MEMORY;
     }
     
     option->value.as_ptr = url;
@@ -267,7 +270,8 @@ int coordinate_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     coordinate_t *coord = calloc(1, sizeof(coordinate_t));
     if (!coord) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        ARGUS_PARSING_ERROR(argus, "Memory allocation failed");
+        return ARGUS_ERROR_MEMORY;
     }
 
     option->value.as_ptr = coord;
@@ -277,8 +281,8 @@ int coordinate_handler(argus_t *argus, argus_option_t *option, char *arg)
     char *comma = strchr(arg, ',');
     if (!comma) {
         free(coord);
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                          "Invalid format '%s' (expected lat,lon)", arg);
+        ARGUS_PARSING_ERROR(argus, "Invalid format '%s' (expected lat,lon)", arg);
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
     
     // Parse latitude
@@ -286,29 +290,29 @@ int coordinate_handler(argus_t *argus, argus_option_t *option, char *arg)
     coord->latitude = strtod(arg, &endptr);
     if (endptr != comma) {
         free(coord);
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "Invalid latitude value");
+        ARGUS_PARSING_ERROR(argus, "Invalid latitude value");
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     // Parse longitude
     coord->longitude = strtod(comma + 1, &endptr);
     if (*endptr != '\0') {
         free(coord);
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "Invalid longitude value");
+        ARGUS_PARSING_ERROR(argus, "Invalid longitude value");
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     // Validate ranges
     if (coord->latitude < -90.0 || coord->latitude > 90.0) {
         free(coord);
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_RANGE,
-                          "Latitude must be between -90 and 90");
+        ARGUS_PARSING_ERROR(argus, "Latitude must be between -90 and 90");
+        return ARGUS_ERROR_INVALID_RANGE;
     }
     
     if (coord->longitude < -180.0 || coord->longitude > 180.0) {
         free(coord);
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_RANGE,
-                          "Longitude must be between -180 and 180");
+        ARGUS_PARSING_ERROR(argus, "Longitude must be between -180 and 180");
+        return ARGUS_ERROR_INVALID_RANGE;
     }
 
     return ARGUS_SUCCESS;
@@ -327,7 +331,8 @@ int color_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     rgb_color_t *color = calloc(1, sizeof(rgb_color_t));
     if (!color) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        ARGUS_PARSING_ERROR(argus, "Memory allocation failed");
+        return ARGUS_ERROR_MEMORY;
     }
 
     option->value.as_ptr = color;
@@ -342,8 +347,8 @@ int color_handler(argus_t *argus, argus_option_t *option, char *arg)
             unsigned int r, g, b;
             if (sscanf(arg, "%2x%2x%2x", &r, &g, &b) != 3) {
                 free(color);
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                                  "Invalid hex color format");
+                ARGUS_PARSING_ERROR(argus, "Invalid hex color format");
+                return ARGUS_ERROR_INVALID_FORMAT;
             }
             color->r = r; color->g = g; color->b = b;
         } else if (strlen(arg) == 3) {
@@ -351,14 +356,14 @@ int color_handler(argus_t *argus, argus_option_t *option, char *arg)
             unsigned int r, g, b;
             if (sscanf(arg, "%1x%1x%1x", &r, &g, &b) != 3) {
                 free(color);
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                                  "Invalid hex color format");
+                ARGUS_PARSING_ERROR(argus, "Invalid hex color format");
+                return ARGUS_ERROR_INVALID_FORMAT;
             }
             color->r = r * 17; color->g = g * 17; color->b = b * 17;
         } else {
             free(color);
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                              "Hex color must be #RGB or #RRGGBB");
+            ARGUS_PARSING_ERROR(argus, "Hex color must be #RGB or #RRGGBB");
+            return ARGUS_ERROR_INVALID_FORMAT;
         }
     }
     // Handle rgb(r,g,b) format
@@ -366,22 +371,22 @@ int color_handler(argus_t *argus, argus_option_t *option, char *arg)
         int r, g, b;
         if (sscanf(arg, "rgb(%d,%d,%d)", &r, &g, &b) != 3) {
             free(color);
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                              "Invalid rgb() format (expected rgb(r,g,b))");
+            ARGUS_PARSING_ERROR(argus, "Invalid rgb() format (expected rgb(r,g,b))");
+            return ARGUS_ERROR_INVALID_FORMAT;
         }
         
         if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
             free(color);
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_RANGE,
-                              "RGB values must be 0-255");
+            ARGUS_PARSING_ERROR(argus, "RGB values must be 0-255");
+            return ARGUS_ERROR_INVALID_RANGE;
         }
         
         color->r = r; color->g = g; color->b = b;
     }
     else {
         free(color);
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                          "Unsupported color format (use #RRGGBB or rgb(r,g,b))");
+        ARGUS_PARSING_ERROR(argus, "Unsupported color format (use #RRGGBB or rgb(r,g,b))");
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
 
     return ARGUS_SUCCESS;
@@ -403,8 +408,8 @@ int url_format_validator(argus_t *argus, void *value_ptr, validator_data_t data)
     
     // Basic format check before parsing
     if (!strstr(url, "://") && !strchr(url, '/')) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                          "URL must contain protocol or path");
+        ARGUS_PARSING_ERROR(argus, "URL must contain protocol or path");
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
     
     return ARGUS_SUCCESS;
@@ -435,7 +440,8 @@ int safe_handler(argus_t *argus, argus_option_t *option, char *arg)
     // 1. Allocate main structure
     my_type_t *obj = calloc(1, sizeof(my_type_t));
     if (!obj) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Memory allocation failed");
+        ARGUS_PARSING_ERROR(argus, "Memory allocation failed");
+        return ARGUS_ERROR_MEMORY;
     }
     
     // 2. Store immediately for automatic cleanup
@@ -444,11 +450,13 @@ int safe_handler(argus_t *argus, argus_option_t *option, char *arg)
     
     // 3. Parse and validate - can exit immediately on error
     if (parse_step_1(obj, arg) != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Invalid format");
+        ARGUS_PARSING_ERROR(argus, "Invalid format");
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
     
     if (parse_step_2(obj, arg) != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Invalid value");
+        ARGUS_PARSING_ERROR(argus, "Invalid value");
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     return ARGUS_SUCCESS;
@@ -459,22 +467,20 @@ int safe_handler(argus_t *argus, argus_option_t *option, char *arg)
 - Validate input early
 - Set `option->value.as_ptr` and `option->is_allocated = true` early
 - Use specific error codes
-- `ARGUS_REPORT_ERROR` handles cleanup and returns
+- `ARGUS_PARSING_ERROR` reports the error, then return the error code
 
 </TabItem>
 <TabItem value="error-messages" label="Clear Error Messages">
 
 ```c
 // ✅ Good error messages
-ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                  "Invalid endpoint format '%s' (expected host:port)", arg);
+ARGUS_PARSING_ERROR(argus, "Invalid endpoint format '%s' (expected host:port)", arg);
 
-ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_RANGE,
-                  "Port %ld out of range (must be 1-65535)", port);
+ARGUS_PARSING_ERROR(argus, "Port %ld out of range (must be 1-65535)", port);
 
 // ❌ Poor error messages  
-ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Bad input");
-ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Parse error");
+ARGUS_PARSING_ERROR(argus, "Bad input");
+ARGUS_PARSING_ERROR(argus, "Parse error");
 ```
 
 **Guidelines:**
@@ -497,7 +503,8 @@ int simple_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     my_type_t *obj = malloc(sizeof(my_type_t));
     if (!obj) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Allocation failed");
+        ARGUS_PARSING_ERROR(argus, "Allocation failed");
+        return ARGUS_ERROR_MEMORY;
     }
     
     // Store immediately for automatic cleanup
@@ -514,7 +521,8 @@ int complex_handler(argus_t *argus, argus_option_t *option, char *arg)
 {
     complex_type_t *obj = calloc(1, sizeof(complex_type_t));
     if (!obj) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Allocation failed");
+        ARGUS_PARSING_ERROR(argus, "Allocation failed");
+        return ARGUS_ERROR_MEMORY;
     }
     
     // Store immediately for automatic cleanup
@@ -524,12 +532,14 @@ int complex_handler(argus_t *argus, argus_option_t *option, char *arg)
     // Additional allocations
     obj->data = malloc(data_size);
     if (!obj->data) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Data allocation failed");
+        ARGUS_PARSING_ERROR(argus, "Data allocation failed");
+        return ARGUS_ERROR_MEMORY;
     }
     
     obj->name = strdup(parsed_name);
     if (!obj->name) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Name allocation failed");
+        ARGUS_PARSING_ERROR(argus, "Name allocation failed");
+        return ARGUS_ERROR_MEMORY;
     }
     
     return ARGUS_SUCCESS;

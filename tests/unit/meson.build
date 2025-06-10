@@ -1,7 +1,5 @@
 # Unit tests
 unit_tests = [
-  ['context', 'test_core/test_context.c'],
-  ['error', 'test_core/test_error.c'],
   ['strings', 'test_utils/test_strings.c'],
   ['value_utils', 'test_utils/test_value_utils.c'],
   ['option_lookup', 'test_utils/test_option_lookup.c'],
@@ -27,7 +25,6 @@ foreach test : unit_tests
   )
 endforeach
 
-# Special test for release mode
 release_mode_test_sources = files('test_core/test_release_mode.c')
 
 # Build and run the test in normal mode (validation enabled)

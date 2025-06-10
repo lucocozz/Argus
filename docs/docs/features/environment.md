@@ -534,7 +534,7 @@ ARGUS_OPTIONS(
     
     // Environment + choices
     OPTION_STRING('l', "level", ENV_VAR("LOG_LEVEL"),
-                  CHOICES_STRING("debug", "info", "warn", "error"),
+                  VALIDATOR(V_CHOICE_STR("debug", "info", "warn", "error")),
                   DEFAULT("info")),
     
     // Environment + collections

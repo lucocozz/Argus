@@ -11,8 +11,9 @@ void argus_free(argus_t *argus);
 
 int argus_parse(argus_t *argus, int argc, char **argv)
 {
-    int status = parse_args(argus, argus->options, argc - 1, &argv[1]);
-    if (status == ARGUS_SOULD_EXIT) {
+    int status   = parse_args(argus, argus->options, argc - 1, &argv[1]);
+    argus->error_code = status;
+    if (status == ARGUS_SHOULD_EXIT) {
         argus_free(argus);
         exit(ARGUS_SUCCESS);
     }
@@ -20,8 +21,8 @@ int argus_parse(argus_t *argus, int argc, char **argv)
         printf("\n");
         display_usage(argus, NULL);
         printf("\nTry '%s", argus->program_name);
-        for (size_t i = 0; i < argus->context.subcommand_depth; ++i)
-            printf(" %s", argus->context.subcommand_stack[i]->name);
+        for (size_t i = 0; i < argus->subcommand_depth; ++i)
+            printf(" %s", argus->subcommand_stack[i]->name);
         printf(" --help' for more information.\n");
         argus_free(argus);
         return (status);

@@ -442,11 +442,16 @@ void adjust_array_size(argus_option_t *option)
     if (option->value.as_array == NULL) {
         option->value_capacity = MULTI_VALUE_INITIAL_CAPACITY;
         option->value.as_array = malloc(option->value_capacity * sizeof(argus_value_t));
+        if (option->value.as_array == NULL) {
+            option->value_capacity = 0;
+            return;
+        }
     } else if (option->value_count >= option->value_capacity) {
+        size_t old_capacity = option->value_capacity;
         option->value_capacity *= 2;
         void *new = realloc(option->value.as_array, option->value_capacity * sizeof(argus_value_t));
         if (new == NULL) {
-            option->value_capacity /= 2;
+            option->value_capacity = old_capacity;
             return;
         }
         option->value.as_array = new;
@@ -458,11 +463,16 @@ void adjust_map_size(argus_option_t *option)
     if (option->value.as_map == NULL) {
         option->value_capacity = MULTI_VALUE_INITIAL_CAPACITY;
         option->value.as_map   = malloc(option->value_capacity * sizeof(argus_pair_t));
+        if (option->value.as_map == NULL) {
+            option->value_capacity = 0;
+            return;
+        }
     } else if (option->value_count >= option->value_capacity) {
+        size_t old_capacity = option->value_capacity;
         option->value_capacity *= 2;
         void *new = realloc(option->value.as_map, option->value_capacity * sizeof(argus_pair_t));
         if (new == NULL) {
-            option->value_capacity /= 2;
+            option->value_capacity = old_capacity;
             return;
         }
         option->value.as_map = new;

@@ -158,8 +158,8 @@ ARGUS_OPTIONS(options,
     OPTION_INT('p', "port", HELP("Port number"),
               ENV_VAR("PORT"), VALIDATOR(V_RANGE(1, 65535)), DEFAULT(8080)),
     // Choice validation
-    OPTION_STRING('l', "level", HELP("Log level"),
-                 CHOICES_STRING("debug", "info", "warn", "error"), DEFAULT("info"))
+    OPTION_STRING('l', "level", HELP("Log level"), DEFAULT("info"),
+                 VALIDATOR(V_CHOICE_STR("debug", "info", "warn", "error")))
 )
 
 // Usage: ./server --host 0.0.0.0 --port 8080 --level debug
@@ -191,6 +191,15 @@ ARGUS_OPTIONS(options,
 
 - **C11 compatible compiler** (GCC 13+, Clang 14+)
 - **Optional:** PCRE2 for regex validation (disable with `-Dregex=false`)
+
+## Roadmap
+
+- 📄 Config files - JSON/YAML configuration loading
+- 🪶 Lightweight version - Minimal footprint option for embedded systems
+- 🎨 Themed help - Customizable colored help output
+- 📁 Shell completion - Auto-generated tab completion for bash/zsh/fish
+- 🔗 Alias support - Command and option aliases for better UX
+- 📦 Plugin system - Extensibility mechanisms for custom handlers
 
 ## Contributing
 

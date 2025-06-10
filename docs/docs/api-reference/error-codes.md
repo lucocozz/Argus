@@ -106,20 +106,8 @@ if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS) {
 
 ```c
 // In custom handlers/validators
-ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, 
-                  "Invalid endpoint format '%s'", value);
-
-// Error context is automatic (option name, subcommand, etc.)
-```
-
-### Error Stack
-
-```c
-// View all accumulated errors
-argus_print_error_stack(&argus);
-
-// Clear error stack
-argus_clear_errors(&argus);
+ARGUS_PARSING_ERROR(argus, "Invalid endpoint format '%s'", value);
+return ARGUS_ERROR_INVALID_VALUE;
 ```
 
 ## Validation Errors
@@ -152,7 +140,7 @@ OPTION_STRING('e', "email", VALIDATOR(V_REGEX(ARGUS_RE_EMAIL)))
 
 ### Choice Validation
 ```c
-OPTION_STRING('f', "format", CHOICES_STRING("json", "xml"))
+OPTION_STRING('f', "format", VALIDATOR(V_CHOICE_STR("json", "xml")))
 // Error: "Cannot be set to 'pdf'. Choose from ["json", "xml"]"
 ```
 

@@ -103,8 +103,8 @@ FLAGS(flags)                         // Option flags
 ### Dependencies
 
 ```c
-REQUIRES("opt1", "opt2", ...)        // Required dependencies
-CONFLICTS("opt1", "opt2", ...)       // Conflicting options
+REQUIRE("opt1", "opt2", ...)        // Required dependencies
+CONFLICT("opt1", "opt2", ...)       // Conflicting options
 ```
 
 ### Environment Variables
@@ -120,14 +120,9 @@ VALIDATOR(V_RANGE(min, max))         // Range validation
 VALIDATOR(V_LENGTH(min, max))        // String length
 VALIDATOR(V_COUNT(min, max))         // Collection count
 VALIDATOR(V_REGEX(pattern))          // Regex validation
-```
-
-### Choice Validation
-
-```c
-CHOICES_STRING("opt1", "opt2", ...)  // String choices
-CHOICES_INT(1, 2, 3, ...)            // Integer choices
-CHOICES_FLOAT(0.1, 0.5, 1.0, ...)    // Float choices
+VALIDATOR(V_CHOICE_STR("opt1", "opt2", ...))  // String choices
+VALIDATOR(V_CHOICE_INT(1, 2, 3, ...))            // Integer choices
+VALIDATOR(V_CHOICE_FLOAT(0.1, 0.5, 1.0, ...))    // Float choices
 ```
 
 ## Core Types

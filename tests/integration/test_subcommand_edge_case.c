@@ -16,10 +16,16 @@ static bool nested_action_called = false;
 
 // Options for nested subcommand tests
 ARGUS_OPTIONS(
+    foo_options,
+    HELP_OPTION(),
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+    POSITIONAL_INT("value", HELP("A numerical value")),
+)
+
+ARGUS_OPTIONS(
     nested_options,
     HELP_OPTION(),
-    OPTION_FLAG('v', "verbose", HELP("Verbose output in nested command")),
-    POSITIONAL_INT("value", HELP("A numerical value")),
+    SUBCOMMAND("foo", foo_options, HELP("Nested subcommand"), ACTION(test_nested_action)),
 )
 
 // Options for remove subcommand
@@ -36,7 +42,6 @@ ARGUS_OPTIONS(
     add_options,
     HELP_OPTION(),
     OPTION_STRING('m', "message", HELP("Commit message")),
-    SUBCOMMAND("nested", nested_options, HELP("Nested subcommand"), ACTION(test_nested_action)),
     POSITIONAL_STRING("path", HELP("Path to add"), FLAGS(FLAG_OPTIONAL)),
 )
 
@@ -50,6 +55,7 @@ ARGUS_OPTIONS(
     // Subcommands
     SUBCOMMAND("add", add_options, HELP("Add files"), ACTION(test_add_action)),
     SUBCOMMAND("remove", remove_options, HELP("Remove files"), ACTION(test_remove_action)),
+    SUBCOMMAND("nested", nested_options, HELP("Nested subcommand")),
 )
 
 // Options for option format testing
@@ -125,7 +131,7 @@ Test(subcommand_edge, basic_subcommand, .init = setup_subcommand)
 // Test nested subcommand parsing
 Test(subcommand_edge, nested_subcommand, .init = setup_subcommand)
 {
-    char *argv[] = {"test", "add", "nested", "-v", "42"};
+    char *argv[] = {"test", "nested", "foo", "-v", "42"};
     int argc = sizeof(argv) / sizeof(char *);
     
     argus_t argus = argus_init(cmd_options, "test", "1.0.0");
@@ -141,13 +147,33 @@ Test(subcommand_edge, nested_subcommand, .init = setup_subcommand)
     cr_assert(nested_action_called, "Nested action should be called");
     
     // Verify option values
-    cr_assert_eq(argus_get(argus, "add.nested.verbose").as_bool, true, 
+    cr_assert_eq(argus_get(argus, "nested.foo.verbose").as_bool, true,
                 "Nested subcommand flag should be accessible");
-    cr_assert_eq(argus_get(argus, "add.nested.value").as_int, 42, 
+    cr_assert_eq(argus_get(argus, "nested.foo.value").as_int, 42, 
                 "Nested subcommand positional should be accessible");
     
     argus_free(&argus);
 }
+
+// Test execute command without action handler
+Test(subcommand_edge, execute_without_action, .init = setup_subcommand)
+{
+    char *argv[] = {"test", "nested"};
+    int argc = sizeof(argv) / sizeof(char *);
+    
+    argus_t argus = argus_init(cmd_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
+    
+    cr_assert_eq(status, ARGUS_SUCCESS, "Subcommand without action should succeed");
+    cr_assert(argus_has_command(argus), "argus_has_command should return true");
+    
+    // Execute subcommand without action
+    status = argus_exec(&argus, NULL);
+    cr_assert_neq(status, 0, "Subcommand execution without action should fail");
+
+    argus_free(&argus);
+}
+
 
 // Test subcommand with global options
 Test(subcommand_edge, global_options, .init = setup_subcommand)
@@ -199,14 +225,14 @@ Test(subcommand_edge, subcommand_abbreviation, .init = setup_subcommand)
 // Test negative numbers as positional args for subcommands
 Test(subcommand_edge, subcommand_negative_number, .init = setup_subcommand)
 {
-    char *argv[] = {"test", "add", "nested", "-42"};
+    char *argv[] = {"test", "nested", "foo", "-42"};
     int argc = sizeof(argv) / sizeof(char *);
     
     argus_t argus = argus_init(cmd_options, "test", "1.0.0");
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Subcommand with negative number should succeed");
-    cr_assert_eq(argus_get(argus, "add.nested.value").as_int, -42, 
+    cr_assert_eq(argus_get(argus, "nested.foo.value").as_int, -42, 
                 "Negative number should parse correctly");
     
     argus_free(&argus);

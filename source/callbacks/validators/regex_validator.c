@@ -20,12 +20,14 @@ int regex_validator(argus_t *argus, void *value_ptr, validator_data_t data)
 #ifndef ARGUS_REGEX
     (void)(value_ptr);
     (void)(data);
-    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "regex support is not available");
+    ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "regex support is not available");
+    return ARGUS_ERROR_INVALID_VALUE;
 #else
     const char *value   = (const char *)value_ptr;
     const char *pattern = data.regex.pattern;
     if (!pattern) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Regular expression pattern is NULL");
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Regular expression pattern is NULL");
+        return ARGUS_ERROR_INVALID_VALUE;
     }
 
     int         errorcode;
@@ -36,8 +38,9 @@ int regex_validator(argus_t *argus, void *value_ptr, validator_data_t data)
     if (re == NULL) {
         PCRE2_UCHAR buffer[256];
         pcre2_get_error_message(errorcode, buffer, sizeof(buffer));
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Failed to compile regex '%s': %s",
-                           pattern, buffer);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT, "Failed to compile regex '%s': %s",
+                            pattern, buffer);
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
 
     pcre2_match_data *match_data = pcre2_match_data_create_from_pattern(re, NULL);
@@ -50,15 +53,17 @@ int regex_validator(argus_t *argus, void *value_ptr, validator_data_t data)
         switch (rc) {
             case PCRE2_ERROR_NOMATCH:
                 if (data.regex.hint && data.regex.hint[0] != '\0') {
-                    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Invalid value '%s': %s",
-                                       value, data.regex.hint);
+                    ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Invalid value '%s': %s",
+                                        value, data.regex.hint);
                 } else {
-                    ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                                       "Value '%s' does not match the expected format", value);
+                    ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
+                                        "Value '%s' does not match the expected format", value);
                 }
+                return ARGUS_ERROR_INVALID_VALUE;
             default:
-                ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                                   "Internal error: Regex match failed with error code %d", rc);
+                ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
+                                    "Internal error: Regex match failed with error code %d", rc);
+                return ARGUS_ERROR_INVALID_FORMAT;
         }
     }
     return (ARGUS_SUCCESS);

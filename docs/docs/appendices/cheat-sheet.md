@@ -79,8 +79,8 @@ VALIDATOR(V_LENGTH(3, 20))                 // String length
 VALIDATOR(V_COUNT(1, 5))                   // Collection count
 VALIDATOR(V_REGEX(ARGUS_RE_EMAIL))         // Regex pattern
 
-CHOICES_STRING("json", "xml", "yaml")      // String choices
-CHOICES_INT(80, 443, 8080)                // Integer choices
+VALIDATOR(V_CHOICE_STR("json", "xml", "yaml"))      // String choices
+VALIDATOR(V_CHOICE_INT(80, 443, 8080))                // Integer choices
 ```
 
 ## Common Regex Patterns

@@ -56,25 +56,28 @@ static int set_kv_pair(argus_t *argus, argus_option_t *option, char *pair)
     // Find the separator '='
     char *separator = strchr(pair, '=');
     if (separator == NULL) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
-                           "Invalid key-value format, expected 'key=value': '%s'", pair);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_FORMAT,
+                            "Invalid key-value format, expected 'key=value': '%s'", pair);
+        return ARGUS_ERROR_INVALID_FORMAT;
     }
 
     // Split the string at the separator
     char *key = safe_strndup(pair, separator - pair);
     if (key == NULL) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
-                           key);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to allocate memory for key '%s'",
+                            key);
+        return ARGUS_ERROR_MEMORY;
     }
     char *value = separator + 1;
 
     // Convert the string value to boolean
     int bool_value = string_to_bool(value);
     if (bool_value == -1) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                           "Invalid boolean value for key '%s': '%s' (expected true/false, yes/no, "
-                           "1/0, on/off, y/n)",
-                           key, value);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
+                            "Invalid boolean value for key '%s': '%s' (expected true/false, "
+                            "yes/no, 1/0, on/off, y/n)",
+                            key, value);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
 
     // Check if the key already exists
@@ -107,7 +110,8 @@ int map_bool_handler(argus_t *argus, argus_option_t *option, char *value)
     if (strchr(value, ',') != NULL) {
         char **pairs = split(value, ",");
         if (pairs == NULL) {
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to split string '%s'", value);
+            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MEMORY, "Failed to split string '%s'", value);
+            return ARGUS_ERROR_MEMORY;
         }
 
         for (size_t i = 0; pairs[i] != NULL; ++i) {

@@ -11,7 +11,8 @@ int test_even_validator(argus_t *argus, void *option_ptr, validator_data_t data)
     argus_option_t *option = (argus_option_t *)option_ptr;
     int number = option->value.as_int;
     if (number % 2 != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be an even number");
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be an even number");
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     return ARGUS_SUCCESS;
 }
@@ -23,7 +24,8 @@ int test_positive_validator(argus_t *argus, void *option_ptr, validator_data_t d
     argus_option_t *option = (argus_option_t *)option_ptr;
     int number = option->value.as_int;
     if (number <= 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be a positive number");
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be a positive number");
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     return ARGUS_SUCCESS;
 }
@@ -38,8 +40,8 @@ int test_alphanumeric_validator(argus_t *argus, void *option_ptr, validator_data
     
     for (const char* p = str; *p; p++) {
         if (!isalnum(*p)) {
-            ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                              "String must contain only alphanumeric characters");
+            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "String must contain only alphanumeric characters");
+            return ARGUS_ERROR_INVALID_VALUE;
         }
     }
     return ARGUS_SUCCESS;
@@ -53,8 +55,8 @@ int test_divisible_validator(argus_t *argus, void *option_ptr, validator_data_t 
     int value = option->value.as_int;
     
     if (value % divisor != 0) {
-        ARGUS_REPORT_ERROR(argus, ARGUS_ERROR_INVALID_VALUE,
-                          "Value must be divisible by %d", divisor);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_VALUE, "Value must be divisible by %d", divisor);
+        return ARGUS_ERROR_INVALID_VALUE;
     }
     
     return ARGUS_SUCCESS;
@@ -77,7 +79,7 @@ ARGUS_OPTIONS(
                 DEFAULT(8080), VALIDATOR(V_RANGE(1, 65535))),
     OPTION_STRING('l', "level", HELP("Log level"), 
                 DEFAULT("info"), 
-                CHOICES_STRING("debug", "info", "warning", "error")),
+                VALIDATOR(V_CHOICE_STR("debug", "info", "warning", "error"))),
     OPTION_STRING('e', "email", HELP("Email address"), 
                 VALIDATOR(V_REGEX(MAKE_REGEX("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", 
                     "Enter email format")))),
