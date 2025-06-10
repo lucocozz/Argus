@@ -31,10 +31,10 @@ static int validate_default_value(argus_t *argus, argus_option_t *option)
                                    error_message);
                 free(error_message);
                 status = ARGUS_ERROR_INVALID_DEFAULT;
-            }
+            } else
+                restore_stderr();
         }
     }
-
     return (status);
 }
 
