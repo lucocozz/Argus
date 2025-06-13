@@ -1,10 +1,14 @@
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #ifdef ARGUS_REGEX
     #define PCRE2_CODE_UNIT_WIDTH 8
     #include <pcre2.h>
 #endif
 #include "argus/errors.h"
 #include "argus/types.h"
+#include "argus/internal/cross_platform.h"
 
 /**
  * regex_validator - Validate a string value against a regular expression
@@ -68,4 +72,34 @@ int regex_validator(argus_t *argus, void *value_ptr, validator_data_t data)
     }
     return (ARGUS_SUCCESS);
 #endif
+}
+
+char *format_regex_validator(validator_data_t data)
+{
+    const char *pattern = data.regex.pattern;
+    const char *hint = data.regex.hint;
+    
+    // Priority 1: Use hint if available (remove arbitrary length restriction)
+    if (hint && hint[0] != '\0') {
+        char *result = malloc(strlen(hint) + 1);
+        if (result) {
+            strcpy(result, hint);
+        }
+        return result;
+    }
+    
+    // Priority 2: Use pattern directly if short enough
+    if (pattern && pattern[0] != '\0') {
+        size_t pattern_len = strlen(pattern);
+        if (pattern_len <= 15) {
+            char *result = malloc(pattern_len + 1);
+            if (result) {
+                strcpy(result, pattern);
+            }
+            return result;
+        }
+    }
+    
+    // Priority 3: Fallback to generic pattern indicator
+    return safe_strdup("pattern");
 }
