@@ -45,3 +45,8 @@ EXPORTS
     choices_string_validator
     choices_int_validator
     choices_float_validator
+    format_range_validator
+    format_length_validator
+    format_count_validator
+    format_regex_validator
+    format_choices_validator
