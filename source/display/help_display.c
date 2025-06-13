@@ -12,9 +12,7 @@
 #include <stdio.h>
 
 #include "argus/internal/display.h"
-#include "argus/internal/help_formatter.h"
-#include "argus/internal/help_organizer.h"
-#include "argus/internal/help_renderer.h"
+#include "argus/internal/help.h"
 #include "argus/internal/utils.h"
 #include "argus/types.h"
 

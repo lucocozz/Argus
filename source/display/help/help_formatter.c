@@ -15,9 +15,21 @@
 
 #include "argus/internal/cross_platform.h"
 #include "argus/internal/display.h"
-#include "argus/internal/help_formatter.h"
+#include "argus/internal/help.h"
 #include "argus/internal/utils.h"
+#include "argus/options.h"
 #include "argus/types.h"
+
+argus_helper_config_t get_default_helper_config(void)
+{
+    return (argus_helper_config_t) {
+        .max_line_width = DEFAULT_MAX_LINE_WIDTH,
+        .description_column = DEFAULT_DESCRIPTION_COLUMN,
+        .option_indent = DEFAULT_OPTION_INDENT,
+        .smart_hint_max_length = DEFAULT_SMART_HINT_MAX_LENGTH,
+        .smart_hint_allow_spaces = DEFAULT_SMART_HINT_ALLOW_SPACES
+    };
+}
 
 const char *get_base_type_name(argus_valtype_t type)
 {
@@ -55,26 +67,53 @@ char *format_collection_hint(const char *format, const char *type_name)
     return buffer;
 }
 
-void print_value_hint(const argus_option_t *option)
+bool is_short_hint(argus_t *argus, const char *hint)
 {
-    if (option->value_type == VALUE_TYPE_FLAG)
-        return;  // No hint for boolean flags
-
-    // Get the base type name or hint
-    const char *type_name;
-    if (option->hint) {
-        type_name = option->hint;
-    } else {
-        type_name = get_base_type_name(option->value_type);
-    }
-
-    // Get the collection format if applicable
-    const char *collection_format = get_collection_format(option->value_type);
-
-    // Print the formatted hint
-    printf(" <%s>",
-           collection_format ? format_collection_hint(collection_format, type_name) : type_name);
+    if (!hint)
+        return false;
+    
+    size_t len = strlen(hint);
+    bool is_short = len <= argus->helper.config.smart_hint_max_length;
+    bool is_simple = argus->helper.config.smart_hint_allow_spaces || !strchr(hint, ' ');
+    
+    return is_short && is_simple;
 }
+
+bool has_single_validator(const argus_option_t *option)
+{
+    if (!option->validators)
+        return false;
+    
+    int count = 0;
+    for (int i = 0; option->validators[i] != NULL; i++) {
+        count++;
+        if (count > 1)
+            return false;
+    }
+    
+    return count == 1;
+}
+
+char *get_smart_hint(argus_t *argus, const argus_option_t *option)
+{
+    // Priority 1: HINT() override
+    if (option->hint) {
+        return safe_strdup(option->hint);
+    }
+    
+    // Priority 2: Single validator with short format
+    if (has_single_validator(option) && option->validators[0]->formatter) {
+        char *validator_hint = option->validators[0]->formatter(option->validators[0]->data);
+        if (validator_hint && is_short_hint(argus, validator_hint)) {
+            return validator_hint;  // Caller takes ownership
+        }
+        free(validator_hint);  // Free if not used
+    }
+    
+    // Priority 3: Base type name
+    return safe_strdup(get_base_type_name(option->value_type));
+}
+
 
 void print_wrapped_text(const char *text, size_t indent, size_t line_width)
 {
@@ -142,7 +181,7 @@ void print_wrapped_text(const char *text, size_t indent, size_t line_width)
     }
 }
 
-size_t print_option_name(const argus_option_t *option, size_t indent)
+size_t print_option_name(argus_t *argus, const argus_option_t *option, size_t indent)
 {
     size_t name_len = 0;
 
@@ -169,36 +208,32 @@ size_t print_option_name(const argus_option_t *option, size_t indent)
         name_len += 2 + strlen(option->lname);  // "--option"
     }
 
-    // Print value hint
+    // Handle value hint - calculate once, use twice
     if (option->value_type != VALUE_TYPE_FLAG) {
-        print_value_hint(option);
-
-        // Calculate hint length for correct padding
-        const char *type_name;
-        if (option->hint) {
-            type_name = option->hint;
-        } else {
-            type_name = get_base_type_name(option->value_type);
-        }
-
-        // Get the collection format if applicable
-        const char *collection_format = get_collection_format(option->value_type);
-
-        // Calculate length based on whether it's a collection or not
-        if (collection_format) {
-            // Approximate the length for collection format
-            // Format is "KEY=%s,..." or "%s,..."
-            const char *format_str = format_collection_hint(collection_format, type_name);
-            name_len += 3 + strlen(format_str);  // " <hint_format>"
-        } else {
-            name_len += 3 + strlen(type_name);  // " <hint>"
+        // Get smart hint once
+        char *smart_hint = get_smart_hint(argus, option);
+        if (smart_hint) {
+            // Get the collection format if applicable
+            const char *collection_format = get_collection_format(option->value_type);
+            
+            // Print the hint
+            if (collection_format) {
+                const char *format_str = format_collection_hint(collection_format, smart_hint);
+                printf(" <%s>", format_str);
+                name_len += 3 + strlen(format_str);  // " <hint_format>"
+            } else {
+                printf(" <%s>", smart_hint);
+                name_len += 3 + strlen(smart_hint);  // " <hint>"
+            }
+            
+            free(smart_hint);
         }
     }
 
     return name_len;
 }
 
-char *build_option_description(const argus_option_t *option)
+char *build_option_description(argus_t *argus, const argus_option_t *option)
 {
     // Start with help text
     char *description = NULL;
@@ -215,26 +250,64 @@ char *build_option_description(const argus_option_t *option)
         }
     }
 
-    // TODO: Future extension point for validator formatters
-    // This is where we would add validator information like:
-    // - Choices: [opt1, opt2, opt3]
-    // - Range: [1 - 125]
-    // - Regex: pattern /^[a-z]+$/
-    //
-    // Example implementation:
-    // if (option->validators) {
-    //     for (int i = 0; option->validators[i] != NULL; ++i) {
-    //         validator_entry_t *validator = option->validators[i];
-    //         if (validator->formatter) {
-    //             char *validator_desc = validator->formatter(validator->data);
-    //             if (validator_desc) {
-    //                 // Append to description
-    //                 // ...
-    //                 free(validator_desc);
-    //             }
-    //         }
-    //     }
-    // }
+    // Add validator information that didn't go in the hint
+    if (option->validators) {
+        // Check if any validator was actually used in the hint
+        bool validator_used_in_hint = false;
+        if (has_single_validator(option) && !option->hint && option->validators[0]->formatter) {
+            char *validator_hint = option->validators[0]->formatter(option->validators[0]->data);
+            if (validator_hint && is_short_hint(argus, validator_hint)) {
+                validator_used_in_hint = true;
+            }
+            free(validator_hint);
+        }
+        
+        // Show validators in description if:
+        // 1. Multiple validators (complex case)
+        // 2. Single validator but NOT used in hint (too long or other reason)
+        // 3. Has HINT() override (validator info still useful)
+        if (!validator_used_in_hint || !has_single_validator(option) || option->hint) {
+            // Build validator descriptions for complex cases
+            for (int i = 0; option->validators[i] != NULL; ++i) {
+                validator_entry_t *validator = option->validators[i];
+                if (validator->formatter) {
+                    char *validator_desc = validator->formatter(validator->data);
+                    if (validator_desc) {
+                        // Determine description format based on validator type
+                        char validator_info[256] = {0};
+                        
+                        if (validator->func == regex_validator) {
+                            snprintf(validator_info, sizeof(validator_info), " (pattern: %s)", validator_desc);
+                        } else if (validator->func == choices_string_validator || 
+                                 validator->func == choices_int_validator ||
+                                 validator->func == choices_float_validator) {
+                            snprintf(validator_info, sizeof(validator_info), " [%s]", validator_desc);
+                        } else if (validator->func == length_validator) {
+                            snprintf(validator_info, sizeof(validator_info), " (%s characters)", validator_desc);
+                        } else if (validator->func == range_validator) {
+                            snprintf(validator_info, sizeof(validator_info), " (range: %s)", validator_desc);
+                        } else if (validator->func == count_validator) {
+                            snprintf(validator_info, sizeof(validator_info), " (count: %s)", validator_desc);
+                        }
+                        
+                        // Append to description if there's content
+                        if (validator_info[0] != '\0') {
+                            size_t desc_size = strlen(description) + strlen(validator_info) + 1;
+                            char *new_desc = malloc(desc_size);
+                            if (new_desc) {
+                                safe_strcpy(new_desc, desc_size, description);
+                                safe_strcat(new_desc, desc_size, validator_info);
+                                free(description);
+                                description = new_desc;
+                            }
+                        }
+                        
+                        free(validator_desc);
+                    }
+                }
+            }
+        }
+    }
 
     // Append default value if any
     if (option->have_default && option->value_type != VALUE_TYPE_FLAG) {
@@ -307,18 +380,29 @@ char *build_option_description(const argus_option_t *option)
     return description;
 }
 
-void print_option_description(const argus_option_t *option, size_t padding)
+void print_option_description(argus_t *argus, const argus_option_t *option, size_t padding)
 {
-    size_t description_indent = padding < 4 ? DESCRIPTION_COLUMN : padding;
+    // Determine where description starts
+    size_t description_indent = argus->helper.config.description_column;
 
-    if (padding < 4)
+    // If option name is too long, move to next line
+    if (padding < 4) {
         printf("\n");
-    for (size_t i = 0; i < description_indent; ++i)
-        printf(" ");
-    printf("- ");
+        // Indent to description column
+        for (size_t i = 0; i < description_indent; ++i)
+            printf(" ");
+        // Add visual marker
+        printf("- ");
+    } else {
+        // Otherwise, add calculated padding to align description
+        for (size_t i = 0; i < padding; ++i)
+            printf(" ");
+        // Add visual marker
+        printf("- ");
+    }
 
     // Build the complete description
-    char *description = build_option_description(option);
+    char *description = build_option_description(argus, option);
     if (!description) {
         printf("Error: Memory allocation failed\n");
         return;
@@ -326,7 +410,7 @@ void print_option_description(const argus_option_t *option, size_t padding)
 
     // Print the wrapped description
     if (strlen(description) > 0)
-        print_wrapped_text(description, description_indent, MAX_LINE_WIDTH);
+        print_wrapped_text(description, description_indent, argus->helper.config.max_line_width);
 
     free(description);
     printf("\n");

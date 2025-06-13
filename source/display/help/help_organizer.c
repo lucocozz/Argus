@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "argus/internal/help_organizer.h"
+#include "argus/internal/help.h"
 #include "argus/types.h"
 
 option_entry_t *create_option_entry(const argus_option_t *option)
