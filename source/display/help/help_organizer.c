@@ -32,9 +32,9 @@ void add_option_to_list(option_entry_t **list, const argus_option_t *option)
     if (!entry)
         return;
 
-    if (*list == NULL) {
+    if (*list == NULL)
         *list = entry;
-    } else {
+    else {
         option_entry_t *current = *list;
         while (current->next != NULL)
             current = current->next;
@@ -44,7 +44,6 @@ void add_option_to_list(option_entry_t **list, const argus_option_t *option)
 
 group_info_t *find_or_create_group(help_data_t *data, const char *name, const char *description)
 {
-    // First, look for existing group
     group_info_t *group = data->groups;
     while (group != NULL) {
         if (strcmp(group->name, name) == 0)
@@ -52,7 +51,6 @@ group_info_t *find_or_create_group(help_data_t *data, const char *name, const ch
         group = group->next;
     }
 
-    // Create new group
     group = malloc(sizeof(group_info_t));
     if (!group)
         return NULL;
@@ -62,10 +60,9 @@ group_info_t *find_or_create_group(help_data_t *data, const char *name, const ch
     group->options     = NULL;
     group->next        = NULL;
 
-    // Add to list
-    if (data->groups == NULL) {
+    if (data->groups == NULL)
         data->groups = group;
-    } else {
+    else {
         group_info_t *current = data->groups;
         while (current->next != NULL)
             current = current->next;
@@ -88,7 +85,7 @@ void organize_options(const argus_option_t *options, help_data_t *data)
             case TYPE_GROUP:
                 current_group      = option->name;
                 current_group_desc = option->help;
-                group              = NULL;  // Will be created on demand when options are added
+                group              = NULL;
                 break;
 
             case TYPE_OPTION:
@@ -96,7 +93,6 @@ void organize_options(const argus_option_t *options, help_data_t *data)
                     continue;
 
                 if (current_group != NULL) {
-                    // Ensure group exists
                     if (group == NULL)
                         group = find_or_create_group(data, current_group, current_group_desc);
                     add_option_to_list(&group->options, option);
@@ -120,7 +116,6 @@ void organize_options(const argus_option_t *options, help_data_t *data)
 
 void free_help_data(help_data_t *data)
 {
-    // Free groups and their options
     group_info_t *group = data->groups;
     while (group != NULL) {
         option_entry_t *option = group->options;
@@ -135,7 +130,6 @@ void free_help_data(help_data_t *data)
         group = next_group;
     }
 
-    // Free ungrouped options
     option_entry_t *option = data->ungrouped;
     while (option != NULL) {
         option_entry_t *next = option->next;
@@ -143,7 +137,6 @@ void free_help_data(help_data_t *data)
         option = next;
     }
 
-    // Free positionals
     option = data->positionals;
     while (option != NULL) {
         option_entry_t *next = option->next;
@@ -151,7 +144,6 @@ void free_help_data(help_data_t *data)
         option = next;
     }
 
-    // Free subcommands
     option = data->subcommands;
     while (option != NULL) {
         option_entry_t *next = option->next;

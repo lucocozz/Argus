@@ -22,8 +22,8 @@
 /*
  * Default Smart Hint configuration
  */
-#define DEFAULT_SMART_HINT_MAX_LENGTH 20     // Maximum length for short hints
-#define DEFAULT_SMART_HINT_ALLOW_SPACES false // Allow spaces in short hints
+#define DEFAULT_SMART_HINT_MAX_LENGTH   20     // Maximum length for short hints
+#define DEFAULT_SMART_HINT_ALLOW_SPACES false  // Allow spaces in short hints
 
 /**
  * display_help - Display help information
@@ -54,6 +54,5 @@ void display_version(argus_t *argus);
  * @return  Default helper configuration
  */
 argus_helper_config_t get_default_helper_config(void);
-
 
 #endif /* ARGUS_INTERNAL_DISPLAY_H */

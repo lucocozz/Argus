@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include "argus/errors.h"
+#include "argus/internal/cross_platform.h"
+#include "argus/internal/utils.h"
 #include "argus/types.h"
 
 // Forward declaration
@@ -23,8 +25,8 @@ int choices_string_validator(argus_t *argus, void *option_ptr, validator_data_t 
                             option->value.as_string, choices_formatted);
         free(choices_formatted);
     } else {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE, "Value '%s' is not one of the choices",
-                            option->value.as_string);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE,
+                            "Value '%s' is not one of the choices", option->value.as_string);
     }
     return ARGUS_ERROR_INVALID_CHOICE;
 }
@@ -45,8 +47,8 @@ int choices_int_validator(argus_t *argus, void *option_ptr, validator_data_t dat
                             option->value.as_int, choices_formatted);
         free(choices_formatted);
     } else {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE, "Value '%lld' is not one of the choices",
-                            option->value.as_int);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE,
+                            "Value '%lld' is not one of the choices", option->value.as_int);
     }
     return ARGUS_ERROR_INVALID_CHOICE;
 }
@@ -67,17 +69,17 @@ int choices_float_validator(argus_t *argus, void *option_ptr, validator_data_t d
                             option->value.as_float, choices_formatted);
         free(choices_formatted);
     } else {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE, "Value '%f' is not one of the choices",
-                            option->value.as_float);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE,
+                            "Value '%f' is not one of the choices", option->value.as_float);
     }
     return ARGUS_ERROR_INVALID_CHOICE;
 }
 
 char *format_choices_validator(validator_data_t data)
 {
-    choices_data_t *choices = &data.choices;
-    size_t total_length = 0;
-    
+    choices_data_t *choices      = &data.choices;
+    size_t          total_length = 0;
+
     // Calculate total length needed
     for (size_t i = 0; i < choices->count; i++) {
         switch (choices->type) {
@@ -97,36 +99,35 @@ char *format_choices_validator(validator_data_t data)
             total_length += 1;  // For '|' separator
         }
     }
-    
+
     char *result = malloc(total_length + 1);
     if (!result)
         return NULL;
-    
+
     result[0] = '\0';
-    
+
     for (size_t i = 0; i < choices->count; i++) {
         char item[32];
-        
+
         switch (choices->type) {
             case VALUE_TYPE_STRING:
-                strcat(result, choices->as_strings[i]);
+                safe_strcat(result, total_length + 1, choices->as_strings[i]);
                 break;
             case VALUE_TYPE_INT:
                 snprintf(item, sizeof(item), "%lld", choices->as_ints[i]);
-                strcat(result, item);
+                safe_strcat(result, total_length + 1, item);
                 break;
             case VALUE_TYPE_FLOAT:
                 snprintf(item, sizeof(item), "%.2g", choices->as_floats[i]);
-                strcat(result, item);
+                safe_strcat(result, total_length + 1, item);
                 break;
             default:
                 break;
         }
-        
-        if (i < choices->count - 1) {
-            strcat(result, "|");
-        }
+
+        if (i < choices->count - 1)
+            safe_strcat(result, total_length + 1, "|");
     }
-    
+
     return result;
 }

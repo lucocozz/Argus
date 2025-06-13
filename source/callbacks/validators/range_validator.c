@@ -27,7 +27,7 @@ char *format_range_validator(validator_data_t data)
     char *result = malloc(32);
     if (!result)
         return NULL;
-    
+
     snprintf(result, 32, "%lld-%lld", data.range.min, data.range.max);
     return result;
 }

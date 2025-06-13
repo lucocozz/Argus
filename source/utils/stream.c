@@ -8,13 +8,15 @@
     #include <winsock2.h>
     #define write _write
     // Windows doesn't have fcntl, we'll use different approach
-    #define F_GETFL 0
-    #define F_SETFL 0
+    #define F_GETFL    0
+    #define F_SETFL    0
     #define O_NONBLOCK 0
-    static inline int fcntl(int fd, int cmd, ...) {
-        (void)fd; (void)cmd;
-        return 0; // No-op on Windows
-    }
+static inline int fcntl(int fd, int cmd, ...)
+{
+    (void)fd;
+    (void)cmd;
+    return 0;  // No-op on Windows
+}
 #else
     #include <fcntl.h>
     #include <unistd.h>

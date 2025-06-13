@@ -164,7 +164,7 @@ char *build_option_description(argus_t *argus, const argus_option_t *option);
 /**
  * Get smart hint for an option (for testing)
  *
- * @param argus   Argus context  
+ * @param argus   Argus context
  * @param option  Option to get hint for
  * @return        Allocated hint string - caller must free
  */
