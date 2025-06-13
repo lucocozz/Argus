@@ -4,6 +4,7 @@
 
 #include "argus/errors.h"
 #include "argus/types.h"
+#include "argus/internal/display.h"
 
 int validate_structure(argus_t *argus, argus_option_t *options);
 
@@ -15,6 +16,7 @@ argus_t _argus_init_validate(argus_option_t *options, const char *program_name, 
         .version      = version,
         .description  = NULL,
         .env_prefix   = NULL,
+        .helper       = { .config = get_default_helper_config() },
         .options      = options,
     };
 
