@@ -20,6 +20,8 @@
 #include "argus/options.h"
 #include "argus/types.h"
 
+#include <ctype.h>
+
 argus_helper_config_t get_default_helper_config(void)
 {
     return (argus_helper_config_t){.max_line_width          = DEFAULT_MAX_LINE_WIDTH,
@@ -104,6 +106,55 @@ char *get_smart_hint(argus_t *argus, const argus_option_t *option)
     }
 
     return safe_strdup(get_base_type_name(option->value_type));
+}
+
+/**
+ * get_env_var_name_for_display - Get environment variable name for display purposes
+ *
+ * @param argus  Argus context
+ * @param option Option to get env var name for
+ *
+ * @return Environment variable name or NULL if none
+ */
+static const char *get_env_var_name_for_display(argus_t *argus, const argus_option_t *option)
+{
+    static char full_name[128];
+    const char *prefix           = argus->env_prefix ? argus->env_prefix : "";
+    size_t      prefix_len       = strlen(prefix);
+    bool        needs_underscore = prefix_len > 0 && prefix[prefix_len - 1] != '_';
+
+    if (option->env_name) {
+        if (option->flags & FLAG_NO_ENV_PREFIX)
+            return option->env_name;
+
+        if (argus->env_prefix && strncmp(option->env_name, argus->env_prefix, prefix_len) == 0)
+            return option->env_name;
+
+        if (needs_underscore) {
+            snprintf(full_name, sizeof(full_name), "%s_%s", prefix, option->env_name);
+        } else {
+            snprintf(full_name, sizeof(full_name), "%s%s", prefix, option->env_name);
+        }
+        return full_name;
+    }
+
+    if (option->flags & FLAG_AUTO_ENV) {
+        const char *name = option->name ? option->name : (option->lname ? option->lname : "");
+
+        if (option->flags & FLAG_NO_ENV_PREFIX) {
+            snprintf(full_name, sizeof(full_name), "%s", name);
+        } else if (needs_underscore) {
+            snprintf(full_name, sizeof(full_name), "%s_%s", prefix, name);
+        } else {
+            snprintf(full_name, sizeof(full_name), "%s%s", prefix, name);
+        }
+
+        for (char *p = full_name; *p; ++p)
+            *p = *p == '-' ? '_' : (char)toupper(*p);
+        return full_name;
+    }
+
+    return NULL;
 }
 
 void print_wrapped_text(const char *text, size_t indent, size_t line_width)
@@ -258,7 +309,6 @@ char *build_option_description(argus_t *argus, const argus_option_t *option)
         }
     }
 
-    // Append default value if any
     if (option->have_default && option->value_type != VALUE_TYPE_FLAG) {
         char default_buf[128] = {0};
         snprintf(default_buf, sizeof(default_buf), " (default: ");
@@ -273,9 +323,8 @@ char *build_option_description(argus_t *argus, const argus_option_t *option)
                 if (option->default_value.as_string) {
                     snprintf(default_buf + default_len, sizeof(default_buf) - default_len,
                              "\"%s\")", option->default_value.as_string);
-                } else {
+                } else
                     snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "null)");
-                }
                 break;
             case VALUE_TYPE_FLOAT:
                 snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%.2f)",
@@ -290,7 +339,6 @@ char *build_option_description(argus_t *argus, const argus_option_t *option)
                 break;
         }
 
-        // Allocate new buffer for combined description
         size_t desc_size = strlen(description) + strlen(default_buf) + 1;
         char  *new_desc  = malloc(desc_size);
         if (new_desc) {
@@ -301,7 +349,28 @@ char *build_option_description(argus_t *argus, const argus_option_t *option)
         }
     }
 
-    // Append additional attributes
+    const char *env_name = get_env_var_name_for_display(argus, option);
+    if (env_name) {
+        char env_buf[256] = {0};
+
+        size_t desc_len = strlen(description);
+        if (desc_len > 0 && description[desc_len - 1] == ')') {
+            snprintf(env_buf, sizeof(env_buf), ", env: %s)", env_name);
+            if (desc_len > 0)
+                description[desc_len - 1] = '\0';
+        } else
+            snprintf(env_buf, sizeof(env_buf), " (env: %s)", env_name);
+
+        size_t desc_size = strlen(description) + strlen(env_buf) + 1;
+        char  *new_desc  = malloc(desc_size);
+        if (new_desc) {
+            safe_strcpy(new_desc, desc_size, description);
+            safe_strcat(new_desc, desc_size, env_buf);
+            free(description);
+            description = new_desc;
+        }
+    }
+
     if (option->flags & FLAG_EXIT || option->flags & FLAG_REQUIRED ||
         option->flags & FLAG_DEPRECATED || option->flags & FLAG_EXPERIMENTAL) {
         char attrs_buf[32] = {0};
@@ -315,7 +384,6 @@ char *build_option_description(argus_t *argus, const argus_option_t *option)
         if (option->flags & FLAG_EXPERIMENTAL)
             safe_strcat(attrs_buf, sizeof(attrs_buf), " (experimental)");
 
-        // Allocate new buffer for combined description
         size_t desc_size = strlen(description) + strlen(attrs_buf) + 1;
         char  *new_desc  = malloc(desc_size);
         if (new_desc) {
