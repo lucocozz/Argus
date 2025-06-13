@@ -156,11 +156,11 @@ int ip_address_validator(argus_t *argus, void *option_ptr, validator_data_t data
 }
 
 #define V_DOMAINE(_domain_) \
-    MAKE_VALIDATOR(domain_validator, _V_DATA_CUSTOM_(_domain_), ORDER_POST)
+    MAKE_VALIDATOR(domain_validator, NULL, _V_DATA_CUSTOM_(_domain_), ORDER_POST)
 #define V_DIVISIBLE_BY(_divisor_) \
-    MAKE_VALIDATOR(int_divisible_validator, _V_DATA_CUSTOM_(_divisor_), ORDER_POST)
+    MAKE_VALIDATOR(int_divisible_validator, NULL, _V_DATA_CUSTOM_(_divisor_), ORDER_POST)
 #define V_IP_ADDRESS(allow_ipv6, allow_private) \
-    MAKE_VALIDATOR(ip_address_validator, \
+    MAKE_VALIDATOR(ip_address_validator, NULL, \
         _V_DATA_CUSTOM_(&((ip_validator_config_t){allow_ipv6, allow_private})), \
         ORDER_POST)
 

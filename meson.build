@@ -71,6 +71,16 @@ install_subdir(
     exclude_directories: ['internal']
 )
 
+pkg = import('pkgconfig')
+pkg.generate(
+    name: 'argus',
+    description: 'A Modern C full featured CLI Argument Parser',
+    version: meson.project_version(),
+    libraries: [argus_lib],
+    subdirs: 'includes',
+    requires: regex ? ['libpcre2-8'] : [],
+)
+
 if get_option('tests')
     subdir('tests')
 endif

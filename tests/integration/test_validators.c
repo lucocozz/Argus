@@ -63,13 +63,13 @@ int test_divisible_validator(argus_t *argus, void *option_ptr, validator_data_t 
 }
 
 #define V_EVEN() \
-    MAKE_VALIDATOR(test_even_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+    MAKE_VALIDATOR(test_even_validator, NULL, _V_DATA_CUSTOM_(NULL), ORDER_POST)
 #define V_POSITIVE() \
-    MAKE_VALIDATOR(test_positive_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+    MAKE_VALIDATOR(test_positive_validator, NULL, _V_DATA_CUSTOM_(NULL), ORDER_POST)
 #define V_ALPHANUMERIC() \
-    MAKE_VALIDATOR(test_alphanumeric_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+    MAKE_VALIDATOR(test_alphanumeric_validator, NULL, _V_DATA_CUSTOM_(NULL), ORDER_POST)
 #define V_DIVISIBLE_BY(_divisor_) \
-    MAKE_VALIDATOR(test_divisible_validator, _V_DATA_CUSTOM_(_divisor_), ORDER_POST)
+    MAKE_VALIDATOR(test_divisible_validator, NULL, _V_DATA_CUSTOM_(_divisor_), ORDER_POST)
 
 // Define test options with validators
 ARGUS_OPTIONS(
