@@ -1,7 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "argus/errors.h"
 #include "argus/types.h"
-
-#include <string.h>
 
 int length_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 {
@@ -16,7 +18,7 @@ int length_validator(argus_t *argus, void *option_ptr, validator_data_t data)
         return ARGUS_ERROR_INVALID_RANGE;
     }
     if (data.range.min > data.range.max) {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_RANGE, "Range is invalid [%ld, %ld]",
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_RANGE, "Range is invalid %lld-%lld",
                             data.range.min, data.range.max);
         return ARGUS_ERROR_INVALID_RANGE;
     }
@@ -25,9 +27,19 @@ int length_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 
     if (len < data.range.min || len > data.range.max) {
         ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_RANGE,
-                            "Value %lld is out of length [%ld, %ld]", len, data.range.min,
+                            "Value length %lld is out of range %lld-%lld", len, data.range.min,
                             data.range.max);
         return ARGUS_ERROR_INVALID_RANGE;
     }
     return (ARGUS_SUCCESS);
+}
+
+char *format_length_validator(validator_data_t data)
+{
+    char *result = malloc(32);
+    if (!result)
+        return NULL;
+
+    snprintf(result, 32, "%lld-%lld", data.range.min, data.range.max);
+    return result;
 }

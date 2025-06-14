@@ -214,6 +214,7 @@ union validator_data_u {
 typedef int (*argus_handler_t)(argus_t *, argus_option_t *, char *);
 typedef int (*argus_free_handler_t)(argus_option_t *);
 typedef int (*argus_validator_t)(argus_t *, void *, validator_data_t);
+typedef char *(*argus_validator_formatter_t)(validator_data_t);
 typedef int (*argus_action_t)(argus_t *, void *);
 
 typedef enum validation_order_e
@@ -227,9 +228,10 @@ typedef enum validation_order_e
  */
 typedef struct validator_entry_s
 {
-    argus_validator_t  func;
-    validator_data_t   data;
-    validation_order_t order;
+    argus_validator_t           func;
+    validator_data_t            data;
+    validation_order_t          order;
+    argus_validator_formatter_t formatter;
 } validator_entry_t;
 
 /**
@@ -287,16 +289,40 @@ struct argus_option_s
 #endif
 
 /**
+ * argus_helper_config_t - Helper configuration and theme settings
+ */
+typedef struct argus_helper_config_s
+{
+    /* Layout configuration */
+    size_t max_line_width;      // Maximum width of a line
+    size_t description_column;  // Column where descriptions start
+    size_t option_indent;       // Indentation for options
+
+    /* Smart Hint configuration */
+    size_t smart_hint_max_length;    // Maximum length for short hints
+    bool   smart_hint_allow_spaces;  // Allow spaces in short hints
+} argus_helper_config_t;
+
+/**
+ * argus_helper_t - Helper configuration structure
+ */
+typedef struct argus_helper_s
+{
+    argus_helper_config_t config;
+} argus_helper_t;
+
+/**
  * argus_s - Main library context
  */
 struct argus_s
 {
     /* Public fields */
-    const char *program_name;
-    const char *version;
-    const char *description;
-    const char *env_prefix;
-    int         error_code;
+    const char    *program_name;
+    const char    *version;
+    const char    *description;
+    const char    *env_prefix;
+    int            error_code;
+    argus_helper_t helper;
 
     /* Internal fields - do not access directly */
     argus_option_t       *options;

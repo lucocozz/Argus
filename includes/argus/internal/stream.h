@@ -15,9 +15,9 @@
     #define close(fd)           _close(fd)
     #define read(fd, buf, size) _read(fd, buf, size)
     // Define standard file descriptors for Windows
-    #define STDIN_FILENO        0
-    #define STDOUT_FILENO       1
-    #define STDERR_FILENO       2
+    #define STDIN_FILENO  0
+    #define STDOUT_FILENO 1
+    #define STDERR_FILENO 2
 #else
     #include <unistd.h>
 #endif
