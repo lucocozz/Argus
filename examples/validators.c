@@ -171,8 +171,8 @@ ARGUS_OPTIONS(
 
     // Built-in choices validator
     OPTION_STRING('l', "log-level", HELP("Log level"), 
-                DEFAULT("inf"),
-                VALIDATOR(V_CHOICE_STR("debug", "info", "warning", "error"))),
+                DEFAULT("info"),
+                VALIDATOR(V_CHOICE_STR("debug", "info", "warn", "error"))),
 
     // Custom validator using custom data parameter (int)
     OPTION_INT('n', "number", HELP("Number (must be divisible by 5)"), 
@@ -186,7 +186,10 @@ ARGUS_OPTIONS(
     // Custom validator using custom data parameter (struct)
     OPTION_STRING('i', "ip-address", 
                 HELP("Server IP address (IPv4 only, no private addresses)"),
-                VALIDATOR(V_IP_ADDRESS(false, false))),   
+                VALIDATOR(V_IP_ADDRESS(false, false))),  
+    
+    OPTION_STRING('u', "username", HELP("Username"),
+                VALIDATOR(V_LENGTH(3, 20))),
 )
 
 int main(int argc, char **argv)

@@ -40,6 +40,6 @@ char *format_length_validator(validator_data_t data)
     if (!result)
         return NULL;
 
-    snprintf(result, 32, "%lld-%lld", data.range.min, data.range.max);
+    snprintf(result, 32, "%lld-%lld chars", data.range.min, data.range.max);
     return result;
 }

@@ -482,33 +482,34 @@ OPTION_BOOL('\0', "skip-auth", ENV_VAR("SKIP_AUTH"),
 // Set argus.env_prefix once, not per option
 ```
 
-### Documentation Guidelines
+### Documentation
 
-Document environment variables clearly:
+Argus automatically displays environment variables in the help output.
+Simply define your options and the help system will show the corresponding environment variables:
 
 ```c
 ARGUS_OPTIONS(
     options,
     HELP_OPTION(),
     
-    // Include env var name in help text
-    OPTION_STRING('h', "host", HELP("Server hostname (env: WEBAPP_HOST)"),
+    OPTION_STRING('h', "host", HELP("Server hostname"),
                   ENV_VAR("HOST"), DEFAULT("localhost")),
     
-    // Mention override behavior
-    OPTION_INT('t', "timeout", HELP("Timeout in seconds (env override: FORCE_TIMEOUT)"),
+    OPTION_INT('t', "timeout", HELP("Timeout in seconds"),
                ENV_VAR("FORCE_TIMEOUT"), FLAGS(FLAG_ENV_OVERRIDE)),
+    
+    OPTION_INT('p', "port", HELP("Server port"),
+               FLAGS(FLAG_AUTO_ENV), DEFAULT(8080)),
 )
 ```
 
-**Generate environment variable documentation:**
-```c
-printf("Environment Variables:\n");
-printf("  WEBAPP_HOST          - Server hostname\n");
-printf("  WEBAPP_PORT          - Server port\n");
-printf("  DATABASE_URL         - Database connection string\n");
-printf("  WEBAPP_LOG_LEVEL     - Log level (debug, info, warn, error)\n");
-printf("  FORCE_TIMEOUT        - Override timeout setting\n");
+**Automatic help output:**
+```
+Options:
+  -h, --host <STR>       - Server hostname (default: "localhost", env:
+                           APP_HOST)
+  -t, --timeout <NUM>    - Timeout in seconds (env: APP_FORCE_TIMEOUT)  
+  -p, --port <NUM>       - Server port (default: 8080, env: APP_PORT)
 ```
 
 ## Environment Variable Loading Process

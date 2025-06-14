@@ -280,7 +280,7 @@ char *build_option_description(argus_t *argus, const argus_option_t *option)
                             snprintf(validator_info, sizeof(validator_info), " [%s]",
                                      validator_desc);
                         } else if (validator->func == length_validator) {
-                            snprintf(validator_info, sizeof(validator_info), " (%s characters)",
+                            snprintf(validator_info, sizeof(validator_info), " (%s)",
                                      validator_desc);
                         } else if (validator->func == range_validator) {
                             snprintf(validator_info, sizeof(validator_info), " (range: %s)",

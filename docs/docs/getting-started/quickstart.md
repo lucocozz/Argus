@@ -98,7 +98,7 @@ Options:
   -V, --version          - Display version information (exit)
   -v, --verbose          - Enable verbose output
   -o, --output <STR>     - Output file (default: "result.txt")
-  -c, --count <NUM>      - Number of iterations [1-100] (default: 1)
+  -c, --count <1-100>    - Number of iterations (default: 1)
 ```
 
 ### Input Validation

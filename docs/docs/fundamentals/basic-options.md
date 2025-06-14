@@ -384,20 +384,20 @@ A comprehensive example showing all option types
 Usage: comprehensive_tool [OPTIONS] <input> [iterations]
 
 Arguments:
-  <input>                - Input file to process
-  [iterations]           - Number of processing iterations (default: 1)
+  <input>                     - Input file to process
+  [iterations]                - Number of processing iterations (default: 1)
 
 Options:
-  -h, --help             - Display this help message (exit)
-  -V, --version          - Display version information (exit)
-  -v, --verbose          - Enable verbose output
-  -f, --force            - Force overwrite existing files
-      --dry-run          - Show what would be done
-  -o, --output <DIR>     - Output directory (default: "./output")
-      --format <STR>     - Output format [json|xml|csv] (default: "json")
-  -t, --threads <NUM>    - Number of worker threads [1-16] (default: 1)
-  -q, --quality <0.0-1.0> - Compression quality [0.00-1.00] (default: 0.80)
-  -b, --backup <BOOL>    - Create backup before processing (default: false)
+  -h, --help                  - Display this help message (exit)
+  -V, --version               - Display version information (exit)
+  -v, --verbose               - Enable verbose output
+  -f, --force                 - Force overwrite existing files
+      --dry-run               - Show what would be done
+  -o, --output <DIR>          - Output directory (default: "./output")
+      --format <json|xml|csv> - Output format (default: "json")
+  -t, --threads <1-16>        - Number of worker threads (default: 1)
+  -q, --quality <0.0-1.0>     - Compression quality (default: 0.80)
+  -b, --backup <BOOL>         - Create backup before processing (default: false)
 ```
 
 ## What's Next?

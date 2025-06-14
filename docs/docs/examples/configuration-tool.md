@@ -258,15 +258,17 @@ Arguments:
 Options:
   -h, --help             - Display this help message (exit)
   -V, --version          - Display version information (exit)
-  -t, --tags <STR,...>   - Resource tags [1-10 items] (sorted, unique)
-  -p, --ports <NUM,...>  - Port numbers (supports ranges) [1-5 items]
+  -t, --tags <STR,...>   - Resource tags (count: 1-10) (sorted, unique)
+  -p, --ports <NUM,...>  - Port numbers (supports ranges) (count: 1-5)
   -e, --env <KEY=VAL,...>
-                         - Environment variables (env: CONFIG_CONFIG_ENV) (sorted by key)
+                         - Environment variables (env: CONFIG_CONFIG_ENV)
+                           (sorted by key)
   -f, --features <KEY=BOOL,...>
                          - Feature toggles (sorted by key)
   -n, --name <STR>       - Service name (env: CONFIG_SERVICE_NAME) (required)
-  -h, --host <STR>       - Host address (env: CONFIG_HOST) (default: "localhost")
-  -P, --port <NUM>       - Main port (env: CONFIG_PORT) [1-65535] (default: 8080)
+  -h, --host <STR>       - Host address (env: CONFIG_HOST) (default:
+                           "localhost")
+  -P, --port <1-65535>   - Main port (env: CONFIG_PORT) (default: 8080)
   -c, --contact <STR>    - Contact email
 ```
 
