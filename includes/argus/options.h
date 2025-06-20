@@ -45,6 +45,12 @@ ARGUS_API int choices_string_validator(argus_t *argus, void *option_ptr, validat
 ARGUS_API int choices_int_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 
+ARGUS_API char *format_range_validator(validator_data_t data);
+ARGUS_API char *format_length_validator(validator_data_t data);
+ARGUS_API char *format_count_validator(validator_data_t data);
+ARGUS_API char *format_regex_validator(validator_data_t data);
+ARGUS_API char *format_choices_validator(validator_data_t data);
+
 /*
  * Support macro for character to string conversion
  */
@@ -76,9 +82,10 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
 /*
  * Validator macros
  */
-#define MAKE_VALIDATOR(fn, _data_, _order_) \
+#define MAKE_VALIDATOR(fn, _formatter_, _data_, _order_) \
     &(validator_entry_t){ \
         .func = fn, \
+        .formatter = _formatter_, \
         .data = _data_, \
         .order = _order_ \
     }
@@ -88,16 +95,16 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
     ((validator_data_t){ .custom = (uintptr_t)(data) })
 
 #define V_RANGE(_min_, _max_) \
-    MAKE_VALIDATOR(range_validator, _V_DATA_RANGE_(_min_, _max_), ORDER_POST)
+    MAKE_VALIDATOR(range_validator, format_range_validator, _V_DATA_RANGE_(_min_, _max_), ORDER_POST)
 #define V_LENGTH(_min_, _max_) \
-    MAKE_VALIDATOR(length_validator, _V_DATA_RANGE_(_min_, _max_), ORDER_POST)
+    MAKE_VALIDATOR(length_validator, format_length_validator, _V_DATA_RANGE_(_min_, _max_), ORDER_POST)
 #define V_COUNT(_min_, _max_) \
-    MAKE_VALIDATOR(count_validator, _V_DATA_RANGE_(_min_, _max_), ORDER_POST)
+    MAKE_VALIDATOR(count_validator, format_count_validator, _V_DATA_RANGE_(_min_, _max_), ORDER_POST)
 #define V_REGEX(re) \
-    MAKE_VALIDATOR(regex_validator, ((validator_data_t){ .regex = (re) }), ORDER_PRE)
+    MAKE_VALIDATOR(regex_validator, format_regex_validator, ((validator_data_t){ .regex = (re) }), ORDER_PRE)
 
 #define V_CHOICE_STR(...) \
-    MAKE_VALIDATOR(choices_string_validator, \
+    MAKE_VALIDATOR(choices_string_validator, format_choices_validator, \
         ((validator_data_t){ .choices = { \
             .as_strings = (char*[]){ __VA_ARGS__ }, \
             .count = sizeof((char*[]){ __VA_ARGS__ }) / sizeof(char*), \
@@ -105,7 +112,7 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
         }}), ORDER_POST)
 
 #define V_CHOICE_INT(...) \
-    MAKE_VALIDATOR(choices_int_validator, \
+    MAKE_VALIDATOR(choices_int_validator, format_choices_validator, \
         ((validator_data_t){ .choices = { \
             .as_ints = (long long[]){ __VA_ARGS__ }, \
             .count = sizeof((long long[]){ __VA_ARGS__ }) / sizeof(long long), \
@@ -113,7 +120,7 @@ ARGUS_API int choices_float_validator(argus_t *argus, void *option_ptr, validato
         }}), ORDER_POST)
 
 #define V_CHOICE_FLOAT(...) \
-    MAKE_VALIDATOR(choices_float_validator, \
+    MAKE_VALIDATOR(choices_float_validator, format_choices_validator, \
         ((validator_data_t){ .choices = { \
             .as_floats = (double[]){ __VA_ARGS__ }, \
             .count = sizeof((double[]){ __VA_ARGS__ }) / sizeof(double), \

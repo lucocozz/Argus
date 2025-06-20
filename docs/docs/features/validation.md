@@ -51,9 +51,9 @@ Range validation automatically appears in help text:
 ```bash
 $ ./tool --help
 Options:
-  -p, --port <NUM>       - Port number [1-65535] (default: 8080)
-  -q, --quality <FLOAT>  - Compression quality [0-1] (default: 0.80)
-  -t, --temperature <NUM> - Temperature in Celsius [-50-100]
+  -p, --port <1-65535>          - Port number (default: 8080)
+  -q, --quality <0-1>           - Compression quality (default: 0.80)
+  -t, --temperature <-50-100>   - Temperature in Celsius
 ```
 
 The range `[min-max]` is automatically added to the help display.
@@ -103,9 +103,9 @@ Length constraints appear in help:
 ```bash
 $ ./tool --help
 Options:
-  -u, --username <STR>   - Username [3-20 chars]
-  -p, --password <STR>   - Password [8-128 chars]
-  -d, --description <STR> - Project description [10-500 chars]
+  -u, --username <STR>      - Username (3-20 chars)
+  -p, --password <STR>      - Password (8-128 chars)  
+  -d, --description <STR>   - Project description (10-500 chars)
 ```
 
 </TabItem>
@@ -243,10 +243,13 @@ Choices automatically appear in help:
 ```bash
 $ ./tool --help
 Options:
-  -l, --level <STR>      - Log level [debug|info|warn|error] (default: "info")
-  -f, --format <STR>     - Output format [json|xml|yaml|csv] (default: "json")
-  -m, --mode <NUM>       - Operating mode [1|2|3|5|8] (default: 1)
-  -q, --quality <FLOAT>  - Quality preset [0.1|0.5|0.8|1.0] (default: 0.80)
+  -l, --level <STR>           - Log level [debug|info|warn|error] (default:
+                                "info")
+  -f, --format <json|xml|yaml|csv>
+                              - Output format (default: "json")
+  -m, --mode <1|2|3|5|8>      - Operating mode (default: 1)
+  -q, --quality <0.1|0.5|0.8|1.0>
+                              - Quality preset (default: 0.80)
 ```
 
 </TabItem>

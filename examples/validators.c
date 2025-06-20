@@ -156,11 +156,11 @@ int ip_address_validator(argus_t *argus, void *option_ptr, validator_data_t data
 }
 
 #define V_DOMAINE(_domain_) \
-    MAKE_VALIDATOR(domain_validator, _V_DATA_CUSTOM_(_domain_), ORDER_POST)
+    MAKE_VALIDATOR(domain_validator, NULL, _V_DATA_CUSTOM_(_domain_), ORDER_POST)
 #define V_DIVISIBLE_BY(_divisor_) \
-    MAKE_VALIDATOR(int_divisible_validator, _V_DATA_CUSTOM_(_divisor_), ORDER_POST)
+    MAKE_VALIDATOR(int_divisible_validator, NULL, _V_DATA_CUSTOM_(_divisor_), ORDER_POST)
 #define V_IP_ADDRESS(allow_ipv6, allow_private) \
-    MAKE_VALIDATOR(ip_address_validator, \
+    MAKE_VALIDATOR(ip_address_validator, NULL, \
         _V_DATA_CUSTOM_(&((ip_validator_config_t){allow_ipv6, allow_private})), \
         ORDER_POST)
 
@@ -171,8 +171,8 @@ ARGUS_OPTIONS(
 
     // Built-in choices validator
     OPTION_STRING('l', "log-level", HELP("Log level"), 
-                DEFAULT("inf"),
-                VALIDATOR(V_CHOICE_STR("debug", "info", "warning", "error"))),
+                DEFAULT("info"),
+                VALIDATOR(V_CHOICE_STR("debug", "info", "warn", "error"))),
 
     // Custom validator using custom data parameter (int)
     OPTION_INT('n', "number", HELP("Number (must be divisible by 5)"), 
@@ -186,7 +186,10 @@ ARGUS_OPTIONS(
     // Custom validator using custom data parameter (struct)
     OPTION_STRING('i', "ip-address", 
                 HELP("Server IP address (IPv4 only, no private addresses)"),
-                VALIDATOR(V_IP_ADDRESS(false, false))),   
+                VALIDATOR(V_IP_ADDRESS(false, false))),  
+    
+    OPTION_STRING('u', "username", HELP("Username"),
+                VALIDATOR(V_LENGTH(3, 20))),
 )
 
 int main(int argc, char **argv)

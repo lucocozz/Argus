@@ -56,7 +56,7 @@ Options:
   -V, --version          - Display version information (exit)
   -v, --verbose          - Enable verbose output
   -o, --output <STR>     - Output file (default: "result.txt")
-  -p, --port <NUM>       - Port number [1-65535] (default: 8080)
+  -p, --port <1-65535>   - Port number (default: 8080)
 ```
 
 ### Help Components
@@ -163,9 +163,10 @@ ARGUS_OPTIONS(
 
 **Generated help:**
 ```bash
-  -p, --port <NUM>       - Port number [1-65535] (default: 8080)
-  -l, --level <STR>      - Log level [debug|info|warn|error] (default: "info")
-  -u, --username <STR>   - Username [3-20 chars]
+  -p, --port <1-65535>          - Port number (default: 8080)
+  -l, --log-level <STR>         - Log level [debug|info|warn|error] (default:
+                                  "info")
+  -u, --username <STR>         - Username (3-20 chars)
 ```
 
 </TabItem>
@@ -190,12 +191,12 @@ ARGUS_OPTIONS(
 
 **Generated help:**
 ```bash
-  -f, --file <STR>       - Input file
-  -c, --count <NUM>      - Item count
-  -r, --rate <FLOAT>     - Processing rate
-  -c, --config <FILE>    - Config file
-  -s, --size <BYTES>     - Buffer size
-  -q, --quality <0.0-1.0> - Quality
+  -f, --file <STR>             - Input file
+  -c, --count <NUM>            - Item count
+  -r, --rate <FLOAT>           - Processing rate
+  -c, --config <FILE>          - Config file
+  -s, --size <BYTES>           - Buffer size
+  -q, --quality <0.0-1.0>      - Quality
 ```
 
 </TabItem>

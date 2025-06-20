@@ -6,6 +6,7 @@ unit_tests = [
   ['multi_values', 'test_utils/test_multi_values.c'],
   ['handlers', 'test_callbacks/test_handlers.c'],
   ['validators', 'test_callbacks/test_validators.c'],
+  ['smart_hint', 'test_smart_hint.c'],
 ]
 
 foreach test : unit_tests

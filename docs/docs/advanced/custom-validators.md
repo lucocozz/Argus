@@ -37,7 +37,7 @@ int even_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 
 // Helper macro
 #define V_EVEN() \
-    MAKE_VALIDATOR(even_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+    MAKE_VALIDATOR(even_validator, NULL, _V_DATA_CUSTOM_(NULL), ORDER_POST)
 
 // Usage
 OPTION_INT('n', "number", HELP("Even number"), VALIDATOR(V_EVEN()))
@@ -72,7 +72,7 @@ int email_format_validator(argus_t *argus, void *value_ptr, validator_data_t dat
 }
 
 #define V_EMAIL_FORMAT() \
-    MAKE_VALIDATOR(email_format_validator, _V_DATA_CUSTOM_(NULL), ORDER_PRE)
+    MAKE_VALIDATOR(email_format_validator, NULL, _V_DATA_CUSTOM_(NULL), ORDER_PRE)
 
 // Usage
 OPTION_STRING('e', "email", HELP("Email address"), VALIDATOR(V_EMAIL_FORMAT()))
@@ -103,7 +103,7 @@ int divisible_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 }
 
 #define V_DIVISIBLE_BY(n) \
-    MAKE_VALIDATOR(divisible_validator, _V_DATA_CUSTOM_(n), ORDER_POST)
+    MAKE_VALIDATOR(divisible_validator, NULL, _V_DATA_CUSTOM_(n), ORDER_POST)
 
 // Usage
 OPTION_INT('p', "port", HELP("Port (multiple of 100)"), 
@@ -141,7 +141,7 @@ int advanced_range_validator(argus_t *argus, void *option_ptr, validator_data_t 
 }
 
 #define V_ADVANCED_RANGE(min, max, allow_zero) \
-    MAKE_VALIDATOR(advanced_range_validator, \
+    MAKE_VALIDATOR(advanced_range_validator, NULL, \
         _V_DATA_CUSTOM_(&((range_config_t){min, max, allow_zero})), \
         ORDER_POST)
 
@@ -176,7 +176,7 @@ int max_greater_than_min_validator(argus_t *argus, void *option_ptr, validator_d
 }
 
 #define V_GREATER_THAN(option_name) \
-    MAKE_VALIDATOR(max_greater_than_min_validator, _V_DATA_CUSTOM_(option_name), ORDER_POST)
+    MAKE_VALIDATOR(max_greater_than_min_validator, NULL, _V_DATA_CUSTOM_(option_name), ORDER_POST)
 
 ARGUS_OPTIONS(
     options,
@@ -214,7 +214,7 @@ int company_email_validator(argus_t *argus, void *option_ptr, validator_data_t d
 }
 
 #define V_COMPANY_EMAIL(domain) \
-    MAKE_VALIDATOR(company_email_validator, _V_DATA_CUSTOM_(domain), ORDER_POST)
+    MAKE_VALIDATOR(company_email_validator, NULL, _V_DATA_CUSTOM_(domain), ORDER_POST)
 
 // Usage
 OPTION_STRING('e', "email", HELP("Company email"), 
@@ -263,11 +263,11 @@ int case_validator(argus_t *argus, void *value_ptr, validator_data_t data)
 }
 
 #define V_LOWERCASE() \
-    MAKE_VALIDATOR(case_validator, _V_DATA_CUSTOM_(&(case_requirement_t){LOWERCASE}), ORDER_PRE)
+    MAKE_VALIDATOR(case_validator, NULL, _V_DATA_CUSTOM_(&(case_requirement_t){LOWERCASE}), ORDER_PRE)
 #define V_UPPERCASE() \
-    MAKE_VALIDATOR(case_validator, _V_DATA_CUSTOM_(&(case_requirement_t){UPPERCASE}), ORDER_PRE)
+    MAKE_VALIDATOR(case_validator, NULL, _V_DATA_CUSTOM_(&(case_requirement_t){UPPERCASE}), ORDER_PRE)
 #define V_MIXED_CASE() \
-    MAKE_VALIDATOR(case_validator, _V_DATA_CUSTOM_(&(case_requirement_t){MIXED}), ORDER_PRE)
+    MAKE_VALIDATOR(case_validator, NULL, _V_DATA_CUSTOM_(&(case_requirement_t){MIXED}), ORDER_PRE)
 ```
 
 </TabItem>
@@ -299,9 +299,9 @@ int file_exists_validator(argus_t *argus, void *option_ptr, validator_data_t dat
 }
 
 #define V_FILE_EXISTS() \
-    MAKE_VALIDATOR(file_exists_validator, _V_DATA_CUSTOM_(true), ORDER_POST)
+    MAKE_VALIDATOR(file_exists_validator, NULL, _V_DATA_CUSTOM_(true), ORDER_POST)
 #define V_FILE_NOT_EXISTS() \
-    MAKE_VALIDATOR(file_exists_validator, _V_DATA_CUSTOM_(false), ORDER_POST)
+    MAKE_VALIDATOR(file_exists_validator, NULL, _V_DATA_CUSTOM_(false), ORDER_POST)
 
 // Usage
 OPTION_STRING('i', "input", HELP("Input file"), VALIDATOR(V_FILE_EXISTS()))
@@ -335,12 +335,189 @@ int array_all_positive_validator(argus_t *argus, void *option_ptr, validator_dat
 }
 
 #define V_ALL_POSITIVE() \
-    MAKE_VALIDATOR(array_all_positive_validator, _V_DATA_CUSTOM_(NULL), ORDER_POST)
+    MAKE_VALIDATOR(array_all_positive_validator, NULL, _V_DATA_CUSTOM_(NULL), ORDER_POST)
 
 // Usage
 OPTION_ARRAY_INT('p', "ports", HELP("Port numbers"), 
                 VALIDATOR(V_COUNT(1, 10), V_ALL_POSITIVE()))
 ```
+
+## Custom Formatters
+
+Add custom formatting to display validator constraints in help output:
+
+<Tabs>
+<TabItem value="basic-formatter" label="Basic Formatter" default>
+
+```c
+// Divisibility validator with formatter
+int divisible_validator(argus_t *argus, void *option_ptr, validator_data_t data)
+{
+    argus_option_t *option = (argus_option_t *)option_ptr;
+    int divisor = (int)data.custom;
+    
+    if (option->value.as_int % divisor != 0) {
+        ARGUS_PARSING_ERROR(argus, "Value must be divisible by %d", divisor);
+        return ARGUS_ERROR_INVALID_VALUE;
+    }
+    return ARGUS_SUCCESS;
+}
+
+// Formatter function
+char *format_divisible_validator(validator_data_t data)
+{
+    char *result = malloc(64);
+    if (!result)
+        return NULL;
+    
+    snprintf(result, 64, "divisible by %d", (int)data.custom);
+    return result;
+}
+
+#define V_DIVISIBLE_BY(n) \
+    MAKE_VALIDATOR(divisible_validator, format_divisible_validator, _V_DATA_CUSTOM_(n), ORDER_POST)
+
+// Usage
+OPTION_INT('p', "port", HELP("Port number"), VALIDATOR(V_DIVISIBLE_BY(100)))
+```
+
+**Generated help:**
+```bash
+  -p, --port <NUM>  - Port number (divisible by 100)
+```
+
+</TabItem>
+<TabItem value="simple-formatter" label="Simple Range">
+
+```c
+// Simple range validator for percentages
+char *format_percentage_validator(validator_data_t data)
+{
+    char *result = malloc(16);
+    if (!result)
+        return NULL;
+    
+    snprintf(result, 16, "0-100");
+    return result;
+}
+
+#define V_PERCENTAGE() \
+    MAKE_VALIDATOR(percentage_validator, format_percentage_validator, \
+                   _V_DATA_CUSTOM_(NULL), ORDER_POST)
+
+// Usage
+OPTION_INT('q', "quality", HELP("Compression quality"), 
+          VALIDATOR(V_PERCENTAGE()))
+```
+
+**Generated help:**
+```bash
+  -q, --quality <0-100>  - Compression quality
+```
+
+</TabItem>
+<TabItem value="domain-formatter" label="Domain Validator">
+
+```c
+// Company email validator with formatter
+char *format_domain_validator(validator_data_t data)
+{
+    const char *domain = (const char *)data.custom;
+    char *result = malloc(128);
+    if (!result)
+        return NULL;
+    
+    snprintf(result, 128, "company domain %s", domain);
+    return result;
+}
+
+#define V_DOMAIN_EMAIL(domain) \
+    MAKE_VALIDATOR(company_email_validator, format_domain_validator, \
+                   _V_DATA_CUSTOM_(domain), ORDER_POST)
+
+// Usage
+OPTION_STRING('e', "email", HELP("Company email"), 
+             VALIDATOR(V_DOMAIN_EMAIL("example.com")))
+```
+
+**Generated help:**
+```bash
+  -e, --email <STR>  - Company email (company domain example.com)
+```
+
+</TabItem>
+<TabItem value="ip-formatter" label="IP Validator">
+
+```c
+typedef struct {
+    bool allow_ipv6;
+    bool allow_private;
+} ip_config_t;
+
+char *format_ip_validator(validator_data_t data)
+{
+    ip_config_t *config = (ip_config_t *)data.custom;
+    char *result = malloc(128);
+    if (!result)
+        return NULL;
+    
+    if (config->allow_ipv6 && config->allow_private) {
+        safe_strcpy(result, 128, "IPv4 or IPv6 address");
+    } else if (config->allow_ipv6) {
+        safe_strcpy(result, 128, "IPv4 or IPv6, no private addresses");
+    } else if (config->allow_private) {
+        safe_strcpy(result, 128, "IPv4 address");
+    } else {
+        safe_strcpy(result, 128, "IPv4, no private addresses");
+    }
+    
+    return result;
+}
+
+#define V_IP_ADDRESS(ipv6, private) \
+    MAKE_VALIDATOR(ip_validator, format_ip_validator, \
+                   _V_DATA_CUSTOM_(&((ip_config_t){ipv6, private})), \
+                   ORDER_POST)
+
+// Usage
+OPTION_STRING('i', "ip", HELP("Server IP"), 
+             VALIDATOR(V_IP_ADDRESS(false, false)))
+```
+
+**Generated help:**
+```bash
+  -i, --ip <STR>  - Server IP (IPv4, no private addresses)
+```
+
+</TabItem>
+</Tabs>
+
+### Formatter Implementation
+
+```c
+// Template for formatter functions
+char *format_my_validator(validator_data_t data)
+{
+    // Allocate memory for result
+    char *result = malloc(BUFFER_SIZE);
+    if (!result)
+        return NULL;
+    
+    // Format based on your data
+    snprintf(result, BUFFER_SIZE, "your descriptive format");
+    
+    return result;  // Memory will be freed by caller
+}
+```
+
+**Integration with `MAKE_VALIDATOR`:**
+```c
+#define MY_VALIDATOR(param) \
+    MAKE_VALIDATOR(my_validator_func, format_my_validator, \
+                   _V_DATA_CUSTOM_(param), ORDER_POST)
+```
+
+The formatter automatically integrates with the help system and appears in option descriptions or hints depending on the output format.
 
 ## Combining Validators
 
@@ -382,7 +559,7 @@ int descriptive_validator(argus_t *argus, void *option_ptr, validator_data_t dat
 
 // ✅ Reusable with parameters
 #define V_MIN_WORDS(count) \
-    MAKE_VALIDATOR(min_words_validator, _V_DATA_CUSTOM_(count), ORDER_POST)
+    MAKE_VALIDATOR(min_words_validator, NULL, _V_DATA_CUSTOM_(count), ORDER_POST)
 
 // ❌ Avoid these patterns
 int bad_validator(argus_t *argus, void *option_ptr, validator_data_t data)

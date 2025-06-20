@@ -116,8 +116,8 @@ static inline void argus_struct_error(argus_option_t *option, const char *fmt, .
     va_end(args);
 }
 
-static inline void argus_parsing_error(argus_t *argus, argus_error_type_t error_type, const char *fmt,
-                                       ...)
+static inline void argus_parsing_error(argus_t *argus, argus_error_type_t error_type,
+                                       const char *fmt, ...)
 {
     va_list args;
 
@@ -139,6 +139,7 @@ static inline void argus_parsing_error(argus_t *argus, argus_error_type_t error_
 /**
  * ARGUS_PARSING_ERROR - Report a parsing error
  */
-#define ARGUS_PARSING_ERROR(argus, error_type, ...) argus_parsing_error(argus, error_type, __VA_ARGS__)
+#define ARGUS_PARSING_ERROR(argus, error_type, ...)                                                \
+    argus_parsing_error(argus, error_type, __VA_ARGS__)
 
 #endif /* ARGUS_ERRORS_H */

@@ -56,6 +56,7 @@
 char  *starts_with(const char *prefix, const char *str);
 char **split(const char *str, const char *charset);
 void   free_split(char **split);
+int    putnchar(char c, size_t n);
 
 /**
  * Multi_value utility functions

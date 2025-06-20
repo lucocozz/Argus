@@ -4,6 +4,7 @@
 #include "argus/internal/cross_platform.h"
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -103,4 +104,17 @@ void free_split(char **split)
     for (size_t i = 0; split[i] != NULL; ++i)
         free(split[i]);
     free(split);
+}
+
+/**
+ * Writes a character to stdout multiple times.
+ * @param c The character to write.
+ * @param n The number of times to write the character.
+ * @return The total number of characters written.
+ */
+int putnchar(char c, size_t n)
+{
+    for (size_t i = 0; i < n; i++)
+        putchar(c);
+    return (int)n;
 }

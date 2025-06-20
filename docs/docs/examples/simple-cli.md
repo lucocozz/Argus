@@ -133,8 +133,9 @@ Options:
   -V, --version          - Display version information (exit)
   -v, --verbose          - Enable verbose output
   -o, --output <STR>     - Output file (default: "result.txt")
-  -c, --count <NUM>      - Processing iterations [1-100] (default: 1)
-  -f, --format <STR>     - Output format [text|json|xml] (default: "text")
+  -c, --count <1-100>    - Processing iterations (default: 1)
+  -f, --format <text|json|xml>
+                         - Output format (default: "text")
 ```
 
 ## Key Features

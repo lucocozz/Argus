@@ -18,8 +18,8 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
 
     // Custom patterns defined in this file
-    OPTION_STRING('u', "username", HELP("Username (3-20 chars)"),
-        VALIDATOR(V_REGEX(RE_SIMPLE_NAME))),
+    OPTION_STRING('u', "username", HELP("Username"),
+        VALIDATOR(V_REGEX(RE_SIMPLE_NAME), V_LENGTH(3, 20))),
     
     // Using predefined patterns from header
     POSITIONAL_STRING("ip", HELP("IPv4 address"),

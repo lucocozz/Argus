@@ -125,7 +125,7 @@ const config = {
     algolia: {
       appId: 'Z686PG1DUX',
       apiKey: '8a592f2cd2ef4e5c88c46aca825d1a3e',
-      indexName: 'argus',
+      indexName: 'argus-lib',
       contextualSearch: true,
       searchPagePath: 'search',
       placeholder: 'Search docs...',
