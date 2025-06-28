@@ -120,17 +120,17 @@ union argus_value_u {
     char  as_char;
     char *as_string;
 
-    int       as_int;
-    int8_t    as_int8;
-    int16_t   as_int16;
-    int32_t   as_int32;
-    long long as_int64;
+    int     as_int;
+    int8_t  as_int8;
+    int16_t as_int16;
+    int32_t as_int32;
+    int64_t as_int64;
 
     double as_float;
     bool   as_bool;
 
     char         **as_array_string;
-    long long     *as_array_int;
+    int64_t       *as_array_int;
     double        *as_array_float;
     argus_value_t *as_array; /* Generic array */
     argus_pair_t  *as_map;
@@ -170,8 +170,8 @@ typedef struct argus_map_iterator_s
  */
 typedef struct argus_range_s
 {
-    long long min;
-    long long max;
+    int64_t min;
+    int64_t max;
 } argus_range_t;
 
 /**
@@ -192,9 +192,9 @@ typedef struct regex_data_s
 typedef struct choices_data_s
 {
     union {
-        char     **as_strings;
-        long long *as_ints;
-        double    *as_floats;
+        char   **as_strings;
+        int64_t *as_ints;
+        double  *as_floats;
     };
     size_t          count;
     argus_valtype_t type;

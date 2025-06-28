@@ -114,8 +114,8 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
 #define V_CHOICE_INT(...) \
     MAKE_VALIDATOR(choices_int_validator, format_choices_validator, \
         ((validator_data_t){ .choices = { \
-            .as_ints = (long long[]){ __VA_ARGS__ }, \
-            .count = sizeof((long long[]){ __VA_ARGS__ }) / sizeof(long long), \
+            .as_ints = (int64_t[]){ __VA_ARGS__ }, \
+            .count = sizeof((int64_t[]){ __VA_ARGS__ }) / sizeof(int64_t), \
             .type = VALUE_TYPE_INT \
         }}), ORDER_POST)
 

@@ -34,8 +34,8 @@ static int set_kv_pair(argus_t *argus, argus_option_t *option, char *pair)
     char *value = separator + 1;
 
     // Convert the string value to integer
-    char     *endptr;
-    long long int_value = strtoll(value, &endptr, 10);
+    char   *endptr;
+    int64_t int_value = strtoll(value, &endptr, 10);
 
     // Check if conversion was successful
     if (*value == '\0' || *endptr != '\0') {

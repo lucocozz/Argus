@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,12 +44,12 @@ int choices_int_validator(argus_t *argus, void *option_ptr, validator_data_t dat
 
     char *choices_formatted = format_choices_validator(data);
     if (choices_formatted) {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE, "Value '%lld' is not one of [%s]",
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE, "Value '%d' is not one of [%s]",
                             option->value.as_int, choices_formatted);
         free(choices_formatted);
     } else {
         ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_CHOICE,
-                            "Value '%lld' is not one of the choices", option->value.as_int);
+                            "Value '%d' is not one of the choices", option->value.as_int);
     }
     return ARGUS_ERROR_INVALID_CHOICE;
 }
@@ -87,7 +88,7 @@ char *format_choices_validator(validator_data_t data)
                 total_length += strlen(choices->as_strings[i]);
                 break;
             case VALUE_TYPE_INT:
-                total_length += 20;  // Max digits for long long
+                total_length += 20;  // Max digits for int64_t
                 break;
             case VALUE_TYPE_FLOAT:
                 total_length += 20;  // Max digits for double
@@ -114,7 +115,7 @@ char *format_choices_validator(validator_data_t data)
                 safe_strcat(result, total_length + 1, choices->as_strings[i]);
                 break;
             case VALUE_TYPE_INT:
-                snprintf(item, sizeof(item), "%lld", choices->as_ints[i]);
+                snprintf(item, sizeof(item), "%" PRId64, choices->as_ints[i]);
                 safe_strcat(result, total_length + 1, item);
                 break;
             case VALUE_TYPE_FLOAT:
