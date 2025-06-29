@@ -265,9 +265,9 @@ int main(int argc, char **argv)
     if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS)
         return 1;
     
-    bool verbose = argus_get(argus, "verbose").as_bool;
-    const char *output = argus_get(argus, "output").as_string;
-    const char *input = argus_get(argus, "input").as_string;
+    bool verbose = argus_get(&argus, "verbose").as_bool;
+    const char *output = argus_get(&argus, "output").as_string;
+    const char *input = argus_get(&argus, "input").as_string;
     
     // Application logic here
     
@@ -281,8 +281,8 @@ int main(int argc, char **argv)
 ```c
 int add_command(argus_t *argus, void *data)
 {
-    const char *file = argus_get(*argus, "file").as_string;
-    bool force = argus_get(*argus, "force").as_bool;
+    const char *file = argus_get(argus, "file").as_string;
+    bool force = argus_get(argus, "force").as_bool;
     // Command logic here
     return 0;
 }
@@ -306,10 +306,9 @@ int main(int argc, char **argv)
     if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS)
         return 1;
     
-    if (argus_has_command(argus)) {
+    if (argus_has_command(&argus))
         return argus_exec(&argus, NULL);
-    }
-    
+
     argus_free(&argus);
     return 0;
 }

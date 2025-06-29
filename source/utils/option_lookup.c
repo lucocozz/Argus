@@ -62,15 +62,15 @@ const argus_option_t *get_active_options(argus_t *argus)
     return (argus->options);
 }
 
-static argus_option_t *find_from_relative_path(argus_t argus, const char *option_name)
+static argus_option_t *find_from_relative_path(argus_t *argus, const char *option_name)
 {
-    for (int i = (int)argus.subcommand_depth; i >= 0; --i) {
+    for (int i = (int)argus->subcommand_depth; i >= 0; --i) {
         argus_option_t *options;
 
         if (i == 0)
-            options = argus.options;
+            options = argus->options;
         else
-            options = argus.subcommand_stack[i - 1]->sub_options;
+            options = argus->subcommand_stack[i - 1]->sub_options;
 
         argus_option_t *option = find_option_by_name(options, option_name);
         if (option != NULL)
@@ -97,7 +97,7 @@ argus_option_t *find_option_by_active_path(argus_t argus, const char *option_pat
 
     // Format: "option_name"
     if (strchr(option_path, '.') == NULL)
-        return (find_from_relative_path(argus, option_path));
+        return (find_from_relative_path(&argus, option_path));
 
     // Format: ".option_name" (root)
     if (option_path[0] == '.')

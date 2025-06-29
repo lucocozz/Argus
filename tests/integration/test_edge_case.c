@@ -57,9 +57,9 @@ Test(edge_cases, special_chars_in_values)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing special characters should succeed");
-    cr_assert_str_eq(argus_get(argus, "special-chars").as_string, "!@#$%^&*()_+",
+    cr_assert_str_eq(argus_get(&argus, "special-chars").as_string, "!@#$%^&*()_+",
                     "Option value with special chars should be parsed correctly");
-    cr_assert_str_eq(argus_get(argus, "arg").as_string, "~`<>,./?;:'\"",
+    cr_assert_str_eq(argus_get(&argus, "arg").as_string, "~`<>,./?;:'\"",
                     "Positional with special chars should be parsed correctly");
     
     argus_free(&argus);
@@ -75,7 +75,7 @@ Test(edge_cases, map_empty_values)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing maps with empty parts should succeed");
-    cr_assert_str_eq(argus_map_get(argus, "map", "empty").as_string, "",
+    cr_assert_str_eq(argus_map_get(&argus, "map", "empty").as_string, "",
                     "Empty value should be handled correctly");
     // Testing empty key is tricky as map_get requires a key - it would need special handling
     
@@ -92,11 +92,11 @@ Test(edge_cases, map_negative_values)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing maps with negative values should succeed");
-    cr_assert_eq(argus_map_get(argus, "numbers", "neg").as_int, -42,
+    cr_assert_eq(argus_map_get(&argus, "numbers", "neg").as_int, -42,
                 "Negative int value should be parsed correctly");
-    cr_assert_eq(argus_map_get(argus, "numbers", "minus-five").as_int, -5,
+    cr_assert_eq(argus_map_get(&argus, "numbers", "minus-five").as_int, -5,
                 "Negative int value should be parsed correctly");
-    cr_assert_eq(argus_map_get(argus, "numbers", "positive").as_int, 10,
+    cr_assert_eq(argus_map_get(&argus, "numbers", "positive").as_int, 10,
                 "Positive int value should be parsed correctly");
     
     argus_free(&argus);
@@ -112,11 +112,11 @@ Test(edge_cases, map_float_values)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing maps with float values should succeed");
-    cr_assert_float_eq(argus_map_get(argus, "floats", "pi").as_float, 3.14159, 0.00001,
+    cr_assert_float_eq(argus_map_get(&argus, "floats", "pi").as_float, 3.14159, 0.00001,
                       "Float value should be parsed correctly");
-    cr_assert_float_eq(argus_map_get(argus, "floats", "neg").as_float, -2.718, 0.001,
+    cr_assert_float_eq(argus_map_get(&argus, "floats", "neg").as_float, -2.718, 0.001,
                       "Negative float value should be parsed correctly");
-    cr_assert_float_eq(argus_map_get(argus, "floats", "zero").as_float, 0.0, 0.001,
+    cr_assert_float_eq(argus_map_get(&argus, "floats", "zero").as_float, 0.0, 0.001,
                       "Zero float value should be parsed correctly");
     // Scientific notation might not be supported, but it's good to test
     
@@ -133,17 +133,17 @@ Test(edge_cases, map_bool_values)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing maps with boolean values should succeed");
-    cr_assert_eq(argus_map_get(argus, "bools", "t").as_bool, true,
+    cr_assert_eq(argus_map_get(&argus, "bools", "t").as_bool, true,
                 "true should be parsed as true");
-    cr_assert_eq(argus_map_get(argus, "bools", "f").as_bool, false,
+    cr_assert_eq(argus_map_get(&argus, "bools", "f").as_bool, false,
                 "false should be parsed as false");
-    cr_assert_eq(argus_map_get(argus, "bools", "y").as_bool, true,
+    cr_assert_eq(argus_map_get(&argus, "bools", "y").as_bool, true,
                 "yes should be parsed as true");
-    cr_assert_eq(argus_map_get(argus, "bools", "n").as_bool, false,
+    cr_assert_eq(argus_map_get(&argus, "bools", "n").as_bool, false,
                 "no should be parsed as false");
-    cr_assert_eq(argus_map_get(argus, "bools", "one").as_bool, true,
+    cr_assert_eq(argus_map_get(&argus, "bools", "one").as_bool, true,
                 "1 should be parsed as true");
-    cr_assert_eq(argus_map_get(argus, "bools", "zero").as_bool, false,
+    cr_assert_eq(argus_map_get(&argus, "bools", "zero").as_bool, false,
                 "0 should be parsed as false");
     
     argus_free(&argus);
@@ -159,9 +159,9 @@ Test(edge_cases, integer_limits)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing INT_MAX should succeed");
-    cr_assert_eq(argus_get(argus, "int").as_int, 2147483647,
+    cr_assert_eq(argus_get(&argus, "int").as_int, 2147483647,
                 "INT_MAX should be parsed correctly");
-    cr_assert_eq(argus_get(argus, "pos-int").as_int, 2147483647,
+    cr_assert_eq(argus_get(&argus, "pos-int").as_int, 2147483647,
                 "INT_MAX positional should be parsed correctly");
     
     argus_free(&argus);
@@ -177,7 +177,7 @@ Test(edge_cases, integer_min_without_separator)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing INT_MIN should succeed");
-    cr_assert_eq(argus_get(argus, "pos-int").as_int, -2147483648,
+    cr_assert_eq(argus_get(&argus, "pos-int").as_int, -2147483648,
                 "INT_MIN positional should be parsed correctly");
     
     argus_free(&argus);
@@ -194,10 +194,10 @@ Test(edge_cases, valid_positionals_full)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing all positionals should succeed");
-    cr_assert_str_eq(argus_get(argus, "required1").as_string, "req1");
-    cr_assert_str_eq(argus_get(argus, "required2").as_string, "req2");
-    cr_assert_str_eq(argus_get(argus, "optional1").as_string, "opt1");
-    cr_assert_str_eq(argus_get(argus, "optional2").as_string, "opt2");
+    cr_assert_str_eq(argus_get(&argus, "required1").as_string, "req1");
+    cr_assert_str_eq(argus_get(&argus, "required2").as_string, "req2");
+    cr_assert_str_eq(argus_get(&argus, "optional1").as_string, "opt1");
+    cr_assert_str_eq(argus_get(&argus, "optional2").as_string, "opt2");
     
     argus_free(&argus);
 }
@@ -213,10 +213,10 @@ Test(edge_cases, valid_positionals_some_optional)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing with some optionals should succeed");
-    cr_assert_str_eq(argus_get(argus, "required1").as_string, "req1");
-    cr_assert_str_eq(argus_get(argus, "required2").as_string, "req2");
-    cr_assert_str_eq(argus_get(argus, "optional1").as_string, "opt1", "First optional should get value");
-    cr_assert_eq(argus_is_set(argus, "optional2"), false, "Second optional should not be set");
+    cr_assert_str_eq(argus_get(&argus, "required1").as_string, "req1");
+    cr_assert_str_eq(argus_get(&argus, "required2").as_string, "req2");
+    cr_assert_str_eq(argus_get(&argus, "optional1").as_string, "opt1", "First optional should get value");
+    cr_assert_eq(argus_is_set(&argus, "optional2"), false, "Second optional should not be set");
     
     argus_free(&argus);
 }
@@ -232,12 +232,12 @@ Test(edge_cases, valid_positionals_only_required)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing only required positionals should succeed");
-    cr_assert_str_eq(argus_get(argus, "required1").as_string, "req1");
-    cr_assert_str_eq(argus_get(argus, "required2").as_string, "req2");
+    cr_assert_str_eq(argus_get(&argus, "required1").as_string, "req1");
+    cr_assert_str_eq(argus_get(&argus, "required2").as_string, "req2");
     
     // Optional arguments shouldn't be set
-    cr_assert_eq(argus_is_set(argus, "optional1"), false);
-    cr_assert_eq(argus_is_set(argus, "optional2"), false);
+    cr_assert_eq(argus_is_set(&argus, "optional1"), false);
+    cr_assert_eq(argus_is_set(&argus, "optional2"), false);
     
     argus_free(&argus);
 }

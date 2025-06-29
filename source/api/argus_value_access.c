@@ -4,52 +4,52 @@
 #include <stddef.h>
 #include <string.h>
 
-argus_value_t argus_get(argus_t argus, const char *option_path)
+argus_value_t argus_get(argus_t *argus, const char *option_path)
 {
-    argus.error_code       = 0;
-    argus_option_t *option = find_option_by_active_path(argus, option_path);
+    argus->error_code       = 0;
+    argus_option_t *option = find_option_by_active_path(*argus, option_path);
     if (option == NULL) {
-        argus.error_code = ARGUS_ERROR_NO_VALUE;
+        argus->error_code = ARGUS_ERROR_NO_VALUE;
         return ((argus_value_t){.raw = 0});
     }
     return (option->value);
 }
 
-bool argus_is_set(argus_t argus, const char *option_path)
+bool argus_is_set(argus_t *argus, const char *option_path)
 {
-    argus_option_t *option = find_option_by_active_path(argus, option_path);
+    argus_option_t *option = find_option_by_active_path(*argus, option_path);
     if (option == NULL)
         return (false);
     return (option->is_set);
 }
 
-size_t argus_count(argus_t argus, const char *option_path)
+size_t argus_count(argus_t *argus, const char *option_path)
 {
-    argus_option_t *option = find_option_by_active_path(argus, option_path);
+    argus_option_t *option = find_option_by_active_path(*argus, option_path);
     if (option == NULL)
         return (0);
     return (option->value_count);
 }
 
-argus_value_t argus_array_get(argus_t argus, const char *option_path, size_t index)
+argus_value_t argus_array_get(argus_t *argus, const char *option_path, size_t index)
 {
-    argus.error_code       = 0;
-    argus_option_t *option = find_option_by_active_path(argus, option_path);
+    argus->error_code       = 0;
+    argus_option_t *option = find_option_by_active_path(*argus, option_path);
 
     if (option == NULL) {
-        argus.error_code = ARGUS_ERROR_NO_VALUE;
+        argus->error_code = ARGUS_ERROR_NO_VALUE;
         return ((argus_value_t){.raw = 0});
     }
 
     // Check if the option is an array type
     if (!(option->value_type & VALUE_TYPE_ARRAY)) {
-        argus.error_code = ARGUS_ERROR_INVALID_TYPE;
+        argus->error_code = ARGUS_ERROR_INVALID_TYPE;
         return ((argus_value_t){.raw = 0});
     }
 
     // Check if the index is valid
     if (index >= option->value_count) {
-        argus.error_code = ARGUS_ERROR_INVALID_INDEX;
+        argus->error_code = ARGUS_ERROR_INVALID_INDEX;
         return ((argus_value_t){.raw = 0});
     }
 
@@ -57,19 +57,19 @@ argus_value_t argus_array_get(argus_t argus, const char *option_path, size_t ind
     return option->value.as_array[index];
 }
 
-argus_value_t argus_map_get(argus_t argus, const char *option_path, const char *key)
+argus_value_t argus_map_get(argus_t *argus, const char *option_path, const char *key)
 {
-    argus.error_code       = 0;
-    argus_option_t *option = find_option_by_active_path(argus, option_path);
+    argus->error_code       = 0;
+    argus_option_t *option = find_option_by_active_path(*argus, option_path);
 
     if (option == NULL) {
-        argus.error_code = ARGUS_ERROR_NO_VALUE;
+        argus->error_code = ARGUS_ERROR_NO_VALUE;
         return ((argus_value_t){.raw = 0});
     }
 
     // Check if the option is a map type
     if (!(option->value_type & VALUE_TYPE_MAP)) {
-        argus.error_code = ARGUS_ERROR_INVALID_TYPE;
+        argus->error_code = ARGUS_ERROR_INVALID_TYPE;
         return ((argus_value_t){.raw = 0});
     }
 
@@ -81,14 +81,14 @@ argus_value_t argus_map_get(argus_t argus, const char *option_path, const char *
     }
 
     // Key not found
-    argus.error_code = ARGUS_ERROR_INVALID_KEY;
+    argus->error_code = ARGUS_ERROR_INVALID_KEY;
     return ((argus_value_t){.raw = 0});
 }
 
-argus_array_it_t argus_array_it(argus_t argus, const char *option_path)
+argus_array_it_t argus_array_it(argus_t *argus, const char *option_path)
 {
     argus_array_it_t it     = {0};
-    argus_option_t  *option = find_option_by_active_path(argus, option_path);
+    argus_option_t  *option = find_option_by_active_path(*argus, option_path);
 
     if (option == NULL || !(option->value_type & VALUE_TYPE_ARRAY))
         return it;  // Return empty iterator
@@ -114,10 +114,10 @@ void argus_array_reset(argus_array_it_t *it)
         it->_position = 0;
 }
 
-argus_map_it_t argus_map_it(argus_t argus, const char *option_path)
+argus_map_it_t argus_map_it(argus_t *argus, const char *option_path)
 {
     argus_map_it_t  it     = {0};
-    argus_option_t *option = find_option_by_active_path(argus, option_path);
+    argus_option_t *option = find_option_by_active_path(*argus, option_path);
 
     if (option == NULL || !(option->value_type & VALUE_TYPE_MAP))
         return it;  // Return empty iterator

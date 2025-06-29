@@ -290,7 +290,7 @@ ARGUS_OPTIONS(
 
 ```c
 OPTION_STRING('o', "output", HELP("Output file"))
-// Access via: argus_get(argus, "output")
+// Access via: argus_get(&argus, "output")
 // Usage: -o file.txt OR --output=file.txt
 ```
 
@@ -298,7 +298,7 @@ OPTION_STRING('o', "output", HELP("Output file"))
 
 ```c
 OPTION_FLAG('\0', "dry-run", HELP("Show what would be done"))
-// Access via: argus_get(argus, "dry-run")  
+// Access via: argus_get(&argus, "dry-run")  
 // Usage: --dry-run (no short form)
 ```
 
@@ -306,7 +306,7 @@ OPTION_FLAG('\0', "dry-run", HELP("Show what would be done"))
 
 ```c
 OPTION_INT('p', NULL, HELP("Port number"))
-// Access via: argus_get(argus, "p")  -- uses short name as identifier
+// Access via: argus_get(&argus, "p")  -- uses short name as identifier
 // Usage: -p 8080 (no long form)
 ```
 

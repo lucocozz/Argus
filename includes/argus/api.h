@@ -65,9 +65,9 @@ ARGUS_API void argus_free(argus_t *argus);
 /**
  * Display functions
  */
-ARGUS_API void argus_print_help(argus_t argus);
-ARGUS_API void argus_print_usage(argus_t argus);
-ARGUS_API void argus_print_version(argus_t argus);
+ARGUS_API void argus_print_help(argus_t *argus);
+ARGUS_API void argus_print_usage(argus_t *argus);
+ARGUS_API void argus_print_version(argus_t *argus);
 
 /**
  * argus_is_set - Check if an option was set on the command line
@@ -77,7 +77,7 @@ ARGUS_API void argus_print_version(argus_t argus);
  *
  * @return true if the option was set, false otherwise
  */
-ARGUS_API bool argus_is_set(argus_t argus, const char *option_path);
+ARGUS_API bool argus_is_set(argus_t *argus, const char *option_path);
 
 /**
  * argus_get - Get the value of an option
@@ -87,7 +87,7 @@ ARGUS_API bool argus_is_set(argus_t argus, const char *option_path);
  *
  * @return Value of the option, or {0} if not found
  */
-ARGUS_API argus_value_t argus_get(argus_t argus, const char *option_path);
+ARGUS_API argus_value_t argus_get(argus_t *argus, const char *option_path);
 
 /**
  * argus_count - Get the number of values for an option
@@ -97,7 +97,7 @@ ARGUS_API argus_value_t argus_get(argus_t argus, const char *option_path);
  *
  * @return Number of values for the option
  */
-ARGUS_API size_t argus_count(argus_t argus, const char *option_path);
+ARGUS_API size_t argus_count(argus_t *argus, const char *option_path);
 
 /**
  * argus_has_command - Check if a subcommand was parsed
@@ -106,7 +106,7 @@ ARGUS_API size_t argus_count(argus_t argus, const char *option_path);
  *
  * @return true if a subcommand was parsed, false otherwise
  */
-ARGUS_API bool argus_has_command(argus_t argus);
+ARGUS_API bool argus_has_command(argus_t *argus);
 
 /**
  * argus_exec - Execute the parsed subcommand
@@ -127,7 +127,7 @@ ARGUS_API int argus_exec(argus_t *argus, void *data);
  *
  * @return Value of the element at the specified index, or {0} if not found or index out of bounds
  */
-ARGUS_API argus_value_t argus_array_get(argus_t argus, const char *option_path, size_t index);
+ARGUS_API argus_value_t argus_array_get(argus_t *argus, const char *option_path, size_t index);
 
 /**
  * argus_map_get - Get a value from a map option with the specified key
@@ -138,7 +138,7 @@ ARGUS_API argus_value_t argus_array_get(argus_t argus, const char *option_path, 
  *
  * @return Value associated with the key, or {0} if not found
  */
-ARGUS_API argus_value_t argus_map_get(argus_t argus, const char *option_path, const char *key);
+ARGUS_API argus_value_t argus_map_get(argus_t *argus, const char *option_path, const char *key);
 
 /**
  * argus_array_it - Create an iterator for efficiently traversing an array option
@@ -148,7 +148,7 @@ ARGUS_API argus_value_t argus_map_get(argus_t argus, const char *option_path, co
  *
  * @return Iterator structure for the array, with count=0 if option not found
  */
-ARGUS_API argus_array_it_t argus_array_it(argus_t argus, const char *option_path);
+ARGUS_API argus_array_it_t argus_array_it(argus_t *argus, const char *option_path);
 
 /**
  * argus_array_next - Get the next element from an array iterator
@@ -174,7 +174,7 @@ ARGUS_API void argus_array_reset(argus_array_it_t *it);
  *
  * @return Iterator structure for the map, with count=0 if option not found
  */
-ARGUS_API argus_map_it_t argus_map_it(argus_t argus, const char *option_path);
+ARGUS_API argus_map_it_t argus_map_it(argus_t *argus, const char *option_path);
 
 /**
  * argus_map_next - Get the next key-value pair from a map iterator

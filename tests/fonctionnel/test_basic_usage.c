@@ -36,10 +36,10 @@ Test(basic_usage, successful_parse)
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing failed with status %d", status);
     
     // Check values
-    cr_assert_eq(argus_get(argus, "verbose").as_bool, true);
-    cr_assert_str_eq(argus_get(argus, "output").as_string, "custom.txt");
-    cr_assert_eq(argus_get(argus, "port").as_int, 9000);
-    cr_assert_str_eq(argus_get(argus, "input").as_string, "input.txt");
+    cr_assert_eq(argus_get(&argus, "verbose").as_bool, true);
+    cr_assert_str_eq(argus_get(&argus, "output").as_string, "custom.txt");
+    cr_assert_eq(argus_get(&argus, "port").as_int, 9000);
+    cr_assert_str_eq(argus_get(&argus, "input").as_string, "input.txt");
     
     // Clean up
     argus_free(&argus);

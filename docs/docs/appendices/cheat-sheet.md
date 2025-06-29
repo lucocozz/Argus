@@ -20,7 +20,7 @@ int main(int argc, char **argv)
         return 1;
     
     // Access values
-    bool flag = argus_get(argus, "flag").as_bool;
+    bool flag = argus_get(&argus, "flag").as_bool;
     
     argus_free(&argus);
     return 0;
@@ -132,23 +132,23 @@ FLAGS(FLAG_SORTED_VALUE)    // Sort map by values
 
 ```c
 // Basic access
-bool verbose = argus_get(argus, "verbose").as_bool;
-const char *output = argus_get(argus, "output").as_string;
+bool verbose = argus_get(&argus, "verbose").as_bool;
+const char *output = argus_get(&argus, "output").as_string;
 
 // Check if set
-if (argus_is_set(argus, "output")) {
+if (argus_is_set(&argus, "output")) {
     // User provided this option
 }
 
 // Array access
-size_t count = argus_count(argus, "tags");
-const char *first = argus_array_get(argus, "tags", 0).as_string;
+size_t count = argus_count(&argus, "tags");
+const char *first = argus_array_get(&argus, "tags", 0).as_string;
 
 // Map access
-const char *user = argus_map_get(argus, "env", "USER").as_string;
+const char *user = argus_map_get(&argus, "env", "USER").as_string;
 
 // Iterators
-argus_array_it_t it = argus_array_it(argus, "tags");
+argus_array_it_t it = argus_array_it(&argus, "tags");
 while (argus_array_next(&it)) {
     printf("%s\n", it.value.as_string);
 }
@@ -159,8 +159,8 @@ while (argus_array_next(&it)) {
 ```c
 int add_action(argus_t *argus, void *data)
 {
-    const char *file = argus_get(*argus, "file").as_string;     // Local option
-    bool verbose = argus_get(*argus, ".verbose").as_bool;       // Global option
+    const char *file = argus_get(argus, "file").as_string;     // Local option
+    bool verbose = argus_get(argus, ".verbose").as_bool;       // Global option
     return 0;
 }
 
@@ -178,7 +178,7 @@ ARGUS_OPTIONS(options,
 int main(int argc, char **argv)
 {
     // ... parse ...
-    if (argus_has_command(argus)) {
+    if (argus_has_command(&argus)) {
         return argus_exec(&argus, NULL);
     }
 }
@@ -245,7 +245,7 @@ OPTION_BASE('e', "endpoint", VALUE_TYPE_CUSTOM,
             HANDLER(endpoint_handler), FREE_HANDLER(endpoint_free))
 
 // Access
-endpoint_t *ep = (endpoint_t*)argus_get(argus, "endpoint").as_ptr;
+endpoint_t *ep = (endpoint_t*)argus_get(&argus, "endpoint").as_ptr;
 ```
 
 ## Groups

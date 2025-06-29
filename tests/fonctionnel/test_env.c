@@ -98,17 +98,17 @@ Test(env_vars, env_override_flag, .init = setup_env, .fini = teardown_env)
     cr_assert_eq(status, ARGUS_SUCCESS, "Command line arguments should parse successfully");
     
     // Check option values
-    cr_assert_str_eq(argus_get(argus, "host").as_string, "cli-server.example.com", 
+    cr_assert_str_eq(argus_get(&argus, "host").as_string, "cli-server.example.com", 
                      "Host should be from command line");
     
-    cr_assert_eq(argus_get(argus, "port").as_int, 8080, 
+    cr_assert_eq(argus_get(&argus, "port").as_int, 8080, 
                  "Port should be from command line");
     
-    cr_assert_str_eq(argus_get(argus, "database").as_string, "mysql://localhost/db", 
+    cr_assert_str_eq(argus_get(&argus, "database").as_string, "mysql://localhost/db", 
                      "Database should be from command line");
     
     // Check that FLAG_ENV_OVERRIDE made env var override command line
-    cr_assert_eq(argus_get(argus, "timeout").as_int, 60, 
+    cr_assert_eq(argus_get(&argus, "timeout").as_int, 60, 
                  "Timeout should be from env var despite command line value");
     
     // Clean up

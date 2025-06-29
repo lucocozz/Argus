@@ -15,9 +15,9 @@
  *
  * param argus  Argus context
  */
-void argus_print_help(argus_t argus)
+void argus_print_help(argus_t *argus)
 {
-    display_help(&argus, NULL);
+    display_help(argus, NULL);
 }
 
 /**
@@ -25,9 +25,9 @@ void argus_print_help(argus_t argus)
  *
  * param argus  Argus context
  */
-void argus_print_usage(argus_t argus)
+void argus_print_usage(argus_t *argus)
 {
-    display_usage(&argus, NULL);
+    display_usage(argus, NULL);
 }
 
 /**
@@ -35,7 +35,7 @@ void argus_print_usage(argus_t argus)
  *
  * param argus  Argus context
  */
-void argus_print_version(argus_t argus)
+void argus_print_version(argus_t *argus)
 {
-    display_version(&argus);
+    display_version(argus);
 }

@@ -38,11 +38,11 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Access by long name (preferred)
-    bool verbose = argus_get(argus, "verbose").as_bool;
-    const char *output = argus_get(argus, "output").as_string;
-    int port = argus_get(argus, "port").as_int;
-    float rate = argus_get(argus, "rate").as_float;
-    bool debug = argus_get(argus, "debug").as_bool;
+    bool verbose = argus_get(&argus, "verbose").as_bool;
+    const char *output = argus_get(&argus, "output").as_string;
+    int port = argus_get(&argus, "port").as_int;
+    float rate = argus_get(&argus, "rate").as_float;
+    bool debug = argus_get(&argus, "debug").as_bool;
     
     printf("Verbose: %s\n", verbose ? "yes" : "no");
     printf("Output: %s\n", output);
@@ -71,12 +71,12 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Access positional arguments by name
-    const char *input = argus_get(argus, "input").as_string;
-    const char *output = argus_get(argus, "output").as_string;
+    const char *input = argus_get(&argus, "input").as_string;
+    const char *output = argus_get(&argus, "output").as_string;
     
     // Check optional positionals before accessing
-    if (argus_is_set(argus, "count")) {
-        int count = argus_get(argus, "count").as_int;
+    if (argus_is_set(&argus, "count")) {
+        int count = argus_get(&argus, "count").as_int;
         printf("Count: %d\n", count);
     }
     
@@ -101,10 +101,10 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Use short name as identifier when no long name
-    int port = argus_get(argus, "p").as_int;
+    int port = argus_get(&argus, "p").as_int;
     
     // Use long name as identifier when available
-    bool debug = argus_get(argus, "debug").as_bool;
+    bool debug = argus_get(&argus, "debug").as_bool;
     
     argus_free(&argus);
     return 0;
@@ -132,13 +132,13 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Always check if user explicitly set the option
-    if (argus_is_set(argus, "output"))
-        printf("User specified output: %s\n", argus_get(argus, "output").as_string);
+    if (argus_is_set(&argus, "output"))
+        printf("User specified output: %s\n", argus_get(&argus, "output").as_string);
     else
-        printf("Using default output: %s\n", argus_get(argus, "output").as_string);
+        printf("Using default output: %s\n", argus_get(&argus, "output").as_string);
     
     // Required positionals are always set (or parsing fails)
-    const char *input = argus_get(argus, "input").as_string;
+    const char *input = argus_get(&argus, "input").as_string;
     printf("Input: %s\n", input);
     
     argus_free(&argus);
@@ -173,16 +173,16 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Get array count and data
-    size_t tag_count = argus_count(argus, "tags");
-    argus_value_t *tags = argus_get(argus, "tags").as_array;
+    size_t tag_count = argus_count(&argus, "tags");
+    argus_value_t *tags = argus_get(&argus, "tags").as_array;
     
     printf("Tags (%zu):\n", tag_count);
     for (size_t i = 0; i < tag_count; i++)
         printf("  %zu: %s\n", i + 1, tags[i].as_string);
     
     // Same for integers
-    size_t num_count = argus_count(argus, "numbers");
-    argus_value_t *numbers = argus_get(argus, "numbers").as_array;
+    size_t num_count = argus_count(&argus, "numbers");
+    argus_value_t *numbers = argus_get(&argus, "numbers").as_array;
     
     for (size_t i = 0; i < num_count; i++)
         printf("Number %zu: %d\n", i + 1, numbers[i].as_int);
@@ -207,8 +207,8 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Get specific array elements by index
-    const char *first_tag = argus_array_get(argus, "tags", 0).as_string;
-    const char *second_tag = argus_array_get(argus, "tags", 1).as_string;
+    const char *first_tag = argus_array_get(&argus, "tags", 0).as_string;
+    const char *second_tag = argus_array_get(&argus, "tags", 1).as_string;
     
     if (first_tag) 
         printf("First tag: %s\n", first_tag);
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
         printf("Second tag: %s\n", second_tag);
     
     // Helper returns empty value for invalid indices
-    argus_value_t invalid = argus_array_get(argus, "tags", 999);
+    argus_value_t invalid = argus_array_get(&argus, "tags", 999);
     // invalid.as_string will be NULL
     
     argus_free(&argus);
@@ -239,7 +239,7 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Create iterator for clean traversal
-    argus_array_it_t it = argus_array_it(argus, "tags");
+    argus_array_it_t it = argus_array_it(&argus, "tags");
     
     printf("Tags:\n");
     while (argus_array_next(&it))
@@ -279,8 +279,8 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Get map count and data
-    size_t env_count = argus_count(argus, "env");
-    argus_pair_t *env_map = argus_get(argus, "env").as_map;
+    size_t env_count = argus_count(&argus, "env");
+    argus_pair_t *env_map = argus_get(&argus, "env").as_map;
     
     printf("Environment variables (%zu):\n", env_count);
     for (size_t i = 0; i < env_count; i++)
@@ -308,14 +308,14 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Look up specific keys
-    const char *user = argus_map_get(argus, "env", "USER").as_string;
-    const char *home = argus_map_get(argus, "env", "HOME").as_string;
+    const char *user = argus_map_get(&argus, "env", "USER").as_string;
+    const char *home = argus_map_get(&argus, "env", "HOME").as_string;
     
-    int http_port = argus_map_get(argus, "ports", "http").as_int;
-    int https_port = argus_map_get(argus, "ports", "https").as_int;
+    int http_port = argus_map_get(&argus, "ports", "http").as_int;
+    int https_port = argus_map_get(&argus, "ports", "https").as_int;
     
-    bool debug = argus_map_get(argus, "features", "debug").as_bool;
-    bool cache = argus_map_get(argus, "features", "cache").as_bool;
+    bool debug = argus_map_get(&argus, "features", "debug").as_bool;
+    bool cache = argus_map_get(&argus, "features", "cache").as_bool;
     
     // Check if keys were actually provided
     if (user) 
@@ -347,7 +347,7 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Create iterator for clean traversal
-    argus_map_it_t it = argus_map_it(argus, "env");
+    argus_map_it_t it = argus_map_it(&argus, "env");
     
     printf("Environment variables:\n");
     while (argus_map_next(&it))
@@ -375,11 +375,11 @@ int add_command(argus_t *argus, void *data)
     (void)data; // Unused
     
     // Access subcommand options using relative names
-    const char *file = argus_get(*argus, "file").as_string;
-    bool force = argus_get(*argus, "force").as_bool;
+    const char *file = argus_get(argus, "file").as_string;
+    bool force = argus_get(argus, "force").as_bool;
     
     // Access global options using absolute path
-    bool verbose = argus_get(*argus, ".verbose").as_bool;
+    bool verbose = argus_get(argus, ".verbose").as_bool;
     
     printf("Adding file: %s\n", file);
     if (force) 
@@ -414,13 +414,13 @@ int service_create_action(argus_t *argus, void *data)
     // Different ways to access the same value
     
     // 1. Relative path (current subcommand context)
-    const char *name = argus_get(*argus, "name").as_string;
+    const char *name = argus_get(argus, "name").as_string;
     
     // 2. Absolute path (full path from root)
-    const char *name_abs = argus_get(*argus, "service.create.name").as_string;
+    const char *name_abs = argus_get(argus, "service.create.name").as_string;
     
     // 3. Root-level option (dot prefix)
-    bool debug = argus_get(*argus, ".debug").as_bool;
+    bool debug = argus_get(argus, ".debug").as_bool;
     
     printf("Creating service: %s\n", name);
     if (debug) 
@@ -485,7 +485,7 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Cast generic pointer to your custom type
-    endpoint_t *endpoint = (endpoint_t*)argus_get(argus, "endpoint").as_ptr;
+    endpoint_t *endpoint = (endpoint_t*)argus_get(&argus, "endpoint").as_ptr;
     
     if (endpoint) {
         printf("Host: %s\n", endpoint->host);
@@ -514,8 +514,8 @@ int main(int argc, char **argv)
     }
     
     // Safe to access values after successful parse
-    bool verbose = argus_get(argus, "verbose").as_bool;
-    const char *input = argus_get(argus, "input").as_string;
+    bool verbose = argus_get(&argus, "verbose").as_bool;
+    const char *input = argus_get(&argus, "input").as_string;
     
     // Your application logic here
     
@@ -535,19 +535,19 @@ if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS) {
 }
 
 // 2. Use descriptive variable names
-const char *config_file = argus_get(argus, "config").as_string;
-bool enable_debug = argus_get(argus, "debug").as_bool;
+const char *config_file = argus_get(&argus, "config").as_string;
+bool enable_debug = argus_get(&argus, "debug").as_bool;
 
 // 3. Check optional values before using
-if (argus_is_set(argus, "output")) {
-    const char *output = argus_get(argus, "output").as_string;
+if (argus_is_set(&argus, "output")) {
+    const char *output = argus_get(&argus, "output").as_string;
     // Use output...
 }
 
 // 4. Access arrays safely
-size_t count = argus_count(argus, "files");
+size_t count = argus_count(&argus, "files");
 if (count > 0) {
-    argus_value_t *files = argus_get(argus, "files").as_array;
+    argus_value_t *files = argus_get(&argus, "files").as_array;
     // Process files...
 }
 ```
@@ -557,14 +557,14 @@ if (count > 0) {
 ```c
 // ❌ Don't ignore parse errors
 argus_parse(&argus, argc, argv); // Missing error check
-bool verbose = argus_get(argus, "verbose").as_bool;
+bool verbose = argus_get(&argus, "verbose").as_bool;
 
 // ❌ Don't access without checking count for arrays
-argus_value_t *files = argus_get(argus, "files").as_array;
+argus_value_t *files = argus_get(&argus, "files").as_array;
 printf("First file: %s\n", files[0].as_string); // May crash!
 
 // ❌ Don't assume optional values are set
-const char *output = argus_get(argus, "output").as_string;
+const char *output = argus_get(&argus, "output").as_string;
 FILE *f = fopen(output, "w"); // output might be NULL!
 ```
 
@@ -572,14 +572,14 @@ FILE *f = fopen(output, "w"); // output might be NULL!
 
 | Scenario | Method | Example |
 |----------|---------|---------|
-| **Basic types** | `argus_get().as_type` | `argus_get(argus, "port").as_int` |
-| **Check if set** | `argus_is_set()` | `if (argus_is_set(argus, "output"))` |
-| **Array elements** | `argus_array_get()` | `argus_array_get(argus, "tags", 0)` |
+| **Basic types** | `argus_get().as_type` | `argus_get(&argus, "port").as_int` |
+| **Check if set** | `argus_is_set()` | `if (argus_is_set(&argus, "output"))` |
+| **Array elements** | `argus_array_get()` | `argus_array_get(&argus, "tags", 0)` |
 | **Array iteration** | `argus_array_it()` | `while (argus_array_next(&it))` |
-| **Map lookup** | `argus_map_get()` | `argus_map_get(argus, "env", "USER")` |
+| **Map lookup** | `argus_map_get()` | `argus_map_get(&argus, "env", "USER")` |
 | **Map iteration** | `argus_map_it()` | `while (argus_map_next(&it))` |
-| **Subcommand relative** | `argus_get()` | `argus_get(*argus, "file").as_string` |
-| **Root from subcommand** | `argus_get()` with `.` | `argus_get(*argus, ".debug").as_bool` |
+| **Subcommand relative** | `argus_get()` | `argus_get(argus, "file").as_string` |
+| **Root from subcommand** | `argus_get()` with `.` | `argus_get(argus, ".debug").as_bool` |
 | **Custom types** | Cast `as_ptr` | `(my_type_t*)argus_get().as_ptr` |
 
 ## What's Next?

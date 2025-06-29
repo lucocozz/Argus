@@ -155,15 +155,15 @@ int main(int argc, char **argv)
     if (status != ARGUS_SUCCESS)
         return status;
     
-    url_t *target = argus_get(argus, "target").as_ptr;
+    url_t *target = argus_get(&argus, "target").as_ptr;
 
     printf("Target URL:\n");
     print_url(target);
     printf("\n");
 
-    if (argus_is_set(argus, "proxy"))
+    if (argus_is_set(&argus, "proxy"))
     {
-        url_t *proxy = argus_get(argus, "proxy").as_ptr;
+        url_t *proxy = argus_get(&argus, "proxy").as_ptr;
         printf("Proxy URL:\n");
         print_url(proxy);
         printf("\n");

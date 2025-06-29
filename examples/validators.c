@@ -201,14 +201,14 @@ int main(int argc, char **argv)
     if (status != ARGUS_SUCCESS)
         return status;
 
-    if (argus_is_set(argus, "log-level"))
-        printf("Log level: %s\n", argus_get(argus, "log-level").as_string);
-    if (argus_is_set(argus, "ip-address"))
-        printf("IP address: %s\n", argus_get(argus, "ip-address").as_string);
-    if (argus_is_set(argus, "email"))
-        printf("Email: %s\n", argus_get(argus, "email").as_string);
-    if (argus_is_set(argus, "number"))
-        printf("Number: %d\n", argus_get(argus, "number").as_int);
+    if (argus_is_set(&argus, "log-level"))
+        printf("Log level: %s\n", argus_get(&argus, "log-level").as_string);
+    if (argus_is_set(&argus, "ip-address"))
+        printf("IP address: %s\n", argus_get(&argus, "ip-address").as_string);
+    if (argus_is_set(&argus, "email"))
+        printf("Email: %s\n", argus_get(&argus, "email").as_string);
+    if (argus_is_set(&argus, "number"))
+        printf("Number: %d\n", argus_get(&argus, "number").as_int);
 
     argus_free(&argus);
     return 0;

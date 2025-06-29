@@ -44,10 +44,10 @@ int main(int argc, char **argv)
     }
     
     // Access parsed values with type safety
-    const char *input = argus_get(argus, "input").as_string;
-    const char *output = argus_get(argus, "output").as_string;
-    int count = argus_get(argus, "count").as_int;
-    bool verbose = argus_get(argus, "verbose").as_bool;
+    const char *input = argus_get(&argus, "input").as_string;
+    const char *output = argus_get(&argus, "output").as_string;
+    int count = argus_get(&argus, "count").as_int;
+    bool verbose = argus_get(&argus, "verbose").as_bool;
     
     // Your application logic
     if (verbose) {

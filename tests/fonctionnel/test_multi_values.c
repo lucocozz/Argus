@@ -39,20 +39,20 @@ Test(multi_value_access, argus_array_get)
     argus_t argus = setup_multi_value_argus();
     
     // Check string array values
-    cr_assert_str_eq(argus_array_get(argus, "strings", 0).as_string, "one", "First string should be 'one'");
-    cr_assert_str_eq(argus_array_get(argus, "strings", 1).as_string, "two", "Second string should be 'two'");
-    cr_assert_str_eq(argus_array_get(argus, "strings", 2).as_string, "three", "Third string should be 'three'");
+    cr_assert_str_eq(argus_array_get(&argus, "strings", 0).as_string, "one", "First string should be 'one'");
+    cr_assert_str_eq(argus_array_get(&argus, "strings", 1).as_string, "two", "Second string should be 'two'");
+    cr_assert_str_eq(argus_array_get(&argus, "strings", 2).as_string, "three", "Third string should be 'three'");
     
     // Check int array values
-    cr_assert_eq(argus_array_get(argus, "ints", 0).as_int, 1, "First int should be 1");
-    cr_assert_eq(argus_array_get(argus, "ints", 2).as_int, 3, "Third int should be 3");
-    cr_assert_eq(argus_array_get(argus, "ints", 4).as_int, 5, "Fifth int should be 5");
+    cr_assert_eq(argus_array_get(&argus, "ints", 0).as_int, 1, "First int should be 1");
+    cr_assert_eq(argus_array_get(&argus, "ints", 2).as_int, 3, "Third int should be 3");
+    cr_assert_eq(argus_array_get(&argus, "ints", 4).as_int, 5, "Fifth int should be 5");
     
     // Check out-of-bounds access
-    cr_assert_eq(argus_array_get(argus, "strings", 10).raw, 0, "Out-of-bounds access should return empty value");
+    cr_assert_eq(argus_array_get(&argus, "strings", 10).raw, 0, "Out-of-bounds access should return empty value");
     
     // Check non-existent option
-    cr_assert_eq(argus_array_get(argus, "nonexistent", 0).raw, 0, "Non-existent option should return empty value");
+    cr_assert_eq(argus_array_get(&argus, "nonexistent", 0).raw, 0, "Non-existent option should return empty value");
     
     // Clean up
     argus_free(&argus);
@@ -64,20 +64,20 @@ Test(multi_value_access, argus_map_get)
     argus_t argus = setup_multi_value_argus();
     
     // Check string map values
-    cr_assert_str_eq(argus_map_get(argus, "map", "key1").as_string, "value1", "key1 should map to 'value1'");
-    cr_assert_str_eq(argus_map_get(argus, "map", "key2").as_string, "value2", "key2 should map to 'value2'");
-    cr_assert_str_eq(argus_map_get(argus, "map", "key3").as_string, "value3", "key3 should map to 'value3'");
+    cr_assert_str_eq(argus_map_get(&argus, "map", "key1").as_string, "value1", "key1 should map to 'value1'");
+    cr_assert_str_eq(argus_map_get(&argus, "map", "key2").as_string, "value2", "key2 should map to 'value2'");
+    cr_assert_str_eq(argus_map_get(&argus, "map", "key3").as_string, "value3", "key3 should map to 'value3'");
     
     // Check int map values
-    cr_assert_eq(argus_map_get(argus, "ports", "http").as_int, 80, "http should map to 80");
-    cr_assert_eq(argus_map_get(argus, "ports", "https").as_int, 443, "https should map to 443");
-    cr_assert_eq(argus_map_get(argus, "ports", "smtp").as_int, 25, "smtp should map to 25");
+    cr_assert_eq(argus_map_get(&argus, "ports", "http").as_int, 80, "http should map to 80");
+    cr_assert_eq(argus_map_get(&argus, "ports", "https").as_int, 443, "https should map to 443");
+    cr_assert_eq(argus_map_get(&argus, "ports", "smtp").as_int, 25, "smtp should map to 25");
     
     // Check non-existent key
-    cr_assert_eq(argus_map_get(argus, "map", "nonexistent").raw, 0, "Non-existent key should return empty value");
+    cr_assert_eq(argus_map_get(&argus, "map", "nonexistent").raw, 0, "Non-existent key should return empty value");
     
     // Check non-existent option
-    cr_assert_eq(argus_map_get(argus, "nonexistent", "key").raw, 0, "Non-existent option should return empty value");
+    cr_assert_eq(argus_map_get(&argus, "nonexistent", "key").raw, 0, "Non-existent option should return empty value");
     
     // Clean up
     argus_free(&argus);
@@ -89,7 +89,7 @@ Test(multi_value_access, argus_array_it)
     argus_t argus = setup_multi_value_argus();
     
     // Test string array iterator
-    argus_array_it_t str_it = argus_array_it(argus, "strings");
+    argus_array_it_t str_it = argus_array_it(&argus, "strings");
     
     // Check iterator metadata
     cr_assert_eq(str_it._count, 3, "String array should have 3 elements");
@@ -107,7 +107,7 @@ Test(multi_value_access, argus_array_it)
     cr_assert_eq(str_count, 3, "Iterator should yield 3 values");
     
     // Test int array iterator
-    argus_array_it_t int_it = argus_array_it(argus, "ints");
+    argus_array_it_t int_it = argus_array_it(&argus, "ints");
     
     // Check iterator metadata
     cr_assert_eq(int_it._count, 5, "Int array should have 5 elements");
@@ -142,7 +142,7 @@ Test(multi_value_access, argus_map_it)
     argus_t argus = setup_multi_value_argus();
     
     // Test string map iterator
-    argus_map_it_t map_it = argus_map_it(argus, "map");
+    argus_map_it_t map_it = argus_map_it(&argus, "map");
     
     // Check iterator metadata
     cr_assert_eq(map_it._count, 3, "String map should have 3 elements");

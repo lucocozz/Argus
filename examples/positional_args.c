@@ -45,15 +45,15 @@ int main(int argc, char **argv)
         return status;
 
     // Access required positional arguments
-    const char *source = argus_get(argus, "source").as_string;
-    const char *destination = argus_get(argus, "destination").as_string;
+    const char *source = argus_get(&argus, "source").as_string;
+    const char *destination = argus_get(&argus, "destination").as_string;
     
     // Access optional positional arguments
-    int buffer_size = argus_get(argus, "buffer_size").as_int;
+    int buffer_size = argus_get(&argus, "buffer_size").as_int;
     
     // Optional argument may not be set
-    const char *log_file = argus_is_set(argus, "log_file") ? 
-                          argus_get(argus, "log_file").as_string : 
+    const char *log_file = argus_is_set(&argus, "log_file") ? 
+                          argus_get(&argus, "log_file").as_string : 
                           "(none)";
     
     printf("Configuration:\n");

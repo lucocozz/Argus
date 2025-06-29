@@ -198,9 +198,9 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Access arrays
-    if (argus_is_set(argus, "names")) {
-        size_t count = argus_count(argus, "names");
-        argus_value_t *names = argus_get(argus, "names").as_array;
+    if (argus_is_set(&argus, "names")) {
+        size_t count = argus_count(&argus, "names");
+        argus_value_t *names = argus_get(&argus, "names").as_array;
         
         printf("Names (%zu):\n", count);
         for (size_t i = 0; i < count; i++)
@@ -208,9 +208,9 @@ int main(int argc, char **argv)
     }
     
     // Access maps
-    if (argus_is_set(argus, "env")) {
-        size_t count = argus_count(argus, "env");
-        argus_pair_t *env = argus_get(argus, "env").as_map;
+    if (argus_is_set(&argus, "env")) {
+        size_t count = argus_count(&argus, "env");
+        argus_pair_t *env = argus_get(&argus, "env").as_map;
         
         printf("Environment (%zu):\n", count);
         for (size_t i = 0; i < count; i++)
@@ -234,17 +234,17 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Array element access
-    const char *first_name = argus_array_get(argus, "names", 0).as_string;
-    const char *second_name = argus_array_get(argus, "names", 1).as_string;
+    const char *first_name = argus_array_get(&argus, "names", 0).as_string;
+    const char *second_name = argus_array_get(&argus, "names", 1).as_string;
     
     if (first_name) 
         printf("First name: %s\n", first_name);
     
     // Map key lookup
-    const char *user = argus_map_get(argus, "env", "USER").as_string;
-    const char *home = argus_map_get(argus, "env", "HOME").as_string;
-    int http_port = argus_map_get(argus, "ports", "http").as_int;
-    bool debug = argus_map_get(argus, "features", "debug").as_bool;
+    const char *user = argus_map_get(&argus, "env", "USER").as_string;
+    const char *home = argus_map_get(&argus, "env", "HOME").as_string;
+    int http_port = argus_map_get(&argus, "ports", "http").as_int;
+    bool debug = argus_map_get(&argus, "features", "debug").as_bool;
     
     if (user) printf("User: %s\n", user);
     if (http_port) printf("HTTP port: %d\n", http_port);
@@ -255,8 +255,8 @@ int main(int argc, char **argv)
 ```
 
 **Helper functions:**
-- `argus_array_get(argus, "option", index)` - Get array element by index
-- `argus_map_get(argus, "option", "key")` - Get map value by key
+- `argus_array_get(&argus, "option", index)` - Get array element by index
+- `argus_map_get(&argus, "option", "key")` - Get map value by key
 - Return empty value (`{.raw = 0}`) for invalid indices/keys
 
 :::warning Safe Collection Access
@@ -264,21 +264,21 @@ Always check collection size before accessing elements:
 
 ```c
 // ✅ Safe array access
-size_t count = argus_count(argus, "names");
+size_t count = argus_count(&argus, "names");
 if (count > 0) {
-    const char *first = argus_array_get(argus, "names", 0).as_string;
+    const char *first = argus_array_get(&argus, "names", 0).as_string;
 }
 
 // ✅ Safe map access  
-if (argus_is_set(argus, "env")) {
-    const char *user = argus_map_get(argus, "env", "USER").as_string;
+if (argus_is_set(&argus, "env")) {
+    const char *user = argus_map_get(&argus, "env", "USER").as_string;
     if (user) {
         // Use user value
     }
 }
 
 // ❌ Unsafe - may access invalid indices
-const char *first = argus_array_get(argus, "names", 0).as_string; // Could be NULL
+const char *first = argus_array_get(&argus, "names", 0).as_string; // Could be NULL
 ```
 :::
 
@@ -294,13 +294,13 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Array iteration
-    argus_array_it_t names_it = argus_array_it(argus, "names");
+    argus_array_it_t names_it = argus_array_it(&argus, "names");
     printf("Names:\n");
     while (argus_array_next(&names_it))
         printf("  - %s\n", names_it.value.as_string);
     
     // Map iteration
-    argus_map_it_t env_it = argus_map_it(argus, "env");
+    argus_map_it_t env_it = argus_map_it(&argus, "env");
     printf("Environment:\n");
     while (argus_map_next(&env_it))
         printf("  %s = %s\n", env_it.key, env_it.value.as_string);
@@ -415,14 +415,14 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Process build targets
-    argus_array_it_t targets_it = argus_array_it(argus, "targets");
+    argus_array_it_t targets_it = argus_array_it(&argus, "targets");
     while (argus_array_next(&targets_it)) {
         printf("Building target: %s\n", targets_it.value.as_string);
         build_target(targets_it.value.as_string);
     }
     
     // Apply feature flags
-    argus_map_it_t features_it = argus_map_it(argus, "features");
+    argus_map_it_t features_it = argus_map_it(&argus, "features");
     while (argus_map_next(&features_it)) {
         set_feature(features_it.key, features_it.value.as_bool);
     }
@@ -468,7 +468,7 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Deploy to each environment
-    argus_array_it_t env_it = argus_array_it(argus, "environments");
+    argus_array_it_t env_it = argus_array_it(&argus, "environments");
     while (argus_array_next(&env_it)) {
         const char *env = env_it.value.as_string;
         printf("Deploying to %s...\n", env);
@@ -476,7 +476,7 @@ int main(int argc, char **argv)
         // Apply resource limits for this environment
         char key_buffer[64];
         snprintf(key_buffer, sizeof(key_buffer), "%s_cpu", env);
-        int cpu_limit = argus_map_get(argus, "resources", key_buffer).as_int;
+        int cpu_limit = argus_map_get(&argus, "resources", key_buffer).as_int;
         if (cpu_limit) {
             printf("  CPU limit: %d\n", cpu_limit);
         }

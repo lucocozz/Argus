@@ -164,7 +164,7 @@ int max_greater_than_min_validator(argus_t *argus, void *option_ptr, validator_d
     const char *min_option = (const char *)data.custom;
     
     int max_value = option->value.as_int;
-    int min_value = argus_get(*argus, min_option).as_int;
+    int min_value = argus_get(argus, min_option).as_int;
     
     if (max_value <= min_value) {
         ARGUS_PARSING_ERROR(argus, "Max value %d must be greater than min value %d",

@@ -35,9 +35,9 @@ int main(int argc, char **argv)
     if (status != ARGUS_SUCCESS)
         return status;
 
-    if (argus_is_set(argus, "username"))
-        printf("Username: %s\n", argus_get(argus, "username").as_string);
-    printf("  IP Address: %s\n", argus_get(argus, "ip").as_string);
+    if (argus_is_set(&argus, "username"))
+        printf("Username: %s\n", argus_get(&argus, "username").as_string);
+    printf("  IP Address: %s\n", argus_get(&argus, "ip").as_string);
 
     argus_free(&argus);
     return 0;
