@@ -10,13 +10,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: ${{ matrix.compiler }} ${{ matrix.regex && '| regex' || ''}}
+    name: ${{ matrix.compiler }} ${{ matrix.arch }} ${{ matrix.regex && '| regex' || ''}}
     strategy:
       fail-fast: false
       matrix:
         build-type: [release]
         compiler: [gcc, clang]
         regex: [true, false]
+        arch: [x64, x86]
+        exclude:
+          - compiler: clang
+            arch: x86
 
     steps:
     - uses: actions/checkout@v3
@@ -25,9 +29,17 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y meson ninja-build pkg-config ${{ matrix.compiler }}
+        if [ "${{ matrix.arch }}" = "x86" ]; then
+          sudo apt-get install -y gcc-multilib g++-multilib libc6-dev-i386
+        fi
 
     - name: Configure project
-      run: meson setup .build -Dregex=${{ matrix.regex }} -Dexamples=false
+      run: |
+        if [ "${{ matrix.arch }}" = "x86" ]; then
+          meson setup .build --cross-file=cross-files/i686-linux-gnu.txt -Dregex=${{ matrix.regex }} -Dexamples=false
+        else
+          meson setup .build -Dregex=${{ matrix.regex }} -Dexamples=false
+        fi
       env:
         CC: ${{ matrix.compiler }}
 
@@ -38,8 +50,12 @@ jobs:
         
     - name: Configure examples
       run: |
-        rm -rf .build/meson-info
-        meson setup --wipe .build -Dregex=${{ matrix.regex }} -Dexamples=true
+        if [ "${{ matrix.arch }}" = "x86" ]; then
+          meson configure -Dexamples=true .build
+        else
+          rm -rf .build/meson-info
+          meson setup --wipe .build -Dregex=${{ matrix.regex }} -Dexamples=true
+        fi
       env:
         CC: ${{ matrix.compiler }}
 
@@ -64,6 +80,6 @@ jobs:
     - name: Upload Ubuntu build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: argus-ubuntu-${{ matrix.compiler }}-${{ matrix.regex && 'regex' || 'noregex' }}
+        name: argus-ubuntu-${{ matrix.compiler }}-${{ matrix.arch }}-${{ matrix.regex && 'regex' || 'noregex' }}
         path: artifacts/
         if-no-files-found: warn

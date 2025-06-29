@@ -18,12 +18,12 @@ int argus_parse(argus_t *argus, int argc, char **argv)
         exit(ARGUS_SUCCESS);
     }
     if (status != ARGUS_SUCCESS) {
-        printf("\n");
+        fprintf(stderr, "\n");
         display_usage(argus, NULL);
-        printf("\nTry '%s", argus->program_name);
+        fprintf(stderr, "\nTry '%s", argus->program_name);
         for (size_t i = 0; i < argus->subcommand_depth; ++i)
-            printf(" %s", argus->subcommand_stack[i]->name);
-        printf(" --help' for more information.\n");
+            fprintf(stderr, " %s", argus->subcommand_stack[i]->name);
+        fprintf(stderr, " --help' for more information.\n");
         argus_free(argus);
         return (status);
     }

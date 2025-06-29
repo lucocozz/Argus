@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,17 +19,18 @@ int length_validator(argus_t *argus, void *option_ptr, validator_data_t data)
         return ARGUS_ERROR_INVALID_RANGE;
     }
     if (data.range.min > data.range.max) {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_RANGE, "Range is invalid %lld-%lld",
-                            data.range.min, data.range.max);
+        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_RANGE,
+                            "Range is invalid %" PRId64 "-%" PRId64, data.range.min,
+                            data.range.max);
         return ARGUS_ERROR_INVALID_RANGE;
     }
 
-    long long len = strlen(option->value.as_string);
+    int64_t len = strlen(option->value.as_string);
 
     if (len < data.range.min || len > data.range.max) {
         ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_RANGE,
-                            "Value length %lld is out of range %lld-%lld", len, data.range.min,
-                            data.range.max);
+                            "Value length %" PRId64 " is out of range %" PRId64 "-%" PRId64, len,
+                            data.range.min, data.range.max);
         return ARGUS_ERROR_INVALID_RANGE;
     }
     return (ARGUS_SUCCESS);
@@ -40,6 +42,6 @@ char *format_length_validator(validator_data_t data)
     if (!result)
         return NULL;
 
-    snprintf(result, 32, "%lld-%lld chars", data.range.min, data.range.max);
+    snprintf(result, 32, "%" PRId64 "-%" PRId64 " chars", data.range.min, data.range.max);
     return result;
 }

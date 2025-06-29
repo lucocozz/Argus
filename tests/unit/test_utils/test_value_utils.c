@@ -53,7 +53,7 @@ Test(value_utils, compare_values)
 Test(value_utils, choices_to_value)
 {
     // Test integer choices
-    argus_value_t int_choices = {.as_array_int = (long long[]){10, 20, 30, 40, 50}};
+    argus_value_t int_choices = {.as_array_int = (int64_t[]){10, 20, 30, 40, 50}};
     
     argus_value_t result1 = choices_to_value(VALUE_TYPE_INT, int_choices, 5, 2);
     cr_assert_eq(result1.as_int, 30, "Third element should be 30");
