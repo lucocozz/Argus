@@ -21,8 +21,8 @@
 
 Replace tedious argument parsing with declarative definitions:
 
+getopt way - verbose and error-prone
 ```c
-// Old way - verbose and error-prone
 int opt;
 while ((opt = getopt(argc, argv, "vo:p:")) != -1) {
     switch (opt) {
@@ -32,8 +32,10 @@ while ((opt = getopt(argc, argv, "vo:p:")) != -1) {
     }
 }
 // + manual validation, help generation, error handling...
+```
 
-// Argus way - declarative and complete
+**Argus** way - declarative and complete
+```c
 ARGUS_OPTIONS(
     options,
     HELP_OPTION(),
