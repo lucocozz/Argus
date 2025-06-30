@@ -69,11 +69,11 @@ int add_command(argus_t *argus, void *data)
     (void)data; // Unused parameter
     
     // Access global options with dot prefix
-    bool verbose = argus_get(*argus, ".verbose").as_bool;
+    bool verbose = argus_get(argus, ".verbose").as_bool;
     
     // Access subcommand options by name
-    const char *file = argus_get(*argus, "file").as_string;
-    bool force = argus_get(*argus, "force").as_bool;
+    const char *file = argus_get(argus, "file").as_string;
+    bool force = argus_get(argus, "force").as_bool;
 
     printf("Adding file: %s\n", file);
     if (verbose) printf("  verbose mode enabled\n");
@@ -86,9 +86,9 @@ int remove_command(argus_t *argus, void *data)
 {
     (void)data;
     
-    bool verbose = argus_get(*argus, ".verbose").as_bool;
-    const char *file = argus_get(*argus, "file").as_string;
-    bool recursive = argus_get(*argus, "recursive").as_bool;
+    bool verbose = argus_get(argus, ".verbose").as_bool;
+    const char *file = argus_get(argus, "file").as_string;
+    bool recursive = argus_get(argus, "recursive").as_bool;
 
     printf("Removing file: %s\n", file);
     if (verbose) printf("  verbose mode enabled\n");
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
         return status;
 
     // Check if a subcommand was specified and execute it
-    if (argus_has_command(argus)) {
+    if (argus_has_command(&argus)) {
         status = argus_exec(&argus, NULL);
     } else {
         printf("No command specified. Use --help to see available commands.\n");
@@ -186,8 +186,8 @@ Use different path formats to access options within subcommand handlers:
 int add_command(argus_t *argus, void *data)
 {
     // Relative paths (within current subcommand context)
-    const char *file = argus_get(*argus, "file").as_string;
-    bool force = argus_get(*argus, "force").as_bool;
+    const char *file = argus_get(argus, "file").as_string;
+    bool force = argus_get(argus, "force").as_bool;
     
     return 0;
 }
@@ -202,8 +202,8 @@ int add_command(argus_t *argus, void *data)
 int add_command(argus_t *argus, void *data)
 {
     // Absolute paths (full path from root)
-    const char *file = argus_get(*argus, "add.file").as_string;
-    bool force = argus_get(*argus, "add.force").as_bool;
+    const char *file = argus_get(argus, "add.file").as_string;
+    bool force = argus_get(argus, "add.force").as_bool;
     
     return 0;
 }
@@ -218,10 +218,10 @@ int add_command(argus_t *argus, void *data)
 int add_command(argus_t *argus, void *data)
 {
     // Global options (dot prefix for root level)
-    bool verbose = argus_get(*argus, ".verbose").as_bool;
+    bool verbose = argus_get(argus, ".verbose").as_bool;
     
     // Mix global and local options
-    const char *file = argus_get(*argus, "file").as_string;
+    const char *file = argus_get(argus, "file").as_string;
     
     return 0;
 }
@@ -279,13 +279,13 @@ int service_create_action(argus_t *argus, void *data)
     // Different ways to access nested values
     
     // 1. Relative path (current context)
-    const char *name = argus_get(*argus, "name").as_string;
+    const char *name = argus_get(argus, "name").as_string;
     
     // 2. Absolute path (full hierarchy)
-    const char *image = argus_get(*argus, "service.create.image").as_string;
+    const char *image = argus_get(argus, "service.create.image").as_string;
     
     // 3. Root-level option
-    bool debug = argus_get(*argus, ".debug").as_bool;
+    bool debug = argus_get(argus, ".debug").as_bool;
     
     printf("Creating service '%s' with image '%s'\n", name, image);
     if (debug) printf("Debug mode enabled\n");
@@ -374,7 +374,7 @@ int main(int argc, char **argv)
         .workers = create_thread_pool(4)
     };
     
-    if (argus_has_command(argus)) {
+    if (argus_has_command(&argus)) {
         // Pass shared resources to subcommand
         int status = argus_exec(&argus, &context);
         
@@ -392,7 +392,7 @@ int service_create_action(argus_t *argus, void *data)
     app_context_t *ctx = (app_context_t *)data;
     
     // Access command-line options normally
-    const char *name = argus_get(*argus, "name").as_string;
+    const char *name = argus_get(argus, "name").as_string;
     
     // Use shared application resources
     log_info(ctx->log_file, "Creating service: %s", name);
@@ -417,20 +417,20 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Check top-level command
-    if (argus_is_set(argus, "service"))
+    if (argus_is_set(&argus, "service"))
     {
         printf("Service command detected\n");
 
         // Check nested command
-        if (argus_is_set(argus, "service.create"))
+        if (argus_is_set(&argus, "service.create"))
             printf("Service create command\n");
-        else if (argus_is_set(argus, "service.list"))
+        else if (argus_is_set(&argus, "service.list"))
             printf("Service list command\n");
     }
-    else if (argus_is_set(argus, "config"))
+    else if (argus_is_set(&argus, "config"))
         printf("Config command detected\n");
 
-    if (argus_has_command(argus))
+    if (argus_has_command(&argus))
         argus_exec(&argus, NULL);
 
     argus_free(&argus);
@@ -535,7 +535,7 @@ int main(int argc, char **argv)
     if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS)
         return 1;
     
-    if (argus_has_command(argus)) {
+    if (argus_has_command(&argus)) {
         return argus_exec(&argus, NULL);
     } else {
         printf("No command specified. Use --help to see available commands.\n");
@@ -659,7 +659,7 @@ int bad_action(argus_t *argus, void *data)
 ```c
 int deploy_action(argus_t *argus, void *data)
 {
-    const char *env = argus_get(*argus, "environment").as_string;
+    const char *env = argus_get(argus, "environment").as_string;
     
     // Validate deployment target
     if (strcmp(env, "production") == 0) {

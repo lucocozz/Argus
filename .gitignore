@@ -51,7 +51,7 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-.build/
+.build*/
 build/
 buildir/
 .vscode/
@@ -61,6 +61,7 @@ reports/
 .venv/
 packaging/conan/test_package/build/
 packaging/conan/test_package/CMakeUserPresets.json
+.claude/
 *.pyc
 .mypy_cache
 subprojects/packagecache/

@@ -331,10 +331,10 @@ int main(int argc, char **argv)
         return 1;
     
     // Access configuration
-    const char *host = argus_get(argus, "host").as_string;
-    int port = argus_get(argus, "port").as_int;
-    const char *database = argus_get(argus, "database").as_string;
-    const char *log_level = argus_get(argus, "log-level").as_string;
+    const char *host = argus_get(&argus, "host").as_string;
+    int port = argus_get(&argus, "port").as_int;
+    const char *database = argus_get(&argus, "database").as_string;
+    const char *log_level = argus_get(&argus, "log-level").as_string;
     
     printf("Starting webapp on %s:%d\n", host, port);
     printf("Database: %s\n", database ? database : "not configured");

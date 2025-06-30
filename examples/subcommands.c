@@ -69,7 +69,7 @@ int main(int argc, char **argv)
     if (status != ARGUS_SUCCESS)
         return status;
 
-    if (argus_has_command(argus))
+    if (argus_has_command(&argus))
         // Execute the subcommand handler
         status = argus_exec(&argus, NULL);
     else
@@ -85,11 +85,11 @@ int add_command(argus_t *argus, void *data)
     (void)data; // Unused parameter
     
     // Get the global option
-    bool verbose = argus_get(*argus, "verbose").as_bool;
+    bool verbose = argus_get(argus, "verbose").as_bool;
     
     // Get command-specific options
-    const char* file = argus_get(*argus, "add.file").as_string;
-    bool force = argus_get(*argus, "add.force").as_bool;
+    const char* file = argus_get(argus, "add.file").as_string;
+    bool force = argus_get(argus, "add.force").as_bool;
 
     printf("Adding file: %s\n", file);
     if (verbose) printf("  verbose mode enabled\n");
@@ -104,11 +104,11 @@ int remove_command(argus_t *argus, void *data)
     (void)data; // Unused parameter
     
     // Get the global option
-    bool verbose = argus_get(*argus, "verbose").as_bool;
+    bool verbose = argus_get(argus, ".verbose").as_bool;
     
     // Get command-specific options
-    const char* file = argus_get(*argus, "file").as_string;
-    bool recursive = argus_get(*argus, "remove.recursive").as_bool;
+    const char* file = argus_get(argus, "file").as_string;
+    bool recursive = argus_get(argus, "remove.recursive").as_bool;
 
     printf("Removing file: %s\n", file);
     if (verbose) printf("  verbose mode enabled\n");
@@ -123,11 +123,11 @@ int remove_all_command(argus_t *argus, void *data)
     (void)data; // Unused parameter
     
     // Get the global option
-    bool verbose = argus_get(*argus, "verbose").as_bool;
+    bool verbose = argus_get(argus, ".verbose").as_bool;
     
     // Get command-specific options
-    bool force = argus_get(*argus, "remove-all.force").as_bool;
-    bool dry_run = argus_get(*argus, "remove-all.dry-run").as_bool;
+    bool force = argus_get(argus, "remove-all.force").as_bool;
+    bool dry_run = argus_get(argus, "remove-all.dry-run").as_bool;
 
     if (dry_run) {
         printf("Would remove all files from the index\n");

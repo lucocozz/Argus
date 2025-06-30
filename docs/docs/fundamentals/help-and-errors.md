@@ -245,8 +245,8 @@ Argus automatically provides help for subcommands and nested command structures:
 int add_command(argus_t *argus, void *data)
 {
     (void)data;
-    const char *file = argus_get(*argus, "file").as_string;
-    bool force = argus_get(*argus, "force").as_bool;
+    const char *file = argus_get(argus, "file").as_string;
+    bool force = argus_get(argus, "force").as_bool;
     
     printf("Adding file: %s\n", file);
     return 0;
@@ -461,14 +461,14 @@ int main(int argc, char **argv)
     
     // Display help manually
     if (argc == 1) {
-        argus_print_help(argus);
+        argus_print_help(&argus);
         argus_free(&argus);
         return 0;
     }
     
     // Display version manually
     if (argc == 2 && strcmp(argv[1], "--version") == 0) {
-        argus_print_version(argus);
+        argus_print_version(&argus);
         argus_free(&argus);
         return 0;
     }

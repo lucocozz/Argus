@@ -114,7 +114,7 @@ Test(validators_integration, range_validation_success)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Valid port should pass validation");
-    cr_assert_eq(argus_get(argus, "port").as_int, 8000);
+    cr_assert_eq(argus_get(&argus, "port").as_int, 8000);
     
     argus_free(&argus);
 }
@@ -144,7 +144,7 @@ Test(validators_integration, choices_validation_success)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Valid log level should pass validation");
-    cr_assert_str_eq(argus_get(argus, "level").as_string, "warning");
+    cr_assert_str_eq(argus_get(&argus, "level").as_string, "warning");
     
     argus_free(&argus);
 }
@@ -174,7 +174,7 @@ Test(validators_integration, regex_validation_success)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Valid email should pass validation");
-    cr_assert_str_eq(argus_get(argus, "email").as_string, "test@example.com");
+    cr_assert_str_eq(argus_get(&argus, "email").as_string, "test@example.com");
     
     argus_free(&argus);
 }
@@ -204,7 +204,7 @@ Test(validators_integration, length_validation_success)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Valid username length should pass validation");
-    cr_assert_str_eq(argus_get(argus, "username").as_string, "johndoe");
+    cr_assert_str_eq(argus_get(&argus, "username").as_string, "johndoe");
     
     argus_free(&argus);
 }
@@ -248,7 +248,7 @@ Test(validators_integration, count_validation_success)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Valid number of tags should pass validation");
-    cr_assert_eq(argus_count(argus, "tags"), 3, "Should have 3 tags");
+    cr_assert_eq(argus_count(&argus, "tags"), 3, "Should have 3 tags");
     
     argus_free(&argus);
 }
@@ -293,7 +293,7 @@ Test(validators_integration, multiple_validators_all_pass)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Valid even positive number should pass all validators");
-    cr_assert_eq(argus_get(argus, "even-positive").as_int, 42);
+    cr_assert_eq(argus_get(&argus, "even-positive").as_int, 42);
     
     argus_free(&argus);
 }
@@ -336,7 +336,7 @@ Test(validators_integration, string_multiple_validators_all_pass)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Valid alphanumeric username should pass all validators");
-    cr_assert_str_eq(argus_get(argus, "alphanum").as_string, "user123");
+    cr_assert_str_eq(argus_get(&argus, "alphanum").as_string, "user123");
     
     argus_free(&argus);
 }
@@ -394,7 +394,7 @@ Test(validators_integration, custom_validator_with_data_success)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Number divisible by 5 should pass validation");
-    cr_assert_eq(argus_get(argus, "divisible").as_int, 25);
+    cr_assert_eq(argus_get(&argus, "divisible").as_int, 25);
     
     argus_free(&argus);
 }
@@ -423,7 +423,7 @@ Test(validators_integration, custom_validator_with_range_both_pass)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Valid number should pass both validators");
-    cr_assert_eq(argus_get(argus, "divisible").as_int, 50);
+    cr_assert_eq(argus_get(&argus, "divisible").as_int, 50);
     
     argus_free(&argus);
 }

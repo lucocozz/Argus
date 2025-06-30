@@ -48,46 +48,42 @@ ARGUS_OPTIONS(
 
 void print_array_strings(argus_t argus, const char *name)
 {
-    if (!argus_is_set(argus, name)) return;
+    if (!argus_is_set(&argus, name)) return;
     
     printf("%s:\n", name);
-    argus_array_it_t it = argus_array_it(argus, name);
-    while (argus_array_next(&it)) {
+    argus_array_it_t it = argus_array_it(&argus, name);
+    while (argus_array_next(&it))
         printf("  - %s\n", it.value.as_string);
-    }
 }
 
 void print_array_ints(argus_t argus, const char *name)
 {
-    if (!argus_is_set(argus, name)) return;
+    if (!argus_is_set(&argus, name)) return;
     
     printf("%s:\n", name);
-    argus_array_it_t it = argus_array_it(argus, name);
-    while (argus_array_next(&it)) {
+    argus_array_it_t it = argus_array_it(&argus, name);
+    while (argus_array_next(&it))
         printf("  - %d\n", it.value.as_int);
-    }
 }
 
 void print_map_strings(argus_t argus, const char *name)
 {
-    if (!argus_is_set(argus, name)) return;
+    if (!argus_is_set(&argus, name)) return;
     
     printf("%s:\n", name);
-    argus_map_it_t it = argus_map_it(argus, name);
-    while (argus_map_next(&it)) {
+    argus_map_it_t it = argus_map_it(&argus, name);
+    while (argus_map_next(&it))
         printf("  %s = %s\n", it.key, it.value.as_string);
-    }
 }
 
 void print_map_bools(argus_t argus, const char *name)
 {
-    if (!argus_is_set(argus, name)) return;
+    if (!argus_is_set(&argus, name)) return;
     
     printf("%s:\n", name);
-    argus_map_it_t it = argus_map_it(argus, name);
-    while (argus_map_next(&it)) {
+    argus_map_it_t it = argus_map_it(&argus, name);
+    while (argus_map_next(&it))
         printf("  %s = %s\n", it.key, it.value.as_bool ? "true" : "false");
-    }
 }
 
 int main(int argc, char **argv)
@@ -100,17 +96,16 @@ int main(int argc, char **argv)
         return 1;
     
     // Basic values
-    const char *name = argus_get(argus, "name").as_string;
-    const char *host = argus_get(argus, "host").as_string;
-    int port = argus_get(argus, "port").as_int;
+    const char *name = argus_get(&argus, "name").as_string;
+    const char *host = argus_get(&argus, "host").as_string;
+    int port = argus_get(&argus, "port").as_int;
     
     printf("=== Service Configuration ===\n");
     printf("Name: %s\n", name);
     printf("Host: %s:%d\n", host, port);
     
-    if (argus_is_set(argus, "contact")) {
-        printf("Contact: %s\n", argus_get(argus, "contact").as_string);
-    }
+    if (argus_is_set(&argus, "contact"))
+        printf("Contact: %s\n", argus_get(&argus, "contact").as_string);
     printf("\n");
     
     // Collections
@@ -121,8 +116,8 @@ int main(int argc, char **argv)
     
     // Generate config file
     const char *output = "config.json";
-    if (argus_is_set(argus, "output")) {
-        output = argus_get(argus, "output").as_string;
+    if (argus_is_set(&argus, "output")) {
+        output = argus_get(&argus, "output").as_string;
     }
     
     FILE *config = fopen(output, "w");
@@ -136,14 +131,14 @@ int main(int argc, char **argv)
     fprintf(config, "  \"host\": \"%s\",\n", host);
     fprintf(config, "  \"port\": %d", port);
     
-    if (argus_is_set(argus, "contact")) {
-        fprintf(config, ",\n  \"contact\": \"%s\"", argus_get(argus, "contact").as_string);
+    if (argus_is_set(&argus, "contact")) {
+        fprintf(config, ",\n  \"contact\": \"%s\"", argus_get(&argus, "contact").as_string);
     }
     
     // Add arrays
-    if (argus_is_set(argus, "tags")) {
+    if (argus_is_set(&argus, "tags")) {
         fprintf(config, ",\n  \"tags\": [");
-        argus_array_it_t it = argus_array_it(argus, "tags");
+        argus_array_it_t it = argus_array_it(&argus, "tags");
         bool first = true;
         while (argus_array_next(&it)) {
             if (!first) fprintf(config, ", ");
@@ -153,9 +148,9 @@ int main(int argc, char **argv)
         fprintf(config, "]");
     }
     
-    if (argus_is_set(argus, "ports")) {
+    if (argus_is_set(&argus, "ports")) {
         fprintf(config, ",\n  \"ports\": [");
-        argus_array_it_t it = argus_array_it(argus, "ports");
+        argus_array_it_t it = argus_array_it(&argus, "ports");
         bool first = true;
         while (argus_array_next(&it)) {
             if (!first) fprintf(config, ", ");
@@ -166,9 +161,9 @@ int main(int argc, char **argv)
     }
     
     // Add maps
-    if (argus_is_set(argus, "env")) {
+    if (argus_is_set(&argus, "env")) {
         fprintf(config, ",\n  \"environment\": {");
-        argus_map_it_t it = argus_map_it(argus, "env");
+        argus_map_it_t it = argus_map_it(&argus, "env");
         bool first = true;
         while (argus_map_next(&it)) {
             if (!first) fprintf(config, ", ");
@@ -179,9 +174,9 @@ int main(int argc, char **argv)
         fprintf(config, "}");
     }
     
-    if (argus_is_set(argus, "features")) {
+    if (argus_is_set(&argus, "features")) {
         fprintf(config, ",\n  \"features\": {");
-        argus_map_it_t it = argus_map_it(argus, "features");
+        argus_map_it_t it = argus_map_it(&argus, "features");
         bool first = true;
         while (argus_map_next(&it)) {
             if (!first) fprintf(config, ", ");

@@ -2,9 +2,9 @@
 #include "argus/types.h"
 #include <stddef.h>
 
-bool argus_has_command(argus_t argus)
+bool argus_has_command(argus_t *argus)
 {
-    return (argus.subcommand_depth > 0);
+    return (argus->subcommand_depth > 0);
 }
 
 int argus_exec(argus_t *argus, void *data)

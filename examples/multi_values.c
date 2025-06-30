@@ -49,10 +49,10 @@ int main(int argc, char **argv)
         return status;
 
     // Print array values using direct access
-    if (argus_is_set(argus, "words"))
+    if (argus_is_set(&argus, "words"))
     {
-        argus_value_t *words = argus_get(argus, "words").as_array;
-        size_t count = argus_count(argus, "words");
+        argus_value_t *words = argus_get(&argus, "words").as_array;
+        size_t count = argus_count(&argus, "words");
         
         printf("Words array (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i)
@@ -61,12 +61,12 @@ int main(int argc, char **argv)
     }
 
     // Print array values using element access helpers
-    if (argus_is_set(argus, "names")) {
-        size_t count = argus_count(argus, "names");
+    if (argus_is_set(&argus, "names")) {
+        size_t count = argus_count(&argus, "names");
         
         printf("Names array (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
-            const char *name = argus_array_get(argus, "names", i).as_string;
+            const char *name = argus_array_get(&argus, "names", i).as_string;
             printf("  [%zu]: \"%s\"\n", i, name);
         }
         printf("\n");
@@ -74,9 +74,9 @@ int main(int argc, char **argv)
 
 
     // Print array values using iterators
-    if (argus_is_set(argus, "ids"))
+    if (argus_is_set(&argus, "ids"))
     {
-        argus_array_it_t it = argus_array_it(argus, "ids");
+        argus_array_it_t it = argus_array_it(&argus, "ids");
 
         printf("ID numbers array (%zu items):\n", it._count);
         for (int i = 0; argus_array_next(&it); i++)
@@ -85,10 +85,10 @@ int main(int argc, char **argv)
     }
 
     // Print map values using direct access
-    if (argus_is_set(argus, "env"))
+    if (argus_is_set(&argus, "env"))
     {
-        argus_pair_t *env = argus_get(argus, "env").as_map;
-        size_t count = argus_count(argus, "env");
+        argus_pair_t *env = argus_get(&argus, "env").as_map;
+        size_t count = argus_count(&argus, "env");
         
         printf("Environment variables (%zu items):\n", count);
         for (size_t i = 0; i < count; ++i) {
@@ -100,24 +100,24 @@ int main(int argc, char **argv)
     }
 
     // Print map values using element access helpers
-    if (argus_is_set(argus, "ports"))
+    if (argus_is_set(&argus, "ports"))
     {
         printf("Common port lookups:\n");
         
-        int http = argus_map_get(argus, "ports", "http").as_int;
+        int http = argus_map_get(&argus, "ports", "http").as_int;
         if (http)
             printf("  HTTP port: %d\n", http);
 
-        int https = argus_map_get(argus, "ports", "https").as_int;
+        int https = argus_map_get(&argus, "ports", "https").as_int;
         if (https)
             printf("  HTTPS port: %d\n", https);
         printf("\n");
     }
 
     // Print map values using iterator approach
-    if (argus_is_set(argus, "scales"))
+    if (argus_is_set(&argus, "scales"))
     {
-        argus_map_it_t it = argus_map_it(argus, "scales");
+        argus_map_it_t it = argus_map_it(&argus, "scales");
 
         printf("Scaling factors (%zu items):\n", it._count);
         while (argus_map_next(&it))

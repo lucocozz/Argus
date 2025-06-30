@@ -1,0 +1,246 @@
+name: Build and Draft Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      version_tag: ${{ steps.get_version.outputs.version_tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+  build:
+    needs: prepare
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux
+            archive_cmd: tar -czf
+            archive_ext: tar.gz
+          - os: macos-latest
+            name: macos
+            archive_cmd: tar -czf
+            archive_ext: tar.gz
+          - os: windows-latest
+            name: windows
+            archive_cmd: zip -r
+            archive_ext: zip
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup build environment (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y meson ninja-build
+
+      - name: Setup build environment (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install meson
+
+      - name: Setup build environment (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          install: >-
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-meson
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-pcre2
+            zip
+
+      - name: Build (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          meson setup builddir --buildtype=release
+          meson compile -C builddir
+          meson install -C builddir --destdir=../install
+
+      - name: Build (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          meson setup builddir --buildtype=release
+          meson compile -C builddir
+          meson install -C builddir --destdir=../install
+
+      - name: Create archive (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          cd install
+          tar -czf ../argus-${{ needs.prepare.outputs.version }}-bin-${{ matrix.name }}.tar.gz *
+
+      - name: Create archive (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          cd install
+          zip -r ../argus-${{ needs.prepare.outputs.version }}-bin-${{ matrix.name }}.zip *
+
+      - name: Generate checksums (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          ARCHIVE_NAME="argus-${{ needs.prepare.outputs.version }}-bin-${{ matrix.name }}.${{ matrix.archive_ext }}"
+          sha256sum "$ARCHIVE_NAME" > "$ARCHIVE_NAME.sha256"
+          sha512sum "$ARCHIVE_NAME" > "$ARCHIVE_NAME.sha512"
+
+      - name: Generate checksums (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          ARCHIVE_NAME="argus-${{ needs.prepare.outputs.version }}-bin-${{ matrix.name }}.${{ matrix.archive_ext }}"
+          shasum -a 256 "$ARCHIVE_NAME" > "$ARCHIVE_NAME.sha256"
+          shasum -a 512 "$ARCHIVE_NAME" > "$ARCHIVE_NAME.sha512"
+
+      - name: Generate checksums (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0}
+        run: |
+          ARCHIVE_NAME="argus-${{ needs.prepare.outputs.version }}-bin-${{ matrix.name }}.${{ matrix.archive_ext }}"
+          sha256sum "$ARCHIVE_NAME" > "$ARCHIVE_NAME.sha256"
+          sha512sum "$ARCHIVE_NAME" > "$ARCHIVE_NAME.sha512"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: argus-${{ matrix.name }}
+          path: argus-${{ needs.prepare.outputs.version }}-bin-${{ matrix.name }}.${{ matrix.archive_ext }}
+          retention-days: 90
+
+  source-archive:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y meson ninja-build
+
+      - name: Create source archive
+        run: |
+          meson setup builddir
+          meson dist -C builddir --no-tests --formats=gztar
+          cp builddir/meson-dist/*.tar.gz argus-${{ needs.prepare.outputs.version }}-source.tar.gz
+          # Create zip version from tar.gz
+          tar -xzf argus-${{ needs.prepare.outputs.version }}-source.tar.gz
+          zip -r argus-${{ needs.prepare.outputs.version }}-source.zip argus-${{ needs.prepare.outputs.version }}/
+
+      - name: Generate source checksums
+        run: |
+          sha256sum argus-${{ needs.prepare.outputs.version }}-source.tar.gz > argus-${{ needs.prepare.outputs.version }}-source.tar.gz.sha256
+          sha512sum argus-${{ needs.prepare.outputs.version }}-source.tar.gz > argus-${{ needs.prepare.outputs.version }}-source.tar.gz.sha512
+          sha256sum argus-${{ needs.prepare.outputs.version }}-source.zip > argus-${{ needs.prepare.outputs.version }}-source.zip.sha256
+          sha512sum argus-${{ needs.prepare.outputs.version }}-source.zip > argus-${{ needs.prepare.outputs.version }}-source.zip.sha512
+
+      - name: Upload source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: argus-source
+          path: |
+            argus-${{ needs.prepare.outputs.version }}-source.tar.gz
+            argus-${{ needs.prepare.outputs.version }}-source.zip
+          retention-days: 90
+
+  create-draft-release:
+    needs: [prepare, build, source-archive]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts/
+
+      - name: Prepare release files
+        run: |
+          mkdir -p final-artifacts
+          find release-artifacts/ -type f \( -name "*.tar.gz" -o -name "*.zip" -o -name "*.tar.xz" \) -exec cp {} final-artifacts/ \;
+          echo "Files to release:"
+          ls -la final-artifacts/
+
+      - name: Create consolidated checksums
+        run: |
+          echo "# Argus Release ${{ needs.prepare.outputs.version }} - Checksums" > final-artifacts/CHECKSUMS.txt
+          echo "Generated on: $(date -u)" >> final-artifacts/CHECKSUMS.txt
+          echo "" >> final-artifacts/CHECKSUMS.txt
+          echo "## SHA256" >> final-artifacts/CHECKSUMS.txt
+          find release-artifacts/ -name "*.sha256" -exec cat {} \; >> final-artifacts/CHECKSUMS.txt
+          echo "" >> final-artifacts/CHECKSUMS.txt
+          echo "## SHA512" >> final-artifacts/CHECKSUMS.txt
+          find release-artifacts/ -name "*.sha512" -exec cat {} \; >> final-artifacts/CHECKSUMS.txt
+          echo "" >> final-artifacts/CHECKSUMS.txt
+          echo "Verify SHA256: sha256sum -c <(grep -A999 '## SHA256' CHECKSUMS.txt | tail -n +2 | grep -v '^## ')" >> final-artifacts/CHECKSUMS.txt
+          echo "Verify SHA512: sha512sum -c <(grep -A999 '## SHA512' CHECKSUMS.txt | tail -n +2 | grep -v '^## ')" >> final-artifacts/CHECKSUMS.txt
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          echo "## 🚀 Release ${{ needs.prepare.outputs.version_tag }}" > release_notes.md
+          echo "" >> release_notes.md
+          echo "### 📝 Changes" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "<!-- Please edit this draft to add release notes -->" >> release_notes.md
+          echo "- Add your changes here" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### 📦 Which archive to download?" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "- **Binary packages**: Ready-to-use compiled libraries (Linux/macOS/Windows)" >> release_notes.md
+          echo "- **argus-\*-source.\*** archives**: Clean source distribution for compilation (use these for building from source)" >> release_notes.md
+          echo "- **Source code** links: Raw repository snapshot (contains development files)" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/v${{ needs.prepare.outputs.version }}...HEAD" >> release_notes.md
+
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.version_tag }}
+          name: "Release ${{ needs.prepare.outputs.version }}"
+          body_path: release_notes.md
+          files: final-artifacts/*
+          draft: true
+          prerelease: false
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "## ✅ Draft Release Created!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🎯 **Tag**: ${{ needs.prepare.outputs.version_tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "📦 **Artifacts**: $(ls final-artifacts/ | wc -l) files" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "👉 [View Draft Release](https://github.com/${{ github.repository }}/releases)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Next steps:**" >> $GITHUB_STEP_SUMMARY
+          echo "1. Review the draft release" >> $GITHUB_STEP_SUMMARY
+          echo "2. Edit release notes" >> $GITHUB_STEP_SUMMARY
+          echo "3. Test the artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "4. Publish when ready"

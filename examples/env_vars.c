@@ -81,12 +81,12 @@ int main(int argc, char **argv)
 		return status;
 
 	// Access option values as usual
-	const char *host = argus_get(argus, "host").as_string;
-	int port = argus_get(argus, "port").as_int;
-	const char *database = argus_get(argus, "database").as_string;
-	bool verbose = argus_get(argus, "verbose").as_bool;
-	int timeout = argus_get(argus, "timeout").as_int;
-	bool debug = argus_get(argus, "debug").as_bool;
+	const char *host = argus_get(&argus, "host").as_string;
+	int port = argus_get(&argus, "port").as_int;
+	const char *database = argus_get(&argus, "database").as_string;
+	bool verbose = argus_get(&argus, "verbose").as_bool;
+	int timeout = argus_get(&argus, "timeout").as_int;
+	bool debug = argus_get(&argus, "debug").as_bool;
 	
 	// Display configuration
 	printf("═════════════════════════════════════════\n");

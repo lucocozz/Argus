@@ -81,8 +81,8 @@ Test(subcommands, basic_parsing, .init = reset)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Valid subcommand should parse successfully");
-    cr_assert(argus_has_command(argus), "argus_has_command should return true");
-    cr_assert(argus_is_set(argus, "add"), "add subcommand should be set");
+    cr_assert(argus_has_command(&argus), "argus_has_command should return true");
+    cr_assert(argus_is_set(&argus, "add"), "add subcommand should be set");
     
     // Execute the command
     status = argus_exec(&argus, NULL);
@@ -104,8 +104,8 @@ Test(subcommands, with_options, .init = reset)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Subcommand with options should parse successfully");
-    cr_assert(argus_is_set(argus, "add.force"), "Force option should be set");
-    cr_assert_str_eq(argus_get(argus, "add.file").as_string, "file.txt", "File argument should be parsed");
+    cr_assert(argus_is_set(&argus, "add.force"), "Force option should be set");
+    cr_assert_str_eq(argus_get(&argus, "add.file").as_string, "file.txt", "File argument should be parsed");
     
     argus_free(&argus);
 }
@@ -121,8 +121,8 @@ Test(subcommands, global_options, .init = reset)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Global option with subcommand should parse successfully");
-    cr_assert(argus_is_set(argus, "verbose"), "Global verbose option should be set");
-    cr_assert(argus_is_set(argus, "add"), "Add subcommand should be set");
+    cr_assert(argus_is_set(&argus, "verbose"), "Global verbose option should be set");
+    cr_assert(argus_is_set(&argus, "add"), "Add subcommand should be set");
     
     argus_free(&argus);
 }

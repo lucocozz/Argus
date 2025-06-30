@@ -209,7 +209,7 @@ void test_option_parsing(void)
     char *argv[] = {"test", "--output", "file.txt"};
     assert(argus_parse(&argus, 3, argv) == ARGUS_SUCCESS);
     
-    const char *output = argus_get(argus, "output").as_string;
+    const char *output = argus_get(&argus, "output").as_string;
     assert(strcmp(output, "file.txt") == 0);
     
     argus_free(&argus);

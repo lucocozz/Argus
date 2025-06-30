@@ -69,12 +69,12 @@ Test(api, argus_parse_valid)
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing valid arguments should succeed");
     
     // Check that options were set correctly
-    cr_assert_eq(argus_get(argus, "verbose").as_bool, true, "Verbose option should be set");
-    cr_assert_str_eq(argus_get(argus, "output").as_string, "custom.txt", "Output option should be set correctly");
-    cr_assert_str_eq(argus_get(argus, "input").as_string, "input.txt", "Input option should be set correctly");
+    cr_assert_eq(argus_get(&argus, "verbose").as_bool, true, "Verbose option should be set");
+    cr_assert_str_eq(argus_get(&argus, "output").as_string, "custom.txt", "Output option should be set correctly");
+    cr_assert_str_eq(argus_get(&argus, "input").as_string, "input.txt", "Input option should be set correctly");
     
     // Check default values
-    cr_assert_eq(argus_get(argus, "number").as_int, 42, "Number option should have default value");
+    cr_assert_eq(argus_get(&argus, "number").as_int, 42, "Number option should have default value");
     
     // Clean up
     argus_free(&argus);
@@ -107,14 +107,14 @@ Test(api, argus_is_set)
     argus_parse(&argus, argc, argv);
     
     // Check options that were set
-    cr_assert_eq(argus_is_set(argus, "verbose"), true, "Verbose option should be set");
-    cr_assert_eq(argus_is_set(argus, "input"), true, "Input option should be set");
+    cr_assert_eq(argus_is_set(&argus, "verbose"), true, "Verbose option should be set");
+    cr_assert_eq(argus_is_set(&argus, "input"), true, "Input option should be set");
     
     // Check options that were not set explicitly
-    cr_assert_eq(argus_is_set(argus, "number"), true, "Number option should be set via default");
+    cr_assert_eq(argus_is_set(&argus, "number"), true, "Number option should be set via default");
     
     // Check non-existent option
-    cr_assert_eq(argus_is_set(argus, "nonexistent"), false, "Non-existent option should not be set");
+    cr_assert_eq(argus_is_set(&argus, "nonexistent"), false, "Non-existent option should not be set");
     
     // Clean up
     argus_free(&argus);
@@ -135,7 +135,7 @@ Test(api, argus_has_command_and_exec)
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing valid arguments should succeed");
     
     // Check that we have a command
-    cr_assert_eq(argus_has_command(argus), true, "Should have a command");
+    cr_assert_eq(argus_has_command(&argus), true, "Should have a command");
     
     // Execute the command
     status = argus_exec(&argus, NULL);
@@ -158,12 +158,12 @@ Test(api, argus_get_different_types)
     argus_parse(&argus, argc, argv);
     
     // Check different value types
-    cr_assert_eq(argus_get(argus, "verbose").as_bool, true, "Boolean value should be correct");
-    cr_assert_eq(argus_get(argus, "number").as_int, 100, "Integer value should be correct");
-    cr_assert_str_eq(argus_get(argus, "output").as_string, "file.txt", "String value should be correct");
+    cr_assert_eq(argus_get(&argus, "verbose").as_bool, true, "Boolean value should be correct");
+    cr_assert_eq(argus_get(&argus, "number").as_int, 100, "Integer value should be correct");
+    cr_assert_str_eq(argus_get(&argus, "output").as_string, "file.txt", "String value should be correct");
     
     // Check non-existent option (should return empty value)
-    cr_assert_eq(argus_get(argus, "nonexistent").raw, 0, "Non-existent option should return empty value");
+    cr_assert_eq(argus_get(&argus, "nonexistent").raw, 0, "Non-existent option should return empty value");
     
     // Clean up
     argus_free(&argus);
@@ -180,18 +180,18 @@ Test(api, argus_count)
     argus_parse(&argus, argc, argv);
 
     // Check count for single-value options
-    cr_assert_eq(argus_count(argus, "input"), 1, "Single value should have count 1");
-    cr_assert_eq(argus_count(argus, "verbose"), 1, "Single value should have count 1");
+    cr_assert_eq(argus_count(&argus, "input"), 1, "Single value should have count 1");
+    cr_assert_eq(argus_count(&argus, "verbose"), 1, "Single value should have count 1");
     
     // Check count for array option
-    cr_assert_eq(argus_count(argus, "array"), 4, "Array option should have count 4");
+    cr_assert_eq(argus_count(&argus, "array"), 4, "Array option should have count 4");
 
     // Check count for map option
-    cr_assert_eq(argus_count(argus, "map"), 3, "Map option should have count 3");
+    cr_assert_eq(argus_count(&argus, "map"), 3, "Map option should have count 3");
     
 
     // Check count for non-existent option
-    cr_assert_eq(argus_count(argus, "nonexistent"), 0, "Non-existent option should have count 0");
+    cr_assert_eq(argus_count(&argus, "nonexistent"), 0, "Non-existent option should have count 0");
 
     // Clean up
     argus_free(&argus);
@@ -204,9 +204,9 @@ Test(api, argus_print_functions, .init = cr_redirect_stdout)
     argus.description = "Test program for argus";
     
     // Test the print functions
-    argus_print_help(argus);
-    argus_print_usage(argus);
-    argus_print_version(argus);
+    argus_print_help(&argus);
+    argus_print_usage(&argus);
+    argus_print_version(&argus);
     
     // We don't assert on the output, just make sure they don't crash
     cr_assert(true, "Print functions should not crash");

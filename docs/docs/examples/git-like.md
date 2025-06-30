@@ -85,13 +85,13 @@ int add_action(argus_t *argus, void *data)
     app_context_t *ctx = (app_context_t *)data;
     
     // Access subcommand options
-    bool add_all = argus_get(*argus, "all").as_bool;
-    bool force = argus_get(*argus, "force").as_bool;
-    const char *files = argus_get(*argus, "files").as_string;
+    bool add_all = argus_get(argus, "all").as_bool;
+    bool force = argus_get(argus, "force").as_bool;
+    const char *files = argus_get(argus, "files").as_string;
     
     // Access global options
-    bool verbose = argus_get(*argus, ".verbose").as_bool;
-    const char *repo_path = argus_get(*argus, ".directory").as_string;
+    bool verbose = argus_get(argus, ".verbose").as_bool;
+    const char *repo_path = argus_get(argus, ".directory").as_string;
     
     if (verbose) {
         printf("Repository: %s\n", repo_path);
@@ -112,9 +112,9 @@ int add_action(argus_t *argus, void *data)
     }
     
     // Check include patterns
-    if (argus_is_set(*argus, "include")) {
+    if (argus_is_set(argus, "include")) {
         printf("Include patterns:\n");
-        argus_array_it_t it = argus_array_it(*argus, "include");
+        argus_array_it_t it = argus_array_it(argus, "include");
         while (argus_array_next(&it)) {
             printf("  %s\n", it.value.as_string);
         }
@@ -132,14 +132,14 @@ int commit_action(argus_t *argus, void *data)
 {
     app_context_t *ctx = (app_context_t *)data;
     
-    const char *message = argus_get(*argus, "message").as_string;
-    const char *author = argus_get(*argus, "author").as_string;
-    bool amend = argus_get(*argus, "amend").as_bool;
-    bool signoff = argus_get(*argus, "signoff").as_bool;
+    const char *message = argus_get(argus, "message").as_string;
+    const char *author = argus_get(argus, "author").as_string;
+    bool amend = argus_get(argus, "amend").as_bool;
+    bool signoff = argus_get(argus, "signoff").as_bool;
     
     // Access global options
-    bool verbose = argus_get(*argus, ".verbose").as_bool;
-    const char *repo_path = argus_get(*argus, ".directory").as_string;
+    bool verbose = argus_get(argus, ".verbose").as_bool;
+    const char *repo_path = argus_get(argus, ".directory").as_string;
     
     if (verbose) {
         printf("Repository: %s\n", repo_path);
@@ -168,15 +168,15 @@ int push_action(argus_t *argus, void *data)
 {
     app_context_t *ctx = (app_context_t *)data;
     
-    const char *remote = argus_get(*argus, "remote").as_string;
-    const char *branch = argus_get(*argus, "branch").as_string;
-    bool force = argus_get(*argus, "force").as_bool;
-    bool tags = argus_get(*argus, "tags").as_bool;
-    bool dry_run = argus_get(*argus, "dry-run").as_bool;
+    const char *remote = argus_get(argus, "remote").as_string;
+    const char *branch = argus_get(argus, "branch").as_string;
+    bool force = argus_get(argus, "force").as_bool;
+    bool tags = argus_get(argus, "tags").as_bool;
+    bool dry_run = argus_get(argus, "dry-run").as_bool;
     
     // Access global options
-    bool verbose = argus_get(*argus, ".verbose").as_bool;
-    const char *repo_path = argus_get(*argus, ".directory").as_string;
+    bool verbose = argus_get(argus, ".verbose").as_bool;
+    const char *repo_path = argus_get(argus, ".directory").as_string;
     
     if (verbose) {
         printf("Repository: %s\n", repo_path);
@@ -214,12 +214,12 @@ int status_action(argus_t *argus, void *data)
 {
     app_context_t *ctx = (app_context_t *)data;
     
-    bool short_format = argus_get(*argus, "short").as_bool;
-    bool porcelain = argus_get(*argus, "porcelain").as_bool;
+    bool short_format = argus_get(argus, "short").as_bool;
+    bool porcelain = argus_get(argus, "porcelain").as_bool;
     
     // Access global options  
-    bool verbose = argus_get(*argus, ".verbose").as_bool;
-    const char *repo_path = argus_get(*argus, ".directory").as_string;
+    bool verbose = argus_get(argus, ".verbose").as_bool;
+    const char *repo_path = argus_get(argus, ".directory").as_string;
     
     if (verbose && !short_format && !porcelain) {
         printf("Repository: %s\n", repo_path);
@@ -267,7 +267,7 @@ int main(int argc, char **argv)
         .logger = open_log("vcs.log")
     };
     
-    if (argus_has_command(argus)) {
+    if (argus_has_command(&argus)) {
         // Execute the parsed subcommand
         int result = argus_exec(&argus, &context);
         argus_free(&argus);
@@ -276,8 +276,8 @@ int main(int argc, char **argv)
     else {
         // No subcommand provided
         printf("No command specified.\n\n");
-        argus_print_usage(argus);
-        argus_print_help(argus);
+        argus_print_usage(&argus);
+        argus_print_help(&argus);
         argus_free(&argus);
         return 1;
     }
@@ -406,8 +406,8 @@ Options:
 ### Value Access Patterns
 ```c
 // In action handlers:
-bool verbose = argus_get(*argus, ".verbose").as_bool;     // Global option (dot prefix)
-const char *msg = argus_get(*argus, "message").as_string; // Local option (relative)
+bool verbose = argus_get(argus, ".verbose").as_bool;     // Global option (dot prefix)
+const char *msg = argus_get(argus, "message").as_string; // Local option (relative)
 ```
 
 ### Context Sharing

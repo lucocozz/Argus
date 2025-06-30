@@ -45,7 +45,7 @@ Test(positional_args, positive_number)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed with positive number");
-    cr_assert_eq(argus_get(argus, "number").as_int, 42, "Integer value should be correctly parsed");
+    cr_assert_eq(argus_get(&argus, "number").as_int, 42, "Integer value should be correctly parsed");
     
     argus_free(&argus);
 }
@@ -60,7 +60,7 @@ Test(positional_args, negative_number, .init = setup_error_redirect)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed with negative number");
-	cr_assert_eq(argus_get(argus, "number").as_int, -42, "Negative integer value should be correctly parsed");
+	cr_assert_eq(argus_get(&argus, "number").as_int, -42, "Negative integer value should be correctly parsed");
     
     argus_free(&argus);
 }
@@ -75,7 +75,7 @@ Test(positional_args, negative_with_separator)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed with -- separator");
-    cr_assert_eq(argus_get(argus, "number").as_int, -42, "Negative integer value should be correctly parsed after --");
+    cr_assert_eq(argus_get(&argus, "number").as_int, -42, "Negative integer value should be correctly parsed after --");
     
     argus_free(&argus);
 }
@@ -90,7 +90,7 @@ Test(positional_args, option_like_with_separator)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed with -- separator");
-    cr_assert_str_eq(argus_get(argus, "arg1").as_string, "--help", "Option-like string should be treated as positional after --");
+    cr_assert_str_eq(argus_get(&argus, "arg1").as_string, "--help", "Option-like string should be treated as positional after --");
     
     argus_free(&argus);
 }
@@ -105,8 +105,8 @@ Test(positional_args, multiple_positionals_with_separator)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed with -- separator and multiple positionals");
-    cr_assert_eq(argus_get(argus, "number").as_int, -42, "First positional should be parsed as -42");
-    cr_assert_str_eq(argus_get(argus, "text").as_string, "--text", "Second positional should be parsed as --text");
+    cr_assert_eq(argus_get(&argus, "number").as_int, -42, "First positional should be parsed as -42");
+    cr_assert_str_eq(argus_get(&argus, "text").as_string, "--text", "Second positional should be parsed as --text");
     
     argus_free(&argus);
 }
@@ -121,8 +121,8 @@ Test(positional_args, mixed_options_and_separator)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed with mixed options and separator");
-    cr_assert_eq(argus_get(argus, "verbose").as_bool, true, "Option before -- should be recognized");
-    cr_assert_str_eq(argus_get(argus, "arg1").as_string, "--arg", "Argument after -- should be treated as positional");
+    cr_assert_eq(argus_get(&argus, "verbose").as_bool, true, "Option before -- should be recognized");
+    cr_assert_str_eq(argus_get(&argus, "arg1").as_string, "--arg", "Argument after -- should be treated as positional");
     
     argus_free(&argus);
 }
@@ -137,11 +137,11 @@ Test(positional_args, array_with_negative_numbers)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed with array of negative numbers");
-    cr_assert_eq(argus_count(argus, "numbers"), 3, "Array should expand the range to 3 elements");
-    cr_assert_eq(argus_array_get(argus, "numbers", 0).as_int, -1, "First element should be -1");
-    cr_assert_eq(argus_array_get(argus, "numbers", 1).as_int, -2, "Second element should be -2");
-    cr_assert_eq(argus_array_get(argus, "numbers", 2).as_int, -3, "Third element should be -3");
-    cr_assert_eq(argus_get(argus, "count").as_int, 5, "Positional should be parsed correctly");
+    cr_assert_eq(argus_count(&argus, "numbers"), 3, "Array should expand the range to 3 elements");
+    cr_assert_eq(argus_array_get(&argus, "numbers", 0).as_int, -1, "First element should be -1");
+    cr_assert_eq(argus_array_get(&argus, "numbers", 1).as_int, -2, "Second element should be -2");
+    cr_assert_eq(argus_array_get(&argus, "numbers", 2).as_int, -3, "Third element should be -3");
+    cr_assert_eq(argus_get(&argus, "count").as_int, 5, "Positional should be parsed correctly");
     
     argus_free(&argus);
 }
@@ -156,9 +156,9 @@ Test(positional_args, array_with_number_ranges)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed with number range");
-    cr_assert_eq(argus_count(argus, "numbers"), 5, "Array should expand the range to 5 elements");
-    cr_assert_eq(argus_array_get(argus, "numbers", 0).as_int, -5, "First element should be -5");
-    cr_assert_eq(argus_array_get(argus, "numbers", 4).as_int, -1, "Last element should be -1");
+    cr_assert_eq(argus_count(&argus, "numbers"), 5, "Array should expand the range to 5 elements");
+    cr_assert_eq(argus_array_get(&argus, "numbers", 0).as_int, -5, "First element should be -5");
+    cr_assert_eq(argus_array_get(&argus, "numbers", 4).as_int, -1, "Last element should be -1");
     
     argus_free(&argus);
 }

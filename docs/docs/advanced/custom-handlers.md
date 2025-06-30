@@ -116,7 +116,7 @@ int main(int argc, char **argv)
     argus_parse(&argus, argc, argv);
     
     // Access custom type
-    endpoint_t *ep = (endpoint_t*)argus_get(argus, "endpoint").as_ptr;
+    endpoint_t *ep = (endpoint_t*)argus_get(&argus, "endpoint").as_ptr;
     if (ep)
         printf("Connecting to %s:%d\n", ep->host, ep->port);
 

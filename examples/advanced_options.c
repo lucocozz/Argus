@@ -52,32 +52,32 @@ int main(int argc, char **argv)
     if (status != ARGUS_SUCCESS)
         return status;
 
-    printf("Processing file: %s\n", argus_get(argus, "input").as_string);
+    printf("Processing file: %s\n", argus_get(&argus, "input").as_string);
     
     // Check compression options
-    if (argus_is_set(argus, "gzip"))
+    if (argus_is_set(&argus, "gzip"))
         printf("Using gzip compression");
-    else if (argus_is_set(argus, "bzip2"))
+    else if (argus_is_set(&argus, "bzip2"))
         printf("Using bzip2 compression");
-    else if (argus_is_set(argus, "lzma"))
+    else if (argus_is_set(&argus, "lzma"))
         printf("Using lzma compression");
     else
         printf("No compression selected");
 
     // Show compression level if any compression is selected
-    if (argus_is_set(argus, "gzip") || argus_is_set(argus, "bzip2") || argus_is_set(argus, "lzma"))
-        printf(" (level %d)\n", argus_get(argus, "level").as_int);
+    if (argus_is_set(&argus, "gzip") || argus_is_set(&argus, "bzip2") || argus_is_set(&argus, "lzma"))
+        printf(" (level %d)\n", argus_get(&argus, "level").as_int);
     else
         printf("\n");
 
     // Check authentication
-    if (argus_is_set(argus, "username"))
-        printf("Authenticated as: %s\n", argus_get(argus, "username").as_string);
+    if (argus_is_set(&argus, "username"))
+        printf("Authenticated as: %s\n", argus_get(&argus, "username").as_string);
 
     // Check output mode
-    if (argus_get(argus, "verbose").as_bool)
+    if (argus_get(&argus, "verbose").as_bool)
         printf("Verbose mode enabled\n");
-    else if (argus_get(argus, "quiet").as_bool)
+    else if (argus_get(&argus, "quiet").as_bool)
         printf("Output suppressed\n");
 
     argus_free(&argus);

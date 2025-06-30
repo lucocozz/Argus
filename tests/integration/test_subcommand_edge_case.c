@@ -111,7 +111,7 @@ Test(subcommand_edge, basic_subcommand, .init = setup_subcommand)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Basic subcommand parsing should succeed");
-    cr_assert(argus_has_command(argus), "argus_has_command should return true");
+    cr_assert(argus_has_command(&argus), "argus_has_command should return true");
     
     // Execute subcommand
     status = argus_exec(&argus, NULL);
@@ -120,9 +120,9 @@ Test(subcommand_edge, basic_subcommand, .init = setup_subcommand)
     cr_assert_not(remove_action_called, "Remove action should not be called");
     
     // Verify option values
-    cr_assert_str_eq(argus_get(argus, "add.message").as_string, "test", 
+    cr_assert_str_eq(argus_get(&argus, "add.message").as_string, "test", 
                     "Subcommand option should be accessible");
-    cr_assert_str_eq(argus_get(argus, "add.path").as_string, "file.txt", 
+    cr_assert_str_eq(argus_get(&argus, "add.path").as_string, "file.txt", 
                     "Subcommand positional should be accessible");
     
     argus_free(&argus);
@@ -138,7 +138,7 @@ Test(subcommand_edge, nested_subcommand, .init = setup_subcommand)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Nested subcommand parsing should succeed");
-    cr_assert(argus_has_command(argus), "argus_has_command should return true");
+    cr_assert(argus_has_command(&argus), "argus_has_command should return true");
     
     // Execute subcommand
     status = argus_exec(&argus, NULL);
@@ -147,9 +147,9 @@ Test(subcommand_edge, nested_subcommand, .init = setup_subcommand)
     cr_assert(nested_action_called, "Nested action should be called");
     
     // Verify option values
-    cr_assert_eq(argus_get(argus, "nested.foo.verbose").as_bool, true,
+    cr_assert_eq(argus_get(&argus, "nested.foo.verbose").as_bool, true,
                 "Nested subcommand flag should be accessible");
-    cr_assert_eq(argus_get(argus, "nested.foo.value").as_int, 42, 
+    cr_assert_eq(argus_get(&argus, "nested.foo.value").as_int, 42, 
                 "Nested subcommand positional should be accessible");
     
     argus_free(&argus);
@@ -165,7 +165,7 @@ Test(subcommand_edge, execute_without_action, .init = setup_subcommand)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Subcommand without action should succeed");
-    cr_assert(argus_has_command(argus), "argus_has_command should return true");
+    cr_assert(argus_has_command(&argus), "argus_has_command should return true");
     
     // Execute subcommand without action
     status = argus_exec(&argus, NULL);
@@ -185,8 +185,8 @@ Test(subcommand_edge, global_options, .init = setup_subcommand)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Subcommand with global options should succeed");
-    cr_assert(argus_has_command(argus), "argus_has_command should return true");
-    cr_assert_eq(argus_get(argus, "verbose").as_bool, true, 
+    cr_assert(argus_has_command(&argus), "argus_has_command should return true");
+    cr_assert_eq(argus_get(&argus, "verbose").as_bool, true, 
                 "Global option should be accessible");
     
     argus_free(&argus);
@@ -203,7 +203,7 @@ Test(subcommand_edge, invalid_subcommand, .init = setup_subcommand)
     
     // This likely fails with Unknown option or Unknown command
     cr_assert_neq(status, ARGUS_SUCCESS, "Invalid subcommand should fail");
-    cr_assert_not(argus_has_command(argus), "argus_has_command should return false");
+    cr_assert_not(argus_has_command(&argus), "argus_has_command should return false");
     
     argus_free(&argus);
 }
@@ -232,7 +232,7 @@ Test(subcommand_edge, subcommand_negative_number, .init = setup_subcommand)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Subcommand with negative number should succeed");
-    cr_assert_eq(argus_get(argus, "nested.foo.value").as_int, -42, 
+    cr_assert_eq(argus_get(&argus, "nested.foo.value").as_int, -42, 
                 "Negative number should parse correctly");
     
     argus_free(&argus);
@@ -254,9 +254,9 @@ Test(option_formats, long_equal)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Long option with equal sign should succeed");
-    cr_assert_str_eq(argus_get(argus, "output").as_string, "file.txt", 
+    cr_assert_str_eq(argus_get(&argus, "output").as_string, "file.txt", 
                     "String value should be correctly parsed");
-    cr_assert_eq(argus_get(argus, "number").as_int, 42, 
+    cr_assert_eq(argus_get(&argus, "number").as_int, 42, 
                 "Integer value should be correctly parsed");
     
     argus_free(&argus);
@@ -272,9 +272,9 @@ Test(option_formats, long_separate)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Long option with separate value should succeed");
-    cr_assert_str_eq(argus_get(argus, "output").as_string, "file.txt", 
+    cr_assert_str_eq(argus_get(&argus, "output").as_string, "file.txt", 
                     "String value should be correctly parsed");
-    cr_assert_eq(argus_get(argus, "number").as_int, 42, 
+    cr_assert_eq(argus_get(&argus, "number").as_int, 42, 
                 "Integer value should be correctly parsed");
     
     argus_free(&argus);
@@ -290,9 +290,9 @@ Test(option_formats, short_attached)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Short option with attached value should succeed");
-    cr_assert_str_eq(argus_get(argus, "output").as_string, "file.txt", 
+    cr_assert_str_eq(argus_get(&argus, "output").as_string, "file.txt", 
                     "String value should be correctly parsed");
-    cr_assert_eq(argus_get(argus, "number").as_int, 42, 
+    cr_assert_eq(argus_get(&argus, "number").as_int, 42, 
                 "Integer value should be correctly parsed");
     
     argus_free(&argus);
@@ -308,9 +308,9 @@ Test(option_formats, short_separate)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Short option with separate value should succeed");
-    cr_assert_str_eq(argus_get(argus, "output").as_string, "file.txt", 
+    cr_assert_str_eq(argus_get(&argus, "output").as_string, "file.txt", 
                     "String value should be correctly parsed");
-    cr_assert_eq(argus_get(argus, "number").as_int, 42, 
+    cr_assert_eq(argus_get(&argus, "number").as_int, 42, 
                 "Integer value should be correctly parsed");
     
     argus_free(&argus);
@@ -326,9 +326,9 @@ Test(option_formats, combined_flags)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Combined short flags should succeed");
-    cr_assert_eq(argus_get(argus, "verbose").as_bool, true, 
+    cr_assert_eq(argus_get(&argus, "verbose").as_bool, true, 
                 "First flag should be set");
-    cr_assert_eq(argus_get(argus, "quiet").as_bool, true, 
+    cr_assert_eq(argus_get(&argus, "quiet").as_bool, true, 
                 "Second flag should be set");
     
     argus_free(&argus);
@@ -344,7 +344,7 @@ Test(option_formats, value_like_option, .init = setup_error_redirect)
     int status = argus_parse(&argus, argc, argv);
     
 	cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed for value-like option");
-    cr_assert_str_eq(argus_get(argus, "output").as_string, "--verbose", 
+    cr_assert_str_eq(argus_get(&argus, "output").as_string, "--verbose", 
                     "Value should be treated as a string instead of a flag");
 
     argus_free(&argus);
@@ -360,7 +360,7 @@ Test(option_formats, empty_value)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Option with empty value should succeed");
-    cr_assert_str_eq(argus_get(argus, "output").as_string, "", 
+    cr_assert_str_eq(argus_get(&argus, "output").as_string, "", 
                     "Empty string value should be correctly parsed");
     
     argus_free(&argus);
@@ -376,7 +376,7 @@ Test(option_formats, dash_value)
     int status = argus_parse(&argus, argc, argv);
     
     cr_assert_eq(status, ARGUS_SUCCESS, "Option with dash value should succeed");
-    cr_assert_str_eq(argus_get(argus, "output").as_string, "-not-an-option", 
+    cr_assert_str_eq(argus_get(&argus, "output").as_string, "-not-an-option", 
                     "Value starting with dash should be correctly parsed");
     
     argus_free(&argus);

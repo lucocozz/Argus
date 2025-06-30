@@ -61,10 +61,10 @@ int main(int argc, char **argv)
         return 1;
 
     // Type-safe value access
-    int port = argus_get(argus, "port").as_int;
-    bool verbose = argus_get(argus, "verbose").as_bool;
-    const char *output = argus_get(argus, "output").as_string;
-    const char *input = argus_get(argus, "input").as_string;
+    int port = argus_get(&argus, "port").as_int;
+    bool verbose = argus_get(&argus, "verbose").as_bool;
+    const char *output = argus_get(&argus, "output").as_string;
+    const char *input = argus_get(&argus, "input").as_string;
     
     argus_free(&argus);
     return 0;

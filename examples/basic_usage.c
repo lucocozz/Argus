@@ -46,10 +46,10 @@ int main(int argc, char **argv)
         return status;
 
     // Access parsed values
-    bool verbose = argus_get(argus, "verbose").as_bool;
-    const char *output = argus_get(argus, "output").as_string;
-    int port = argus_get(argus, "p").as_int;  // Using short name as ID when only short name exists
-    const char *input = argus_get(argus, "input").as_string;
+    bool verbose = argus_get(&argus, "verbose").as_bool;
+    const char *output = argus_get(&argus, "output").as_string;
+    int port = argus_get(&argus, "p").as_int;  // Using short name as ID when only short name exists
+    const char *input = argus_get(&argus, "input").as_string;
 
     // Display configuration
     printf("Configuration:\n");
@@ -57,8 +57,8 @@ int main(int argc, char **argv)
     printf("  Output: %s\n", output);
     printf("  Port: %d\n", port);
     printf("  Input: %s\n", input);
-    if (argus_is_set(argus, "value")) // Check if the optional positional argument was set
-        printf("  Value: %d\n", argus_get(argus, "value").as_int);
+    if (argus_is_set(&argus, "value")) // Check if the optional positional argument was set
+        printf("  Value: %d\n", argus_get(&argus, "value").as_int);
 
     // Free resources
     argus_free(&argus);
