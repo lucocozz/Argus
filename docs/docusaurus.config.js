@@ -3,7 +3,7 @@ const config = {
   tagline: 'Modern C library for command-line argument parsing',
   favicon: 'img/argus-logo.webp',
 
-  url: 'https://argus-lib.netlify.app',
+  url: 'https://argus-lib.com',
   baseUrl: '/',
 
   organizationName: 'lucocozz',

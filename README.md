@@ -12,7 +12,7 @@
   <a href="https://github.com/lucocozz/argus/actions/workflows/ci-complete.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/ci-complete.yml/badge.svg" alt="CI/CD Pipeline"></a>
   <a href="https://github.com/lucocozz/argus/actions/workflows/codeql.yml"><img src="https://github.com/lucocozz/argus/actions/workflows/codeql.yml/badge.svg" alt="CodeQL Analysis"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
-  <a href="https://argus.readthedocs.io"><img src="https://img.shields.io/badge/docs-latest-blue.svg" alt="Documentation"></a>
+  <a href="https://argus-lib.com"><img src="https://img.shields.io/badge/docs-latest-blue.svg" alt="Documentation"></a>
 </p>
 
 ---
@@ -171,10 +171,10 @@ ARGUS_OPTIONS(options,
 
 ## Documentation
 
-📚 **[Full Documentation](https://argus.readthedocs.io)** - Complete guides and API reference  
-🚀 **[Quick Start Guide](https://argus.readthedocs.io/getting-started/quickstart)** - Get running in 5 minutes  
-💡 **[Examples](https://argus.readthedocs.io/examples)** - Real-world usage patterns  
-🔧 **[API Reference](https://argus.readthedocs.io/api-reference)** - Complete function and macro documentation  
+📚 **[Full Documentation](https://argus-lib.com)** - Complete guides and API reference  
+🚀 **[Quick Start Guide](https://argus-lib.com/getting-started/quickstart)** - Get running in 5 minutes  
+💡 **[Examples](https://argus-lib.com/examples/simple-cli)** - Real-world usage patterns  
+🔧 **[API Reference](https://argus-lib.com/api-reference/overview)** - Complete function and macro documentation  
 
 ## Comparison
 
