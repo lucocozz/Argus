@@ -1,9 +1,10 @@
-/**
- * argus_display.c - Display functions for argus
+/*
+ * MIT License
  *
- * This file implements functions for displaying help, usage, and version information.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #include "argus/internal/display.h"

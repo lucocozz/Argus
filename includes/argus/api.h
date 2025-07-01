@@ -1,10 +1,10 @@
-/**
- * argus/api.h - Public API functions
+/*
+ * MIT License
  *
- * This header defines all the public functions that users can call
- * to initialize, parse arguments, and access results.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_API_H

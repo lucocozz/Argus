@@ -1,11 +1,10 @@
-/**
- * argus/internal/platform/string_compat.h - String function compatibility utilities
+/*
+ * MIT License
  *
- * INTERNAL HEADER - NOT PART OF THE PUBLIC API
- * This header provides cross-platform compatibility for string functions
- * that have different implementations or naming conventions across platforms.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_INTERNAL_CROSS_PLATFORM_H

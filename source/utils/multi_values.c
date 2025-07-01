@@ -1,9 +1,10 @@
-/**
- * multi_value_utils.c - Implementation of utility functions for multi-value options
+/*
+ * MIT License
  *
- * This file implements sorting and uniqueness functions for array and map options.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #include "argus/internal/utils.h"

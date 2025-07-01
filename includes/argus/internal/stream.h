@@ -1,3 +1,12 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 lucocozz
+ *
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
+ */
+
 #ifndef ARGUS_INTERNAL_STREAM_H
 #define ARGUS_INTERNAL_STREAM_H
 

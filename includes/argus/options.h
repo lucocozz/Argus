@@ -1,12 +1,12 @@
-/**
- * argus/options.h - Option definition macros
+/*
+ * MIT License
  *
- * This header provides macros for defining command-line options.
- * These are the primary interface users interact with to specify
- * what options their program accepts.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
+
 #ifndef ARGUS_OPTIONS_H
 #define ARGUS_OPTIONS_H
 

@@ -1,3 +1,12 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 lucocozz
+ *
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
+ */
+
 #include <stdlib.h>
 
 #include "argus/errors.h"

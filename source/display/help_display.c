@@ -1,9 +1,10 @@
-/**
- * help_display.c - Main help display coordination
+/*
+ * MIT License
  *
- * This file coordinates the help display functionality using modular components.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #define _GNU_SOURCE  // NOLINT

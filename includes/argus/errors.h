@@ -1,10 +1,10 @@
-/**
- * argus/errors.h - Error handling
+/*
+ * MIT License
  *
- * This header defines error codes and error handling functions
- * that are part of the public API.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_ERRORS_H
