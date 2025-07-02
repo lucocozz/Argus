@@ -1,3 +1,12 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 lucocozz
+ *
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
+ */
+
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,7 +14,6 @@
 
 #include "argus/errors.h"
 #include "argus/internal/cross_platform.h"
-#include "argus/internal/utils.h"
 #include "argus/types.h"
 
 // Forward declaration
@@ -88,10 +96,8 @@ char *format_choices_validator(validator_data_t data)
                 total_length += strlen(choices->as_strings[i]);
                 break;
             case VALUE_TYPE_INT:
-                total_length += 20;  // Max digits for int64_t
-                break;
             case VALUE_TYPE_FLOAT:
-                total_length += 20;  // Max digits for double
+                total_length += 20;  // Max digits for int64_t/double
                 break;
             default:
                 break;

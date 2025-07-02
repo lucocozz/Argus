@@ -1,10 +1,10 @@
-/**
- * argus/internal/callbacks/handlers.h - Internal handlers implementation
+/*
+ * MIT License
  *
- * INTERNAL HEADER - NOT PART OF THE PUBLIC API
- * This header defines standard handler callbacks for different option types.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_INTERNAL_CALLBACKS_HANDLERS_H

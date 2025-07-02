@@ -1,11 +1,10 @@
-/**
- * argus/types.h - Public types and data structures
+/*
+ * MIT License
  *
- * This header defines all the types and structures that are exposed
- * as part of the public API. Users rely on these definitions to
- * configure and use the library.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_TYPES_H

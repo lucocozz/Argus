@@ -1,10 +1,10 @@
-/**
- * argus.h - Main entry point for the Argus library
+/*
+ * MIT License
  *
- * This header includes all the public APIs needed by library users.
- * Users should only need to include this file to use the library.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_H

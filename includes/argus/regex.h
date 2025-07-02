@@ -1,10 +1,10 @@
-/**
- * argus/patterns.h - Common regex patterns
+/*
+ * MIT License
  *
- * This header provides a collection of common regex patterns that can be used
- * with the REGEX validator to validate option values.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_REGEX_H

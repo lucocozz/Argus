@@ -1,5 +1,12 @@
-#include "argus/internal/compiler.h"
-#include "argus/internal/cross_platform.h"
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 lucocozz
+ *
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
+ */
+
 #include "argus/types.h"
 
 #include <limits.h>

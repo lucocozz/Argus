@@ -1,8 +1,13 @@
-#include "argus/errors.h"
-#include "argus/internal/utils.h"
-#include "argus/types.h"
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 lucocozz
+ *
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
+ */
 
-#include <stdio.h>
+#include "argus/errors.h"
 
 const char *argus_strerror(argus_error_type_t error)
 {

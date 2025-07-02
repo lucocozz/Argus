@@ -1,10 +1,10 @@
-/**
- * argus/internal/utils.h - Internal utility functions
+/*
+ * MIT License
  *
- * INTERNAL HEADER - NOT PART OF THE PUBLIC API
- * This header defines utility functions used internally by the library.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_INTERNAL_UTILS_H

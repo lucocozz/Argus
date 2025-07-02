@@ -1,9 +1,10 @@
-/**
- * help_formatter.c - Functions for formatting help text and option descriptions
+/*
+ * MIT License
  *
- * This file implements the formatting logic for help display.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #define _GNU_SOURCE  // NOLINT
@@ -159,6 +160,7 @@ static const char *get_env_var_name_for_display(argus_t *argus, const argus_opti
 
 void print_wrapped_text(const char *text, size_t indent, size_t line_width)
 {
+    // NOLINTNEXTLINE(clang-analyzer-core.uninitialized.Branch)
     if (!text || !*text)
         return;
 
@@ -234,6 +236,155 @@ size_t print_option_name(argus_t *argus, const argus_option_t *option, size_t in
     return name_len;
 }
 
+// Helper function to append text to description
+static char *append_to_description(char *description, const char *suffix)
+{
+    if (!suffix || !*suffix)
+        return description;
+
+    size_t desc_len   = strlen(description);
+    size_t suffix_len = strlen(suffix);
+    size_t desc_size  = desc_len + suffix_len + 1;
+    char  *new_desc   = malloc(desc_size);
+    if (new_desc) {
+        safe_strcpy(new_desc, desc_size, description);
+        safe_strcat(new_desc, desc_size, suffix);
+        free(description);
+        return new_desc;
+    }
+    return description;
+}
+
+// Helper function to append default value information
+static char *append_default_info(char *description, const argus_option_t *option)
+{
+    if (!option->have_default || option->value_type == VALUE_TYPE_FLAG)
+        return description;
+
+    char default_buf[128] = {0};
+    snprintf(default_buf, sizeof(default_buf), " (default: ");
+    size_t default_len = strlen(default_buf);
+
+    switch (option->value_type) {
+        case VALUE_TYPE_INT:
+            snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%d)",
+                     option->default_value.as_int);
+            break;
+        case VALUE_TYPE_STRING:
+            if (option->default_value.as_string) {
+                snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "\"%s\")",
+                         option->default_value.as_string);
+            } else
+                snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "null)");
+            break;
+        case VALUE_TYPE_FLOAT:
+            snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%.2f)",
+                     option->default_value.as_float);
+            break;
+        case VALUE_TYPE_BOOL:
+            snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%s)",
+                     option->default_value.as_bool ? "true" : "false");
+            break;
+        default:
+            safe_strcat(default_buf, sizeof(default_buf), ")");
+            break;
+    }
+
+    return append_to_description(description, default_buf);
+}
+
+// Helper function to append validator information
+static char *append_validator_info(char *description, argus_t *argus, const argus_option_t *option)
+{
+    if (!option->validators)
+        return description;
+
+    bool validator_used_in_hint = false;
+    if (has_single_validator(option) && !option->hint && option->validators[0]->formatter) {
+        char *validator_hint = option->validators[0]->formatter(option->validators[0]->data);
+        if (validator_hint && is_short_hint(argus, validator_hint))
+            validator_used_in_hint = true;
+        free(validator_hint);
+    }
+
+    // Show validators in description if not used as hint or complex case
+    if (!validator_used_in_hint || !has_single_validator(option) || option->hint) {
+        for (int i = 0; option->validators[i] != NULL; ++i) {
+            validator_entry_t *validator = option->validators[i];
+            if (validator->formatter) {
+                char *validator_desc = validator->formatter(validator->data);
+                if (validator_desc) {
+                    char validator_info[256] = {0};
+
+                    if (validator->func == regex_validator) {
+                        snprintf(validator_info, sizeof(validator_info), " (pattern: %s)",
+                                 validator_desc);
+                    } else if (validator->func == choices_string_validator ||
+                               validator->func == choices_int_validator ||
+                               validator->func == choices_float_validator) {
+                        snprintf(validator_info, sizeof(validator_info), " [%s]", validator_desc);
+                    } else if (validator->func == length_validator) {
+                        snprintf(validator_info, sizeof(validator_info), " (%s)", validator_desc);
+                    } else if (validator->func == range_validator) {
+                        snprintf(validator_info, sizeof(validator_info), " (range: %s)",
+                                 validator_desc);
+                    } else if (validator->func == count_validator) {
+                        snprintf(validator_info, sizeof(validator_info), " (count: %s)",
+                                 validator_desc);
+                    }
+
+                    if (validator_info[0] != '\0') {
+                        description = append_to_description(description, validator_info);
+                    }
+
+                    free(validator_desc);
+                }
+            }
+        }
+    }
+    return description;
+}
+
+// Helper function to append environment variable information
+static char *append_env_info(char *description, argus_t *argus, const argus_option_t *option)
+{
+    const char *env_name = get_env_var_name_for_display(argus, option);
+    if (!env_name)
+        return description;
+
+    char   env_buf[256] = {0};
+    size_t desc_len     = strlen(description);
+
+    if (desc_len > 0 && description[desc_len - 1] == ')') {
+        snprintf(env_buf, sizeof(env_buf), ", env: %s)", env_name);
+        if (desc_len > 0)
+            description[desc_len - 1] = '\0';
+    } else
+        snprintf(env_buf, sizeof(env_buf), " (env: %s)", env_name);
+
+    return append_to_description(description, env_buf);
+}
+
+// Helper function to append flag information
+static char *append_flag_info(char *description, const argus_option_t *option)
+{
+    if (!(option->flags & (FLAG_EXIT | FLAG_REQUIRED | FLAG_DEPRECATED | FLAG_EXPERIMENTAL)))
+        return description;
+
+    char attrs_buf[32] = {0};
+
+    if (option->flags & FLAG_EXIT)
+        safe_strcat(attrs_buf, sizeof(attrs_buf), " (exit)");
+    if (option->flags & FLAG_REQUIRED)
+        safe_strcat(attrs_buf, sizeof(attrs_buf), " (required)");
+    if (option->flags & FLAG_DEPRECATED)
+        safe_strcat(attrs_buf, sizeof(attrs_buf), " (deprecated)");
+    if (option->flags & FLAG_EXPERIMENTAL)
+        safe_strcat(attrs_buf, sizeof(attrs_buf), " (experimental)");
+
+    return append_to_description(description, attrs_buf);
+}
+
 char *build_option_description(argus_t *argus, const argus_option_t *option)
 {
     char *description = NULL;
@@ -248,151 +399,13 @@ char *build_option_description(argus_t *argus, const argus_option_t *option)
             return NULL;
     }
 
-    if (option->validators) {
-        bool validator_used_in_hint = false;
-        if (has_single_validator(option) && !option->hint && option->validators[0]->formatter) {
-            char *validator_hint = option->validators[0]->formatter(option->validators[0]->data);
-            if (validator_hint && is_short_hint(argus, validator_hint))
-                validator_used_in_hint = true;
-            free(validator_hint);
-        }
+    description = append_validator_info(description, argus, option);
 
-        // Show validators in description if:
-        // 1. Multiple validators (complex case)
-        // 2. Single validator but NOT used in hint (too long or other reason)
-        // 3. Has HINT() override (validator info still useful)
-        if (!validator_used_in_hint || !has_single_validator(option) || option->hint) {
-            // Build validator descriptions for complex cases
-            for (int i = 0; option->validators[i] != NULL; ++i) {
-                validator_entry_t *validator = option->validators[i];
-                if (validator->formatter) {
-                    char *validator_desc = validator->formatter(validator->data);
-                    if (validator_desc) {
-                        // Determine description format based on validator type
-                        char validator_info[256] = {0};
+    description = append_default_info(description, option);
 
-                        if (validator->func == regex_validator) {
-                            snprintf(validator_info, sizeof(validator_info), " (pattern: %s)",
-                                     validator_desc);
-                        } else if (validator->func == choices_string_validator ||
-                                   validator->func == choices_int_validator ||
-                                   validator->func == choices_float_validator) {
-                            snprintf(validator_info, sizeof(validator_info), " [%s]",
-                                     validator_desc);
-                        } else if (validator->func == length_validator) {
-                            snprintf(validator_info, sizeof(validator_info), " (%s)",
-                                     validator_desc);
-                        } else if (validator->func == range_validator) {
-                            snprintf(validator_info, sizeof(validator_info), " (range: %s)",
-                                     validator_desc);
-                        } else if (validator->func == count_validator) {
-                            snprintf(validator_info, sizeof(validator_info), " (count: %s)",
-                                     validator_desc);
-                        }
+    description = append_env_info(description, argus, option);
 
-                        // Append to description if there's content
-                        if (validator_info[0] != '\0') {
-                            size_t desc_size = strlen(description) + strlen(validator_info) + 1;
-                            char  *new_desc  = malloc(desc_size);
-                            if (new_desc) {
-                                safe_strcpy(new_desc, desc_size, description);
-                                safe_strcat(new_desc, desc_size, validator_info);
-                                free(description);
-                                description = new_desc;
-                            }
-                        }
-
-                        free(validator_desc);
-                    }
-                }
-            }
-        }
-    }
-
-    if (option->have_default && option->value_type != VALUE_TYPE_FLAG) {
-        char default_buf[128] = {0};
-        snprintf(default_buf, sizeof(default_buf), " (default: ");
-        size_t default_len = strlen(default_buf);
-
-        switch (option->value_type) {
-            case VALUE_TYPE_INT:
-                snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%d)",
-                         option->default_value.as_int);
-                break;
-            case VALUE_TYPE_STRING:
-                if (option->default_value.as_string) {
-                    snprintf(default_buf + default_len, sizeof(default_buf) - default_len,
-                             "\"%s\")", option->default_value.as_string);
-                } else
-                    snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "null)");
-                break;
-            case VALUE_TYPE_FLOAT:
-                snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%.2f)",
-                         option->default_value.as_float);
-                break;
-            case VALUE_TYPE_BOOL:
-                snprintf(default_buf + default_len, sizeof(default_buf) - default_len, "%s)",
-                         option->default_value.as_bool ? "true" : "false");
-                break;
-            default:
-                safe_strcat(default_buf, sizeof(default_buf), ")");
-                break;
-        }
-
-        size_t desc_size = strlen(description) + strlen(default_buf) + 1;
-        char  *new_desc  = malloc(desc_size);
-        if (new_desc) {
-            safe_strcpy(new_desc, desc_size, description);
-            safe_strcat(new_desc, desc_size, default_buf);
-            free(description);
-            description = new_desc;
-        }
-    }
-
-    const char *env_name = get_env_var_name_for_display(argus, option);
-    if (env_name) {
-        char env_buf[256] = {0};
-
-        size_t desc_len = strlen(description);
-        if (desc_len > 0 && description[desc_len - 1] == ')') {
-            snprintf(env_buf, sizeof(env_buf), ", env: %s)", env_name);
-            if (desc_len > 0)
-                description[desc_len - 1] = '\0';
-        } else
-            snprintf(env_buf, sizeof(env_buf), " (env: %s)", env_name);
-
-        size_t desc_size = strlen(description) + strlen(env_buf) + 1;
-        char  *new_desc  = malloc(desc_size);
-        if (new_desc) {
-            safe_strcpy(new_desc, desc_size, description);
-            safe_strcat(new_desc, desc_size, env_buf);
-            free(description);
-            description = new_desc;
-        }
-    }
-
-    if (option->flags & FLAG_EXIT || option->flags & FLAG_REQUIRED ||
-        option->flags & FLAG_DEPRECATED || option->flags & FLAG_EXPERIMENTAL) {
-        char attrs_buf[32] = {0};
-
-        if (option->flags & FLAG_EXIT)
-            safe_strcat(attrs_buf, sizeof(attrs_buf), " (exit)");
-        if (option->flags & FLAG_REQUIRED)
-            safe_strcat(attrs_buf, sizeof(attrs_buf), " (required)");
-        if (option->flags & FLAG_DEPRECATED)
-            safe_strcat(attrs_buf, sizeof(attrs_buf), " (deprecated)");
-        if (option->flags & FLAG_EXPERIMENTAL)
-            safe_strcat(attrs_buf, sizeof(attrs_buf), " (experimental)");
-
-        size_t desc_size = strlen(description) + strlen(attrs_buf) + 1;
-        char  *new_desc  = malloc(desc_size);
-        if (new_desc) {
-            safe_strcpy(new_desc, desc_size, description);
-            safe_strcat(new_desc, desc_size, attrs_buf);
-            free(description);
-            description = new_desc;
-        }
-    }
+    description = append_flag_info(description, option);
 
     return description;
 }

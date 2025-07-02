@@ -1,10 +1,10 @@
-/**
- * argus/callbacks.h - Public callbacks
+/*
+ * MIT License
  *
- * This header defines custom callback types that can be implemented
- * by users to extend the library's functionality.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_CALLBACKS_H

@@ -1,0 +1,36 @@
+name: Lint and Format
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Code Quality Check
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y meson ninja-build pkg-config clang clang-tidy clang-format just
+    
+    - name: Configure project
+      run: meson setup .build
+    
+    - name: Check code formatting
+      run: |
+        just format
+        if [ -n "$(git diff --name-only)" ]; then
+          echo "Code is not properly formatted. Please run 'just format' locally."
+          git diff
+          exit 1
+        fi
+    
+    - name: Run static analysis
+      run: just lint

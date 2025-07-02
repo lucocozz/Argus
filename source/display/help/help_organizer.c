@@ -1,9 +1,10 @@
-/**
- * help_organizer.c - Functions for organizing options into display categories
+/*
+ * MIT License
  *
- * This file implements the organization logic for help display.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #define _GNU_SOURCE  // NOLINT

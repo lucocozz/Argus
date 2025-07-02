@@ -1,8 +1,18 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 lucocozz
+ *
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
+ */
+
 #include "argus/errors.h"
 #include "argus/internal/stream.h"
 #include "argus/internal/utils.h"
 #include "argus/types.h"
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 
 static int validate_default_value(argus_t *argus, argus_option_t *option)

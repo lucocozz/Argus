@@ -1,10 +1,18 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 lucocozz
+ *
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
+ */
+
 #define _GNU_SOURCE  // NOLINT
 
 #include <stdlib.h>
 #include <string.h>
 
 #include "argus/errors.h"
-#include "argus/internal/compiler.h"
 #include "argus/internal/cross_platform.h"
 #include "argus/internal/utils.h"
 #include "argus/options.h"

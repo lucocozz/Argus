@@ -1,10 +1,10 @@
-/**
- * argus/internal/help.h - Help system functions
+/*
+ * MIT License
  *
- * INTERNAL HEADER - NOT PART OF THE PUBLIC API
- * This header defines all functions for the help system: organization, formatting, and rendering.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_INTERNAL_HELP_H

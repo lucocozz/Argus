@@ -1,10 +1,10 @@
-/**
- * argus/internal/parsing.h - Internal parsing functions
+/*
+ * MIT License
  *
- * INTERNAL HEADER - NOT PART OF THE PUBLIC API
- * This header defines internal functions for parsing command-line arguments.
+ * Copyright (c) 2025 lucocozz
  *
- * MIT License - Copyright (c) 2024 lucocozz
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
  */
 
 #ifndef ARGUS_INTERNAL_PARSING_H

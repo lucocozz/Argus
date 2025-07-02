@@ -2,20 +2,28 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
-
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| 0.1.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+If you find a security issue in Argus, please email me privately at:
+**lucocozz.dev@proton.me**
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Please include:
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+
+## What to Expect
+
+- I'll acknowledge your report when I can (usually within a few days)
+- I'll investigate and fix critical issues as soon as possible
+- I'll credit you in the fix unless you prefer to stay anonymous
+
+## Notes
+
+This is a personal project maintained in my free time. While I take security seriously, response times may vary based on my availability.
+
+For non-security bugs, please use GitHub issues instead.

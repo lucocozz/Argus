@@ -1,3 +1,12 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 lucocozz
+ *
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
+ */
+
 #include "argus/errors.h"
 #include "argus/types.h"
 #include <stddef.h>
@@ -89,11 +98,11 @@ int validate_naming(argus_option_t *options)
         }
 
         // short name
-        if (option->sname != '\0' && option->sname == ' ') {
+        if (option->sname == ' ') {
             ARGUS_STRUCT_ERROR(option, "Short name cannot be a space character");
             status = ARGUS_ERROR_MALFORMED_OPTION;
         }
-        if (option->sname != '\0' && option->sname == '-') {
+        if (option->sname == '-') {
             ARGUS_STRUCT_ERROR(option, "Short name cannot be a hyphen");
             status = ARGUS_ERROR_MALFORMED_OPTION;
         }

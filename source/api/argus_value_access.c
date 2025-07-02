@@ -1,3 +1,12 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2025 lucocozz
+ *
+ * This file is part of Argus.
+ * See LICENSE file in the project root for full license information.
+ */
+
 #include "argus/errors.h"
 #include "argus/internal/utils.h"
 #include "argus/types.h"
@@ -6,7 +15,7 @@
 
 argus_value_t argus_get(argus_t *argus, const char *option_path)
 {
-    argus->error_code       = 0;
+    argus->error_code      = 0;
     argus_option_t *option = find_option_by_active_path(*argus, option_path);
     if (option == NULL) {
         argus->error_code = ARGUS_ERROR_NO_VALUE;
@@ -33,7 +42,7 @@ size_t argus_count(argus_t *argus, const char *option_path)
 
 argus_value_t argus_array_get(argus_t *argus, const char *option_path, size_t index)
 {
-    argus->error_code       = 0;
+    argus->error_code      = 0;
     argus_option_t *option = find_option_by_active_path(*argus, option_path);
 
     if (option == NULL) {
@@ -59,7 +68,7 @@ argus_value_t argus_array_get(argus_t *argus, const char *option_path, size_t in
 
 argus_value_t argus_map_get(argus_t *argus, const char *option_path, const char *key)
 {
-    argus->error_code       = 0;
+    argus->error_code      = 0;
     argus_option_t *option = find_option_by_active_path(*argus, option_path);
 
     if (option == NULL) {
