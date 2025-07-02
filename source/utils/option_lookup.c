@@ -10,9 +10,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "argus/errors.h"
-#include "argus/internal/compiler.h"
-#include "argus/internal/cross_platform.h"
 #include "argus/internal/utils.h"
 #include "argus/types.h"
 

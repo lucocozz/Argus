@@ -12,6 +12,7 @@
 #include "argus/internal/utils.h"
 #include "argus/types.h"
 #include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 
 static int validate_default_value(argus_t *argus, argus_option_t *option)

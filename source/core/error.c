@@ -8,10 +8,6 @@
  */
 
 #include "argus/errors.h"
-#include "argus/internal/utils.h"
-#include "argus/types.h"
-
-#include <stdio.h>
 
 const char *argus_strerror(argus_error_type_t error)
 {

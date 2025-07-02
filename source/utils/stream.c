@@ -9,6 +9,7 @@
 
 #include "argus/internal/stream.h"
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -126,8 +127,10 @@ char *stream_read(int fd)
     }
 
     if (bytes_read == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-        if (total_size == 0)
+        if (total_size == 0) {
+            free(result);
             return NULL;
+        }
     }
 
     if (total_size == 0) {

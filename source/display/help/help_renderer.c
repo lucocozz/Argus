@@ -14,9 +14,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "argus/internal/compiler.h"
-#include "argus/internal/cross_platform.h"
-#include "argus/internal/display.h"
 #include "argus/internal/help.h"
 #include "argus/internal/utils.h"
 #include "argus/types.h"

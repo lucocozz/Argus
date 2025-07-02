@@ -9,7 +9,6 @@
 
 #define _GNU_SOURCE  // NOLINT
 
-#include "argus/internal/compiler.h"
 #include "argus/internal/cross_platform.h"
 #include <stdbool.h>
 #include <stddef.h>

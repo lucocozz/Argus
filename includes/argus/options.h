@@ -84,13 +84,13 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
  */
 #define MAKE_VALIDATOR(fn, _formatter_, _data_, _order_) \
     &(validator_entry_t){ \
-        .func = fn, \
-        .formatter = _formatter_, \
-        .data = _data_, \
-        .order = _order_ \
+        .func = (fn), \
+        .formatter = (_formatter_), \
+        .data = (_data_), \
+        .order = (_order_) \
     }
 #define _V_DATA_RANGE_(_min_, _max_) \
-    ((validator_data_t){ .range = (argus_range_t){ .min = _min_, .max = _max_ } })
+    ((validator_data_t){ .range = (argus_range_t){ .min = (_min_), .max = (_max_) } })
 #define _V_DATA_CUSTOM_(data) \
     ((validator_data_t){ .custom = (uintptr_t)(data) })
 
