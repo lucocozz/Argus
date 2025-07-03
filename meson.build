@@ -37,10 +37,8 @@ if not regex
 else
     add_project_arguments('-DARGUS_REGEX', language: 'c')
     
-    # Essayer d'abord de trouver PCRE2 via pkg-config (système)
     pcre2_dep = dependency('libpcre2-8', required: false)
     
-    # Si non trouvé, utiliser le subproject
     if not pcre2_dep.found()
         pcre2_project = subproject('pcre2', default_options: ['werror=false'])
         pcre2_dep = pcre2_project.get_variable('libpcre2_8')
@@ -68,7 +66,6 @@ install_headers('includes/argus.h')
 install_subdir(
     'includes/argus',
     install_dir: get_option('includedir'),
-    exclude_directories: ['internal']
 )
 
 pkg = import('pkgconfig')
