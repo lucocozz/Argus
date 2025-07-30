@@ -1,8 +1,8 @@
-# API Reference Overview
+# > API Reference Overview_
 
 Complete reference for all Argus functions, macros, and types.
 
-## Core Functions
+## // Core Functions
 
 ### Initialization and Parsing
 
@@ -44,7 +44,7 @@ Complete reference for all Argus functions, macros, and types.
 | `argus_has_command()` | Check if subcommand parsed | `bool` |
 | `argus_exec()` | Execute parsed subcommand | `int` |
 
-## Option Definition Macros
+## // Option Definition Macros
 
 ### Basic Options
 
@@ -89,7 +89,7 @@ GROUP_START(name, ...)               // Start option group
 GROUP_END()                          // End option group
 ```
 
-## Option Modifiers
+## // Option Modifiers
 
 ### Core Modifiers
 
@@ -125,7 +125,7 @@ VALIDATOR(V_CHOICE_INT(1, 2, 3, ...))            // Integer choices
 VALIDATOR(V_CHOICE_FLOAT(0.1, 0.5, 1.0, ...))    // Float choices
 ```
 
-## Core Types
+## // Core Types
 
 ### Main Context
 
@@ -153,7 +153,7 @@ typedef struct argus_array_iterator_s argus_array_it_t;  // Array iterator
 typedef struct argus_map_iterator_s argus_map_it_t;      // Map iterator
 ```
 
-## Value Type Enumeration
+## // Value Type Enumeration
 
 ```c
 typedef enum argus_valtype_e {
@@ -177,7 +177,7 @@ typedef enum argus_valtype_e {
 } argus_valtype_t;
 ```
 
-## Option Flags
+## // Option Flags
 
 ```c
 typedef enum argus_optflags_e {
@@ -204,7 +204,7 @@ typedef enum argus_optflags_e {
 } argus_optflags_t;
 ```
 
-## Error Codes
+## // Error Codes
 
 ```c
 typedef enum argus_error_type_e {
@@ -244,7 +244,7 @@ typedef enum argus_error_type_e {
 } argus_error_type_t;
 ```
 
-## Quick Reference
+## // Quick Reference
 
 ### Basic Program Structure
 
@@ -314,7 +314,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## See Also
+## // See Also
 
 - **[Regex Patterns](./regex-patterns)** - Built-in validation patterns
 - **[Error Codes](./error-codes)** - Complete error code reference

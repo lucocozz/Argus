@@ -1,8 +1,8 @@
-# Validation
+# > Validation_
 
 Ensure your users provide correct input with Argus's comprehensive validation system, from simple built-in validators to powerful regex patterns.
 
-## Built-in Validators
+## // Built-in Validators
 
 Argus provides ready-to-use validators for common validation scenarios. Add them to your option definitions using the `VALIDATOR()` macro.
 
@@ -255,7 +255,7 @@ Options:
 </TabItem>
 </Tabs>
 
-## Regex Validation
+## // Regex Validation
 
 Use powerful regular expressions for pattern-based validation:
 
@@ -342,7 +342,7 @@ $ ./tool --version "1.2"              # ❌ Error: Invalid value '1.2': Format: 
 Regex validation requires PCRE2. If compiled without regex support (`-Dregex=false`), regex validators will fail with an error message.
 :::
 
-## Combining Validators
+## // Combining Validators
 
 Apply multiple validators to a single option. All validators are specified within a single `VALIDATOR()` call:
 
@@ -396,7 +396,7 @@ If any validator fails, parsing stops and an error is displayed.
 </TabItem>
 </Tabs>
 
-## Validation Order and Custom Validators
+## // Validation Order and Custom Validators
 
 Argus supports two types of validation timing:
 
@@ -405,7 +405,7 @@ Argus supports two types of validation timing:
 
 For detailed information on creating custom validators with specific ordering and complex validation logic, see the [Custom Validators](../advanced/custom-validators) guide.
 
-## Best Practices
+## // Best Practices
 
 ### ✅ Good Practices
 
@@ -444,7 +444,7 @@ OPTION_INT('p', "port", HELP("Port"),
            VALIDATOR(V_CHOICE(80, 443, 8080))) // ❌ Wrong - multiple calls
 ```
 
-## Complete Example
+## // Complete Example
 
 ```c
 #include "argus.h"
@@ -495,7 +495,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## What's Next?
+## // What's Next?
 
 - **[Environment Variables](environment)** - Load options from environment
 - **[Subcommands](subcommands)** - Build Git-like command hierarchies  

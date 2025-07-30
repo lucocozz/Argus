@@ -1,8 +1,8 @@
-# Collections
+# > Collections_
 
 Handle multiple values and key-value pairs with arrays and maps for complex command-line scenarios.
 
-## Array Options
+## // Array Options
 
 Collect multiple values for a single option through various input methods:
 
@@ -94,7 +94,7 @@ ARGUS_OPTIONS(
 </TabItem>
 </Tabs>
 
-## Map Options
+## // Map Options
 
 Collect key-value pairs for configuration-style options:
 
@@ -178,7 +178,7 @@ ARGUS_OPTIONS(
 </TabItem>
 </Tabs>
 
-## Accessing Collection Values
+## // Accessing Collection Values
 
 <Tabs>
 <TabItem value="direct-access" label="Direct Access" default>
@@ -324,7 +324,7 @@ int main(int argc, char **argv)
 </TabItem>
 </Tabs>
 
-## Validation with Collections
+## // Validation with Collections
 
 Apply validation to collection size and content:
 
@@ -383,7 +383,7 @@ Processing order:
 </TabItem>
 </Tabs>
 
-## Real-World Examples
+## // Real-World Examples
 
 <Tabs>
 <TabItem value="build-tool" label="Build Tool" default>
@@ -500,7 +500,7 @@ int main(int argc, char **argv)
 </TabItem>
 </Tabs>
 
-## Performance Considerations
+## // Performance Considerations
 
 Choose the right access method based on usage patterns:
 
@@ -515,7 +515,7 @@ Choose the right access method based on usage patterns:
 - Growth: Doubles when needed
 - Use `V_COUNT()` validation for large collections
 
-## Collection Flags Summary
+## // Collection Flags Summary
 
 | Flag | Arrays | Maps | Effect |
 |------|--------|------|--------|
@@ -527,7 +527,7 @@ Choose the right access method based on usage patterns:
 
 **Flag precedence:** `FLAG_SORTED_KEY` overrides `FLAG_SORTED_VALUE`
 
-## What's Next?
+## // What's Next?
 
 - **[Validation](validation)** - Validate collection content and constraints
 - **[Environment Variables](environment)** - Load collections from environment

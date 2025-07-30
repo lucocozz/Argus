@@ -1,8 +1,8 @@
-# Argus Cheat Sheet
+# > Argus Cheat Sheet_
 
 Quick reference for common patterns and syntax.
 
-## Basic Setup
+## // Basic Setup
 
 ```c
 #include <argus.h>
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## Option Types
+## // Option Types
 
 | Type | Macro | Access | Example |
 |------|-------|--------|---------|
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 | Float | `OPTION_FLOAT('r', "rate", ...)` | `.as_float` | `--rate 0.5` |
 | Boolean | `OPTION_BOOL('d', "debug", ...)` | `.as_bool` | `--debug=true` |
 
-## Collections
+## // Collections
 
 ```c
 // Arrays
@@ -51,14 +51,14 @@ OPTION_MAP_INT('c', "config", HELP("Config values"))
 OPTION_MAP_BOOL('f', "features", HELP("Feature flags"))
 ```
 
-## Positional Arguments
+## // Positional Arguments
 
 ```c
 POSITIONAL_STRING("input", HELP("Input file"))
 POSITIONAL_INT("count", HELP("Count"), FLAGS(FLAG_OPTIONAL))
 ```
 
-## Option Modifiers
+## // Option Modifiers
 
 ```c
 OPTION_STRING('o', "output", 
@@ -71,7 +71,7 @@ OPTION_STRING('o', "output",
 )
 ```
 
-## Validation
+## // Validation
 
 ```c
 VALIDATOR(V_RANGE(1, 100))                 // Numeric range
@@ -83,7 +83,7 @@ VALIDATOR(V_CHOICE_STR("json", "xml", "yaml"))      // String choices
 VALIDATOR(V_CHOICE_INT(80, 443, 8080))                // Integer choices
 ```
 
-## Common Regex Patterns
+## // Common Regex Patterns
 
 ```c
 ARGUS_RE_EMAIL          // user@example.com
@@ -94,7 +94,7 @@ ARGUS_RE_PHONE_US       // 123-456-7890
 ARGUS_RE_UUID           // 550e8400-e29b-41d4-a716-446655440000
 ```
 
-## Environment Variables
+## // Environment Variables
 
 ```c
 int main(int argc, char **argv)
@@ -111,7 +111,7 @@ OPTION_STRING('d', "db", ENV_VAR("DATABASE_URL"),     // Uses DATABASE_URL exact
               FLAGS(FLAG_NO_ENV_PREFIX))
 ```
 
-## Flags
+## // Flags
 
 ```c
 FLAGS(FLAG_REQUIRED)        // Must be provided
@@ -128,7 +128,7 @@ FLAGS(FLAG_SORTED_KEY)      // Sort map by keys
 FLAGS(FLAG_SORTED_VALUE)    // Sort map by values
 ```
 
-## Value Access
+## // Value Access
 
 ```c
 // Basic access
@@ -154,7 +154,7 @@ while (argus_array_next(&it)) {
 }
 ```
 
-## Subcommands
+## // Subcommands
 
 ```c
 int add_action(argus_t *argus, void *data)
@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## Input Formats
+## // Input Formats
 
 ```bash
 # Flags
@@ -212,7 +212,7 @@ program input.txt output.txt
 program --option -- --not-an-option
 ```
 
-## Error Handling
+## // Error Handling
 
 ```c
 // Parse errors are handled automatically
@@ -227,7 +227,7 @@ if (custom_check_failed) {
 }
 ```
 
-## Custom Types
+## // Custom Types
 
 ```c
 typedef struct { char *host; int port; } endpoint_t;
@@ -248,7 +248,7 @@ OPTION_BASE('e', "endpoint", VALUE_TYPE_CUSTOM,
 endpoint_t *ep = (endpoint_t*)argus_get(&argus, "endpoint").as_ptr;
 ```
 
-## Groups
+## // Groups
 
 ```c
 GROUP_START("Connection", GROUP_DESC("Network options")),
@@ -262,7 +262,7 @@ GROUP_START("Output", GROUP_DESC("Output options")),
 GROUP_END(),
 ```
 
-## Complete Example
+## // Complete Example
 
 ```c
 ARGUS_OPTIONS(options,

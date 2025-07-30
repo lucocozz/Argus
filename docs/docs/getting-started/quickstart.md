@@ -1,8 +1,8 @@
-# Quickstart
+# > Quickstart_
 
 Get up and running with Argus in minutes. This guide walks you through creating your first CLI tool.
 
-## Your First CLI
+## // Your First CLI
 
 Let's build a simple file processor that demonstrates Argus's core features:
 
@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## Build and Test
+## // Build and Test
 
 ```bash
 # Development build (recommended during development)
@@ -78,7 +78,7 @@ gcc -DARGUS_RELEASE my_tool.c -o my_tool-prod -largus
 Use `ARGUS_RELEASE` only in production after thorough testing. It disables option structure validation for faster startup time.
 :::
 
-## What You Get For Free
+## // What You Get For Free
 
 ### Automatic Help Generation
 
@@ -117,7 +117,7 @@ All equivalent:
 ./my_tool -ofile.txt -c5 input.txt
 ```
 
-## Key Concepts
+## // Key Concepts
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -182,7 +182,7 @@ OPTION_STRING('l', "level", HELP("Log level"),
 </TabItem>
 </Tabs>
 
-## Next Steps
+## // Next Steps
 
 ### Add Subcommands
 
@@ -225,7 +225,7 @@ OPTION_MAP_STRING('e', "env", HELP("Environment variables"))
 - **Nested Commands**: Multi-level command hierarchies
 - **Dependency Management**: Require/conflict between options
 
-## Common Patterns
+## // Common Patterns
 
 <Tabs>
 <TabItem value="simple" label="Simple Utility" default>

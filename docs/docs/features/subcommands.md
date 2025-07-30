@@ -1,8 +1,8 @@
-# Subcommands
+# > Subcommands_
 
 Build Git-like command-line interfaces with hierarchical commands, each having their own options and behavior.
 
-## Basic Concept
+## // Basic Concept
 
 Transform your program from a single-purpose tool into a multi-command application:
 
@@ -12,7 +12,7 @@ my_program [global options] command [command options] [arguments]
 
 Examples: `git commit`, `docker run`, `kubectl apply`
 
-## Basic Subcommand Setup
+## // Basic Subcommand Setup
 
 Define action handlers, subcommand options, and link them together:
 
@@ -126,7 +126,7 @@ int main(int argc, char **argv)
 </TabItem>
 </Tabs>
 
-## Help Integration
+## // Help Integration
 
 Argus automatically generates contextual help for subcommands:
 
@@ -175,7 +175,7 @@ Options:
 </TabItem>
 </Tabs>
 
-## Accessing Values in Subcommands
+## // Accessing Values in Subcommands
 
 Use different path formats to access options within subcommand handlers:
 
@@ -232,7 +232,7 @@ int add_command(argus_t *argus, void *data)
 </TabItem>
 </Tabs>
 
-## Nested Subcommands
+## // Nested Subcommands
 
 Create multi-level command hierarchies like `docker container run`:
 
@@ -313,7 +313,7 @@ $ ./tool --debug service create --name web --image nginx
 </TabItem>
 </Tabs>
 
-## Command Abbreviation
+## // Command Abbreviation
 
 Argus supports Git-style command abbreviation - users can type shortened command names:
 
@@ -344,7 +344,7 @@ $ ./tool st                        # Abbreviated
 - Case-sensitive matching
 - Works at all nesting levels
 
-## Advanced Features
+## // Advanced Features
 
 <Tabs>
 <TabItem value="context-data" label="Shared Context" default>
@@ -473,7 +473,7 @@ export MYAPP_DRY_RUN=false
 </TabItem>
 </Tabs>
 
-## Real-World Examples
+## // Real-World Examples
 
 <Tabs>
 <TabItem value="git-like" label="Git-like Tool" default>
@@ -609,7 +609,7 @@ ARGUS_OPTIONS(
 </TabItem>
 </Tabs>
 
-## Best Practices
+## // Best Practices
 
 ### ✅ Good Practices
 
@@ -654,7 +654,7 @@ int bad_action(argus_t *argus, void *data)
 }
 ```
 
-## Error Handling in Actions
+## // Error Handling in Actions
 
 ```c
 int deploy_action(argus_t *argus, void *data)
@@ -683,7 +683,7 @@ int deploy_action(argus_t *argus, void *data)
 }
 ```
 
-## What's Next?
+## // What's Next?
 
 - **[Collections](collections)** - Work with arrays and maps in subcommands
 - **[Custom Handlers](../advanced/custom-handlers)** - Process complex subcommand data

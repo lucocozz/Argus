@@ -1,4 +1,4 @@
 option('tests', type: 'boolean', value: false, description: 'Enable tests')
 option('examples', type: 'boolean', value: false, description: 'Build example programs')
 option('benchmarks', type: 'boolean', value: false, description: 'Build benchmark programs')
-option('regex', type: 'boolean', value: true, description: 'Disable regex support (removes PCRE2 dependency)')
+option('regex', type: 'boolean', value: false, description: 'regex support (PCRE2 dependency)')

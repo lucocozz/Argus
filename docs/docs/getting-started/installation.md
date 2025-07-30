@@ -1,12 +1,8 @@
-# Installation
+# > Installation_
 
 Get Argus up and running on your system quickly with multiple installation options.
 
-:::warning Work in Progress
-Only manual installation is available at the moment. Package manager support is coming soon.
-:::
-
-## Quick Install
+## // Quick Install
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -14,67 +10,65 @@ import TabItem from '@theme/TabItem';
 <Tabs>
 <TabItem value="linux" label="Linux" default>
 
+:::info System Requirements
+**Compiler**: GCC 13.0+ or Clang 14+
+:::
+
 ### Package Managers
 
 <Tabs>
 <TabItem value="vcpkg" label="vcpkg">
 
 ```bash
+# With Regex support (requires PCRE2)
+vcpkg install argus[regex]
+# Without Regex support (default)
 vcpkg install argus
-# Without Regex support (removes PCRE2 dependency)
-vcpkg install argus[core]
 ```
 
 </TabItem>
 <TabItem value="conan" label="Conan">
 
 ```bash
+# With Regex support (requires PCRE2)
+conan install argus/0.1.0 -o argus:regex=True
+# Without Regex support (default)
 conan install argus/0.1.0
-# Without Regex support (removes PCRE2 dependency)
-conan install argus/0.1.0 -o argus:regex=False
 ```
 
 </TabItem>
 <TabItem value="meson" label="Meson">
 
 ```bash
-meson install argus
-# Without Regex support (removes PCRE2 dependency)
-meson install argus -Dregex=false
+# Install as wrap dependency
+meson wrap install argus
+# With Regex support (requires PCRE2)
+meson wrap install argus -Dregex=true
 ```
 
 </TabItem>
-<TabItem value="xrepo" label="XRepo">
+<TabItem value="xmake" label="XMake">
 
 ```bash
+# Basic installation
+xmake require argus
+# With Regex support (requires PCRE2)
+xmake require --extra="{configs={regex=true}}" argus
+
+# XRepo alternative
 xrepo install argus
-# Without Regex support (removes PCRE2 dependency)
-xrepo install "regex=false" argus
+xrepo install --configs="regex=true" argus
 ```
 
 </TabItem>
 </Tabs>
-
-### System Packages
-
-```bash
-# Ubuntu/Debian
-sudo apt update
-sudo apt install libargus-dev
-
-# Fedora/CentOS/RHEL
-sudo dnf install argus-devel
-
-# Arch Linux
-sudo pacman -S argus
-```
 
 ### From Source
 
 ```bash
 git clone https://github.com/lucocozz/argus.git
 cd argus
-meson setup builddir # -Dregex=false
+meson setup builddir # -Dregex=true for regex support
 meson compile -C builddir
 sudo meson install -C builddir
 ```
@@ -82,42 +76,54 @@ sudo meson install -C builddir
 </TabItem>
 <TabItem value="macos" label="macOS">
 
+:::info System Requirements
+**Compiler**: GCC 13.0+ or Clang 14+
+:::
+
 ### Package Managers
 
 <Tabs>
 <TabItem value="vcpkg" label="vcpkg">
 
 ```bash
+# With Regex support (requires PCRE2)
+vcpkg install argus[regex]
+# Without Regex support (default)
 vcpkg install argus
-# Without Regex support (removes PCRE2 dependency)
-vcpkg install argus[core]
 ```
 
 </TabItem>
 <TabItem value="conan" label="Conan">
 
 ```bash
+# With Regex support (requires PCRE2)
+conan install argus/0.1.0 -o argus:regex=True
+# Without Regex support (default)
 conan install argus/0.1.0
-# Without Regex support (removes PCRE2 dependency)
-conan install argus/0.1.0 -o argus:regex=False
 ```
 
 </TabItem>
 <TabItem value="meson" label="Meson">
 
 ```bash
-meson install argus
-# Without Regex support (removes PCRE2 dependency)
-meson install argus -Dregex=false
+# Install as wrap dependency
+meson wrap install argus
+# With Regex support (requires PCRE2)
+meson wrap install argus -Dregex=true
 ```
 
 </TabItem>
-<TabItem value="xrepo" label="XRepo">
+<TabItem value="xmake" label="XMake">
 
 ```bash
+# Basic installation
+xmake require argus
+# With Regex support (requires PCRE2)
+xmake require --extra="{configs={regex=true}}" argus
+
+# XRepo alternative
 xrepo install argus
-# Without Regex support (removes PCRE2 dependency)
-xrepo install "regex=false" argus
+xrepo install --configs="regex=true" argus
 ```
 
 </TabItem>
@@ -125,14 +131,16 @@ xrepo install "regex=false" argus
 
 ### From Source
 
+
 ```bash
-# Install dependencies
-brew install meson ninja pcre2
+# Install dependencies (if needed)
+# Homebrew: brew install meson ninja
+# MacPorts: sudo port install meson ninja
 
 # Build and install
 git clone https://github.com/lucocozz/argus.git
 cd argus
-meson setup builddir # -Dregex=false
+meson setup builddir # -Dregex=true for regex support
 meson compile -C builddir
 sudo meson install -C builddir
 ```
@@ -140,42 +148,55 @@ sudo meson install -C builddir
 </TabItem>
 <TabItem value="windows" label="Windows">
 
+:::info System Requirements
+**Compiler**: GCC 13.0+ (MSYS2/MinGW) or Clang 14+  
+**Note**: MSVC is not compatible due to non-standard extensions used
+:::
+
 ### Package Managers
 
 <Tabs>
 <TabItem value="vcpkg" label="vcpkg">
 
 ```bash
+# With Regex support (requires PCRE2)
+vcpkg install argus[regex]
+# Without Regex support (default)
 vcpkg install argus
-# Without Regex support (removes PCRE2 dependency)
-vcpkg install argus[core]
 ```
 
 </TabItem>
 <TabItem value="conan" label="Conan">
 
 ```bash
+# With Regex support (requires PCRE2)
+conan install argus/0.1.0 -o argus:regex=True
+# Without Regex support (default)
 conan install argus/0.1.0
-# Without Regex support (removes PCRE2 dependency)
-conan install argus/0.1.0 -o argus:regex=False
 ```
 
 </TabItem>
 <TabItem value="meson" label="Meson">
 
 ```bash
-meson install argus
-# Without Regex support (removes PCRE2 dependency)
-meson install argus -Dregex=false
+# Install as wrap dependency
+meson wrap install argus
+# With Regex support (requires PCRE2)
+meson wrap install argus -Dregex=true
 ```
 
 </TabItem>
-<TabItem value="xrepo" label="XRepo">
+<TabItem value="xmake" label="XMake">
 
 ```bash
+# Basic installation
+xmake require argus
+# With Regex support (requires PCRE2)
+xmake require --extra="{configs={regex=true}}" argus
+
+# XRepo alternative
 xrepo install argus
-# Without Regex support (removes PCRE2 dependency)
-xrepo install "regex=false" argus
+xrepo install --configs="regex=true" argus
 ```
 
 </TabItem>
@@ -183,40 +204,45 @@ xrepo install "regex=false" argus
 
 ### From Source (MinGW/MSYS2)
 
+
 ```bash
 # Install dependencies
-pacman -S mingw-w64-x86_64-meson mingw-w64-x86_64-ninja
+pacman -S mingw-w64-x86_64-meson mingw-w64-x86_64-ninja mingw-w64-x86_64-gcc
 
 # Build
 git clone https://github.com/lucocozz/argus.git
 cd argus
-meson setup builddir # -Dregex=false
+meson setup builddir # -Dregex=true for regex support
 meson compile -C builddir
 meson install -C builddir
 ```
 
-:::warning Windows Compatibility
-Argus requires **GCC 13.0+** on Windows. MSVC support is planned for future releases.
+:::warning MSVC Compatibility
+Argus is **not compatible with MSVC** due to non-standard language extensions. Use **GCC 13.0+** or **Clang 14+** with MSYS2/MinGW.
 :::
 
 </TabItem>
 </Tabs>
 
-## Dependencies
+:::info System Packages
+System packages are not currently available. Use package managers or build from source.
+:::
+
+## // Dependencies
 
 Argus has minimal dependencies:
 
 | Dependency | Required | Purpose | Notes |
 |------------|----------|---------|-------|
-| **PCRE2** ℹ️ | Optional | Regex validation | Can disable with `-Dregex=false` |
+| **PCRE2** ℹ️ | Optional | Regex validation | Enable with `-Dregex=true` |
 | **Meson** | Build only | Build system | Version 1.1.0+ required |
 | **Ninja** | Build only | Backend | Recommended for faster builds |
 
 :::info PCRE2 Auto-Installation
-PCRE2 is automatically downloaded and built when installing Argus (via any method). No manual installation required!
+PCRE2 is automatically downloaded and built when regex support is enabled. No manual installation required!
 :::
 
-## Configuration Options
+## // Configuration Options
 
 When building from source, customize your installation:
 
@@ -224,10 +250,10 @@ When building from source, customize your installation:
 <TabItem value="basic" label="Basic Options">
 
 ```bash
-# Disable regex support (removes PCRE2 dependency)
-meson setup builddir -Dregex=false
+# Enable regex support (adds PCRE2 dependency)
+meson setup builddir -Dregex=true
 
-# Release build for production
+# Release build for production (default)
 meson setup builddir
 
 # Install to custom location
@@ -248,7 +274,7 @@ meson setup builddir --buildtype=debug -Db_coverage=true
 </TabItem>
 </Tabs>
 
-## Verification
+## // Verification
 
 Test your installation:
 
@@ -279,7 +305,7 @@ gcc test.c -o test -largus
 ./test --help
 ```
 
-## Integration
+## // Integration
 
 <Tabs>
 <TabItem value="cmake" label="CMake" default>
@@ -298,6 +324,9 @@ target_include_directories(myapp PRIVATE ${ARGUS_INCLUDE_DIRS})
 
 ```lua title="xmake.lua"
 add_requires("argus >=0.1.0")
+-- With regex support
+add_requires("argus >=0.1.0", {configs = {regex = true}})
+
 target("myapp")
     set_kind("binary")
     add_files("main.c")
@@ -309,8 +338,8 @@ target("myapp")
 
 ```meson title="meson.build"
 argus_project = subproject('argus', version: '>=0.1.0')
-# Without Regex support
-argus_project = subproject('argus', version: '>=0.1.0', default_options: ['regex=false'])
+# With regex support
+argus_project = subproject('argus', version: '>=0.1.0', default_options: ['regex=true'])
 
 argus_dep = argus_project.get_variable('argus_dep')
 
@@ -335,7 +364,7 @@ gcc main.c $(pkg-config --cflags --libs argus) -o myapp
 </TabItem>
 </Tabs>
 
-## Troubleshooting
+## // Troubleshooting
 
 ### Common Issues
 
@@ -367,23 +396,23 @@ find /usr -name "argus.h" 2>/dev/null
 </details>
 
 <details>
-<summary><strong>Windows GCC version error</strong></summary>
+<summary><strong>Compiler version error</strong></summary>
 
 ```bash
-# Check GCC version
+# Check compiler version
 gcc --version
+clang --version
 
-# Update if < 13.0.0
-# MSYS2: pacman -S mingw-w64-x86_64-gcc
-# Or use MSVC build (coming soon)
+# Required: GCC 13.0+ or Clang 14+
+# Update if needed or use MSYS2 on Windows
 ```
 
 </details>
 
 ### Platform-Specific Notes
 
-**Linux**: Most distributions package Argus. Check your package manager first.
+**Linux**: Use package managers or build from source. Ensure GCC 13+ or Clang 14+.
 
-**macOS**: Homebrew is the recommended installation method.
+**macOS**: Package managers provide the best experience. Ensure GCC 13+ or Clang 14+.
 
-**Windows**: vcpkg provides the smoothest experience. Native MSVC support coming soon.
+**Windows**: vcpkg recommended. **MSVC not supported** - use GCC 13+ via MSYS2/MinGW or Clang 14+.

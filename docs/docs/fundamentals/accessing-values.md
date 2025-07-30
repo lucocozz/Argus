@@ -1,8 +1,8 @@
-# Accessing Values
+# > Accessing Values_
 
 Learn how to retrieve and use parsed option values in your Argus applications with type-safe access methods.
 
-## Core Access Functions
+## // Core Access Functions
 
 After `argus_parse()` succeeds, use these functions to access your parsed values:
 
@@ -12,7 +12,7 @@ After `argus_parse()` succeeds, use these functions to access your parsed values
 | `argus_is_set()` | Check if option was provided | `bool` |
 | `argus_count()` | Get number of values (collections) | `size_t` |
 
-## Basic Value Access
+## // Basic Value Access
 
 Access values using the option's identifier (long name, or short name if no long name):
 
@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 </TabItem>
 </Tabs>
 
-## Checking If Options Are Set
+## // Checking If Options Are Set
 
 Use `argus_is_set()` to distinguish between default values and user-provided values:
 
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 - **Debugging**: Log what the user actually specified vs defaults
 :::
 
-## Array Collections
+## // Array Collections
 
 Access array values using direct access or helper functions:
 
@@ -259,7 +259,7 @@ int main(int argc, char **argv)
 </TabItem>
 </Tabs>
 
-## Map Collections
+## // Map Collections
 
 Access key-value pairs using direct access or lookup helpers:
 
@@ -361,7 +361,7 @@ int main(int argc, char **argv)
 </TabItem>
 </Tabs>
 
-## Subcommand Access
+## // Subcommand Access
 
 In subcommand context, access values using path notation or relative names:
 
@@ -449,7 +449,7 @@ ARGUS_OPTIONS(options,
 </TabItem>
 </Tabs>
 
-## Custom Types
+## // Custom Types
 
 Access custom handler values through the generic pointer:
 
@@ -497,7 +497,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## Error Handling
+## // Error Handling
 
 Always check parse results before accessing values:
 
@@ -524,7 +524,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## Best Practices
+## // Best Practices
 
 ### ✅ Good Practices
 
@@ -568,7 +568,7 @@ const char *output = argus_get(&argus, "output").as_string;
 FILE *f = fopen(output, "w"); // output might be NULL!
 ```
 
-## Access Patterns Summary
+## // Access Patterns Summary
 
 | Scenario | Method | Example |
 |----------|---------|---------|
@@ -582,7 +582,7 @@ FILE *f = fopen(output, "w"); // output might be NULL!
 | **Root from subcommand** | `argus_get()` with `.` | `argus_get(argus, ".debug").as_bool` |
 | **Custom types** | Cast `as_ptr` | `(my_type_t*)argus_get().as_ptr` |
 
-## What's Next?
+## // What's Next?
 
 Now that you know how to access values, learn about:
 

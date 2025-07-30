@@ -1,8 +1,8 @@
-# Environment Variables
+# > Environment Variables_
 
 Load option values from environment variables to support containerized deployments, CI/CD pipelines, and system-wide configurations.
 
-## Basic Setup
+## // Basic Setup
 
 Configure environment variable support by setting an optional prefix:
 
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## Environment Variable Types
+## // Environment Variable Types
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -132,7 +132,7 @@ export HOME=/home/user
 </TabItem>
 </Tabs>
 
-## Precedence Control
+## // Precedence Control
 
 Control whether environment variables provide defaults or override command-line options:
 
@@ -206,7 +206,7 @@ export APP_SYSTEM_LOG_LEVEL=debug
 </TabItem>
 </Tabs>
 
-## Type Conversion
+## // Type Conversion
 
 Environment variables (always strings) are automatically converted to option types:
 
@@ -285,7 +285,7 @@ export APP_ENV_VARS=USER=alice,HOME=/home/alice,TERM=xterm
 </TabItem>
 </Tabs>
 
-## Complete Examples
+## // Complete Examples
 
 <Tabs>
 <TabItem value="web-app" label="Web Application" default>
@@ -445,7 +445,7 @@ jobs:
 </TabItem>
 </Tabs>
 
-## Best Practices
+## // Best Practices
 
 ### ✅ Good Practices
 
@@ -512,7 +512,7 @@ Options:
   -p, --port <NUM>       - Server port (default: 8080, env: APP_PORT)
 ```
 
-## Environment Variable Loading Process
+## // Environment Variable Loading Process
 
 Argus loads environment variables in this order:
 
@@ -522,7 +522,7 @@ Argus loads environment variables in this order:
 4. **Apply defaults** - Use default values for unset options
 5. **Run validation** - Validate all final values
 
-## Integration with Other Features
+## // Integration with Other Features
 
 Environment variables work seamlessly with other Argus features:
 
@@ -544,7 +544,7 @@ ARGUS_OPTIONS(
 )
 ```
 
-## What's Next?
+## // What's Next?
 
 - **[Subcommands](subcommands)** - Build Git-like command hierarchies
 - **[Collections](collections)** - Work with arrays and maps

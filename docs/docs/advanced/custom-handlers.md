@@ -1,8 +1,8 @@
-# Custom Handlers
+# > Custom Handlers_
 
 Transform raw command-line input into structured data with custom parsing logic for specialized data types.
 
-## Handler Function Signature
+## // Handler Function Signature
 
 All custom handlers must follow this signature:
 
@@ -19,7 +19,7 @@ int handler_function(argus_t *argus, argus_option_t *option, char *arg);
 - `ARGUS_SUCCESS` (0) - Parsing succeeded
 - Error code - Parsing failed (use `ARGUS_PARSING_ERROR` and return error code)
 
-## Basic Custom Handler
+## // Basic Custom Handler
 
 Parse a "host:port" endpoint into a structured type:
 
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 </TabItem>
 </Tabs>
 
-## Helper Macros
+## // Helper Macros
 
 Create reusable macros for common custom types:
 
@@ -177,7 +177,7 @@ ARGUS_OPTIONS(
 </TabItem>
 </Tabs>
 
-## Advanced Examples
+## // Advanced Examples
 
 <Tabs>
 <TabItem value="url-parser" label="URL Parser" default>
@@ -396,7 +396,7 @@ int color_handler(argus_t *argus, argus_option_t *option, char *arg)
 </TabItem>
 </Tabs>
 
-## Integration with Validation
+## // Integration with Validation
 
 Combine custom handlers with validators:
 
@@ -429,7 +429,7 @@ ARGUS_OPTIONS(
 )
 ```
 
-## Error Handling Best Practices
+## // Error Handling Best Practices
 
 <Tabs>
 <TabItem value="error-patterns" label="Error Patterns" default>
@@ -492,7 +492,7 @@ ARGUS_PARSING_ERROR(argus, "Parse error");
 </TabItem>
 </Tabs>
 
-## Memory Management
+## // Memory Management
 
 <Tabs>
 <TabItem value="allocation-patterns" label="Allocation Patterns" default>
@@ -578,7 +578,7 @@ int complex_free_handler(argus_option_t *option)
 </TabItem>
 </Tabs>
 
-## What's Next?
+## // What's Next?
 
 - **[Custom Validators](custom-validators)** - Advanced validation techniques
 - **[Collections](../features/collections)** - Arrays and maps with custom types

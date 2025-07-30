@@ -5,8 +5,8 @@ project(
     default_options: [
         'warning_level=3',
         'werror=true',
-        'c_std=gnu11',
         'buildtype=release',
+        meson.version().version_compare('>=1.3.0') ? 'c_std=gnu11,c11' : 'c_std=gnu11',
     ],
     meson_version: '>=1.1.0',
 )
@@ -22,6 +22,7 @@ endif
 is_windows = host_machine.system() == 'windows'
 if is_windows
     add_project_arguments('-DARGUS_BUILDING', language: 'c')
+    add_project_arguments('-D_CRT_SECURE_NO_WARNINGS', language: 'c')
     # if cc.get_id() == 'gcc'
     #     add_project_link_arguments('-static-libgcc', language: 'c')
     # endif

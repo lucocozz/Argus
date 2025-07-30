@@ -1,12 +1,12 @@
-# Option Formats
+# > Option Formats_
 
 Learn all the ways users can specify options when running your Argus-powered programs.
 
-## Overview
+## // Overview
 
 Argus supports flexible command-line formats, allowing users to specify options in multiple ways. This flexibility accommodates different user preferences and command-line conventions.
 
-## Basic Format Patterns
+## // Basic Format Patterns
 
 | Pattern | Description | Example |
 |---------|-------------|---------|
@@ -16,7 +16,7 @@ Argus supports flexible command-line formats, allowing users to specify options 
 | **Positional** | No prefix, order matters | `input.txt output.txt` |
 | **Option terminator** | `--` ends option parsing | `program -- --not-an-option` |
 
-## Long Options Format
+## // Long Options Format
 
 **Long options** use descriptive names with double dashes (`--`).
 
@@ -63,7 +63,7 @@ import TabItem from '@theme/TabItem';
 </TabItem>
 </Tabs>
 
-## Short Options Format
+## // Short Options Format
 
 **Short options** use single characters with single dashes (`-`).
 
@@ -107,7 +107,7 @@ import TabItem from '@theme/TabItem';
 </TabItem>
 </Tabs>
 
-## Mixed Format Examples
+## // Mixed Format Examples
 
 Users can mix different formats in the same command:
 
@@ -121,7 +121,7 @@ Users can mix different formats in the same command:
 ./program -voresult.txt input.txt
 ```
 
-## Positional Arguments
+## // Positional Arguments
 
 **Positional arguments** are provided without option prefixes, processed in order.
 
@@ -145,7 +145,7 @@ Users can mix different formats in the same command:
 ./program input.txt output.txt 1024  # Provides all args
 ```
 
-## Special Cases and Edge Cases
+## // Special Cases and Edge Cases
 
 ### Negative Numbers
 
@@ -190,7 +190,7 @@ When input could be interpreted multiple ways:
 ./program --output -- file.txt another.txt
 ```
 
-## Collection Formats
+## // Collection Formats
 
 For array and map options, Argus supports multiple input methods:
 
@@ -275,7 +275,7 @@ For array and map options, Argus supports multiple input methods:
 </TabItem>
 </Tabs>
 
-## Real-World Examples
+## // Real-World Examples
 
 Here are complete command-line examples showing different patterns:
 
@@ -318,7 +318,7 @@ Here are complete command-line examples showing different patterns:
 ./builder --verbose -- --enable-debug --target=all
 ```
 
-## Format Validation
+## // Format Validation
 
 Argus automatically validates option formats and provides helpful errors:
 
@@ -336,7 +336,7 @@ $ ./program --unknow
 program: Unknown option: '--unknow'
 ```
 
-## Best Practices for Users
+## // Best Practices for Users
 
 ### Recommended Patterns
 
@@ -362,7 +362,7 @@ program: Unknown option: '--unknow'
 ./program --output result.txt -- result2.txt
 ```
 
-## Compatibility Notes
+## // Compatibility Notes
 
 Argus format support is designed to be compatible with common CLI conventions:
 
@@ -373,7 +373,7 @@ Argus format support is designed to be compatible with common CLI conventions:
 
 This ensures users familiar with standard Unix tools will find Argus programs intuitive to use.
 
-## What's Next?
+## // What's Next?
 
 Now that you understand how users can format their commands, learn how to:
 

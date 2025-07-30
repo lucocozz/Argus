@@ -1,8 +1,8 @@
-# Simple CLI
+# > Simple CLI_
 
 Basic file processor demonstrating core Argus features.
 
-## Complete Example
+## // Complete Example
 
 ```c title="simple_cli.c"
 #include <argus.h>
@@ -99,7 +99,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## Usage
+## // Usage
 
 ```bash
 # Build
@@ -116,7 +116,7 @@ echo "Hello World" > input.txt
 ./simple_cli --help
 ```
 
-## Generated Help
+## // Generated Help
 
 ```
 simple_cli v1.0.0
@@ -138,7 +138,7 @@ Options:
                          - Output format (default: "text")
 ```
 
-## Key Features
+## // Key Features
 
 - **Flag**: `--verbose` (boolean toggle)
 - **String with default**: `--output` 
@@ -147,7 +147,7 @@ Options:
 - **Required positional**: input file
 - **Auto-generated help**: from option definitions
 
-## Error Examples
+## // Error Examples
 
 ```bash
 $ ./simple_cli --count 150 input.txt

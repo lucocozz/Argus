@@ -1,8 +1,8 @@
-# Git-like Tool
+# > Git-like Tool_
 
 Subcommand-based tool demonstrating hierarchical commands, actions, and context sharing.
 
-## Complete Example
+## // Complete Example
 
 ```c title="vcs_tool.c"
 #include <argus.h>
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## Usage Examples
+## // Usage Examples
 
 ### Basic Commands
 
@@ -337,7 +337,7 @@ gcc vcs_tool.c -o vcs -largus
 ./vcs push --help
 ```
 
-## Generated Help
+## // Generated Help
 
 ### Main Help
 ```
@@ -395,7 +395,7 @@ Options:
   -s, --signoff          - Add signed-off-by line
 ```
 
-## Key Features Demonstrated
+## // Key Features Demonstrated
 
 ### Subcommand Structure
 - **Global options** available to all commands (`-v`, `-C`)
@@ -434,7 +434,7 @@ No command specified.
 Try 'vcs COMMAND --help' for command-specific help.
 ```
 
-## Real-World Patterns
+## // Real-World Patterns
 
 This example demonstrates common CLI tool patterns:
 - **Git-style** command structure

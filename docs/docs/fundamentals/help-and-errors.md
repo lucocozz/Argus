@@ -1,8 +1,8 @@
-# Help and Errors
+# > Help and Errors_
 
 Learn how Argus automatically generates beautiful help text and handles errors gracefully to create a polished user experience.
 
-## Automatic Help Generation
+## // Automatic Help Generation
 
 Argus automatically generates comprehensive help text from your option definitions - no manual formatting required.
 
@@ -235,7 +235,7 @@ Output formatting options:
 </TabItem>
 </Tabs>
 
-## Subcommand Help
+## // Subcommand Help
 
 Argus automatically provides help for subcommands and nested command structures:
 
@@ -337,7 +337,7 @@ $ ./tool service --help            # Service subcommand help
 $ ./tool service create --help     # Nested create help
 ```
 
-## Error Handling
+## // Error Handling
 
 Argus provides comprehensive error handling with helpful messages:
 
@@ -450,7 +450,7 @@ tool: Unknown option: '--bad-option'
 Try 'tool service --help' for more information.
 ```
 
-## Manual Help and Version Display
+## // Manual Help and Version Display
 
 You can also display help programmatically:
 
@@ -492,7 +492,7 @@ int main(int argc, char **argv)
 | `argus_print_usage()` | Show usage only | Just the usage line |
 | `argus_print_version()` | Show version | Program name and version |
 
-## Help Customization
+## // Help Customization
 
 ### Program Information
 
@@ -553,7 +553,7 @@ ARGUS_OPTIONS(
 )
 ```
 
-## Best Practices
+## // Best Practices
 
 ### ✅ Good Help Text
 
@@ -596,7 +596,7 @@ OPTION_FLAG('d', "delete", HELP("Delete")) // Delete what? Permanent?
 4. **Use consistent style**: Same terminology and formatting across all options
 5. **Keep it concise**: One line that clearly explains the purpose
 
-## Integration with Error Handling
+## // Integration with Error Handling
 
 Argus integrates error handling with help display for a smooth user experience:
 
@@ -616,7 +616,7 @@ if (some_custom_validation_fails) {
 }
 ```
 
-## What's Next?
+## // What's Next?
 
 Now that you understand help and error handling, dive into advanced features:
 
