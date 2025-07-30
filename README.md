@@ -17,175 +17,235 @@
 
 ---
 
-## The Problem
+## The Traditional Approach
 
-Replace tedious argument parsing with declarative definitions:
+Building command-line tools in C typically involves extensive boilerplate:
 
 ```c
-// Old way - verbose and error-prone
-int opt;
-while ((opt = getopt(argc, argv, "vo:p:")) != -1) {
-    switch (opt) {
-        case 'v': verbose = 1; break;
-        case 'o': output = optarg; break;
-        case 'p': port = atoi(optarg); break;
+#include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(int argc, char **argv) {
+    int opt, verbose = 0, port = 8080;
+    char *output = "output.txt";
+    
+    struct option long_options[] = {
+        {"verbose", no_argument, 0, 'v'},
+        {"output", required_argument, 0, 'o'},
+        {"port", required_argument, 0, 'p'},
+        {"help", no_argument, 0, 'h'},
+        {0, 0, 0, 0}
+    };
+    
+    while ((opt = getopt_long(argc, argv, "vo:p:h", long_options, NULL)) != -1) {
+        switch (opt) {
+            case 'v': verbose = 1; break;
+            case 'o': output = optarg; break;
+            case 'p': 
+                port = atoi(optarg);
+                if (port < 1 || port > 65535) {
+                    fprintf(stderr, "Error: Port must be 1-65535\n");
+                    return 1;
+                }
+                break;
+            case 'h':
+                printf("Usage: %s [OPTIONS]\n", argv[0]);
+                printf("  -v, --verbose    Enable verbose output\n");
+                printf("  -o, --output     Output file\n");
+                printf("  -p, --port       Port number\n");
+                return 0;
+            case '?': return 1;
+        }
     }
+    
+    // Application logic starts here...
 }
-// + manual validation, help generation, error handling...
-
-// Argus way - declarative and complete
-ARGUS_OPTIONS(
-    options,
-    HELP_OPTION(),
-    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
-    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("result.txt")),
-    OPTION_INT('p', "port", HELP("Port number"), VALIDATOR(V_RANGE(1, 65535)))
-)
 ```
 
-## Why Choose Argus?
+This approach requires manual validation, error handling, and help text generation for every application.
 
-Instead of feature matrices, let's be honest about what each library excels at:
+## The Argus Approach
 
-### 🏃‍♂️ **getopt** - The Speed Demon
-**Best for**: Performance-critical applications, embedded systems, legacy codebases
-```c
-// Minimal overhead, maximum control
-while ((opt = getopt(argc, argv, "vo:")) != -1) { ... }
-```
-**Trade-offs**: You write everything from scratch - validation, help, error handling.
+Argus eliminates this boilerplate with a declarative interface:
 
-### 🔧 **argp** - The GNU Workhorse  
-**Best for**: GNU/Linux applications, when you need proven stability
-```c
-// Structured approach with auto-help
-static struct argp_option options[] = { ... };
-```
-**Trade-offs**: GNU-only, callback complexity grows with features.
-
-### 📊 **argtable3** - The Structured Approach
-**Best for**: Type safety without modern C requirements, cross-platform needs
-```c
-// Table-driven with strong typing
-struct arg_lit *verbose = arg_lit0("v", "verbose", "enable verbose");
-```
-**Trade-offs**: Verbose setup, no built-in subcommands or environment integration.
-
-### 🚀 **Argus** - The Modern Choice
-**Best for**: New projects, complex CLIs, developer experience
-```c
-// Declarative with everything built-in
-ARGUS_OPTIONS(opts,
-    OPTION_FLAG('v', "verbose", HELP("Enable verbose")),
-    SUBCOMMAND("deploy", deploy_options, HELP("Deploy application"))
-)
-```
-**Trade-offs**: Requires modern compiler (C11+), younger ecosystem.
-
----
-
-## Quick Decision Guide
-
-**Choose getopt if**: Raw performance matters most, working with legacy systems  
-**Choose argp if**: Building GNU/Linux tools, want battle-tested reliability  
-**Choose argtable3 if**: Need type safety but stuck with older compilers  
-**Choose Argus if**: Want modern C development experience with full feature set
-
----
-
-## What Makes Argus Different
-
-The real question isn't "what features does each library have?" but "how much code do you want to write?"
-
-**Traditional approach** (getopt/argp):
-- ✅ You control the parsing loop and logic
-- ❌ You implement validation, help, error handling from scratch
-
-**Argus approach**:
-- ✅ Declare your interface once, extend via handlers/validators as needed
-- ✅ Get parsing, help, subcommands built-in with full customization hooks
-- ❌ Less control over the core parsing algorithm (but who wants to rewrite that?)
-
-**Bottom line**: Argus trades some control for significantly less boilerplate and better maintainability.
-
-## Core Features
-
-- **🎯 Type Safety** - Strong typing with automatic validation
-- **📖 Auto Help** - Beautiful help generation from definitions  
-- **🔧 Subcommands** - Git/Docker style nested commands
-- **📦 Collections** - Arrays and maps for multiple values
-- **🌍 Environment** - Seamless env var integration
-- **✅ Validation** - Built-in validators + regex patterns
-
-## Quick Start
-
-**Install:**
-```bash
-# Package managers
-vcpkg install argus
-conan install argus/0.1.0
-
-# From source
-git clone https://github.com/lucocozz/argus.git && cd argus
-meson setup build && meson compile -C build && sudo meson install -C build
-```
-
-**Create your first CLI:**
 ```c
 #include <argus.h>
 
 ARGUS_OPTIONS(
     options,
     HELP_OPTION(),
-    OPTION_FLAG('v', "verbose", HELP("Verbose output")),
-    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("result.txt")),
-    POSITIONAL_STRING("input", HELP("Input file"))
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+    OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
+    OPTION_INT('p', "port", HELP("Port number"), 
+               VALIDATOR(V_RANGE(1, 65535)), DEFAULT(8080)),
 )
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     argus_t argus = argus_init(options, "my_tool", "1.0.0");
     
     if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS)
         return 1;
     
-    // Type-safe access
+    // Type-safe access to parsed values
     bool verbose = argus_get(&argus, "verbose").as_bool;
     const char *output = argus_get(&argus, "output").as_string;
-    const char *input = argus_get(&argus, "input").as_string;
+    int port = argus_get(&argus, "port").as_int;
+    
+    // Application logic starts here...
+    argus_free(&argus);
+    return 0;
+}
+```
+
+The result is the same functionality with significantly less code and automatic validation, help generation, and type safety.
+
+## Core Features
+
+- **Type Safety** - Strong typing with automatic validation and conversion
+- **Declarative API** - Define your interface once, get everything else automatically
+- **Auto-generated Help** - Consistent, professional help output based on your definitions
+- **Built-in Validation** - Range checking, pattern matching, and custom validators
+- **Subcommands** - Git-style nested commands with inheritance
+- **Environment Variables** - Seamless integration with system environment
+- **Collections** - Arrays and key-value maps for complex data structures
+- **Cross-platform** - Works on Linux, macOS, and Windows
+
+## Quick Start
+
+**Installation:**
+```bash
+# Package managers
+vcpkg install argus
+conan install argus/0.1.0
+
+# From source
+git clone https://github.com/lucocozz/argus.git
+cd argus && meson setup build && meson compile -C build
+sudo meson install -C build
+```
+
+**Basic Example:**
+```c
+#include <argus.h>
+
+ARGUS_OPTIONS(
+    options,
+    HELP_OPTION(),
+    OPTION_STRING('f', "file", HELP("Input file")),
+    OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
+    POSITIONAL_STRING("output", HELP("Output destination")),
+)
+
+int main(int argc, char **argv) {
+    argus_t argus = argus_init(options, "example", "1.0.0");
+    
+    if (argus_parse(&argus, argc, argv) != ARGUS_SUCCESS)
+        return 1;
+    
+    // Access parsed values
+    const char *file = argus_get(&argus, "file").as_string;
+    bool verbose = argus_get(&argus, "verbose").as_bool;
+    const char *output = argus_get(&argus, "output").as_string;
     
     argus_free(&argus);
     return 0;
 }
 ```
 
+## Advanced Features
+
 <details>
-<summary><strong>🌟 Advanced Example</strong></summary>
+<summary><strong>Complex Validation and Types</strong></summary>
 
 ```c
+#include <argus.h>
+#include <argus/regex.h>
+
 ARGUS_OPTIONS(
     server_options,
-    HELP_OPTION(),
-    VERSION_OPTION(),
-    OPTION_STRING('H', "host", HELP("Server hostname"), DEFAULT("0.0.0.0")),
-    OPTION_INT('p', "port", HELP("Port number"),
-              ENV_VAR("PORT"), VALIDATOR(V_RANGE(1, 65535)), DEFAULT(8080)),
-    // Choice validation
-    OPTION_STRING('l', "level", HELP("Log level"), DEFAULT("info"),
-                 VALIDATOR(V_CHOICE_STR("debug", "info", "warn", "error")))
+    OPTION_STRING(
+        'H', "host",
+        HELP("Server hostname"),
+        DEFAULT("localhost"),
+        VALIDATOR(V_REGEX(ARGUS_RE_DOMAIN))
+    ),
+    OPTION_INT(
+        'p', "port",
+        HELP("Port number"),
+        VALIDATOR(V_RANGE(1024, 65535)),
+        ENV_VAR("PORT")
+    ),
+    OPTION_ARRAY_STRING(
+        'w', "worker",
+        HELP("Worker processes"),
+        VALIDATOR(V_COUNT(1, 8))
+    ),
+    POSITIONAL_MAP_STRING(
+        "config",
+        HELP("Key=value configuration pairs")
+    )
 )
-
-// Usage: ./server --host 0.0.0.0 --port 8080 --level debug
-// Or:    HOST=api.example.com PORT=9000 ./server
 ```
 </details>
 
+<details>
+<summary><strong>Subcommands</strong></summary>
+
+```c
+// Define subcommand options
+ARGUS_OPTIONS(
+    deploy_options,
+    OPTION_FLAG('f', "force", HELP("Force deployment")),
+    OPTION_STRING('e', "environment", HELP("Target environment")),
+)
+
+ARGUS_OPTIONS(
+    status_options,
+    OPTION_FLAG('v', "verbose", HELP("Verbose status output")),
+    OPTION_STRING('s', "service", HELP("Service name to check")),
+)
+
+// Main command with subcommands
+ARGUS_OPTIONS(
+    main_options,
+    HELP_OPTION(),
+    VERSION_OPTION(),
+    SUBCOMMAND("deploy", deploy_options, HELP("Deploy application")),
+    SUBCOMMAND("status", status_options, HELP("Check deployment status")),
+)
+
+// Usage: ./app deploy --force --environment production
+```
+</details>
+
+## Use Cases
+
+Argus is well-suited for:
+
+- **Command-line utilities** - Tools that need robust argument handling
+- **Developer tools** - Build systems, code generators, deployment scripts
+- **System utilities** - Network tools, file processors, automation scripts
+- **Modern C applications** - Projects prioritizing maintainability and developer experience
+
+Consider traditional approaches for embedded systems with strict constraints, legacy codebases using getopt, or environments requiring pre-C11 compatibility.
+
+## Design Philosophy
+
+**Declarative over imperative** - Describe what you need rather than how to parse it. Argus handles the implementation details.
+
+**Type safety by default** - Eliminate common parsing errors through strong typing and automatic validation.
+
+**Consistency and reliability** - Generated help text is always current, validation is comprehensive, and error handling is uniform.
+
+**Developer experience** - Reduce boilerplate, provide clear APIs, and make common tasks simple while keeping complex scenarios achievable.
+
 ## Documentation
 
-📚 **[Full Documentation](https://argus-lib.com)** - Complete guides and API reference  
-🚀 **[Quick Start Guide](https://argus-lib.com/getting-started/quickstart)** - Get running in 5 minutes  
+📚 **[Complete Documentation](https://argus-lib.com)** - Comprehensive guides and tutorials  
+🚀 **[Quick Start Guide](https://argus-lib.com/getting-started/quickstart)** - Get running in minutes  
 💡 **[Examples](https://argus-lib.com/examples/simple-cli)** - Real-world usage patterns  
-🔧 **[API Reference](https://argus-lib.com/api-reference/overview)** - Complete function and macro documentation  
+🔧 **[API Reference](https://argus-lib.com/api-reference/overview)** - Complete function documentation
 
 ## Requirements
 
@@ -194,17 +254,15 @@ ARGUS_OPTIONS(
 
 ## Roadmap
 
-- 📄 Config files - JSON/YAML configuration loading
-- 🪶 Lightweight version - Minimal footprint option for embedded systems
-- 🎨 Themed help - Customizable colored help output
-- 📁 Shell completion - Auto-generated tab completion for bash/zsh/fish
-- 🔗 Universal built-ins - Common CLI patterns (version formats, debug levels, etc.)
-- 📦 Plugin system - Extensibility mechanisms for custom handlers
+- Configuration file support (JSON/YAML)
+- Shell completion generation (bash/zsh/fish)
+- Lightweight build option for constrained environments
+- Additional built-in validators and types
 
 ## Contributing
 
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on reporting issues, submitting features, and development setup.
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) for details.

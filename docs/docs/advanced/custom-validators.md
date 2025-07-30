@@ -1,8 +1,8 @@
-# Custom Validators
+# > Custom Validators_
 
 Create specialized validation logic beyond built-in validators for application-specific requirements.
 
-## Validator Types
+## // Validator Types
 
 Argus supports two validator execution timings:
 
@@ -11,7 +11,7 @@ Argus supports two validator execution timings:
 | **Pre-validator** (`ORDER_PRE`) | Before type conversion | `int func(argus_t *argus, void *value_ptr, validator_data_t data)` | Raw string validation |
 | **Post-validator** (`ORDER_POST`) | After type conversion | `int func(argus_t *argus, void *option_ptr, validator_data_t data)` | Typed value validation |
 
-## Basic Custom Validators
+## // Basic Custom Validators
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -81,7 +81,7 @@ OPTION_STRING('e', "email", HELP("Email address"), VALIDATOR(V_EMAIL_FORMAT()))
 </TabItem>
 </Tabs>
 
-## Passing Data to Validators
+## // Passing Data to Validators
 
 Use `validator_data_t` to pass configuration:
 
@@ -152,7 +152,7 @@ OPTION_INT('p', "port", HELP("Privileged port"),
 </TabItem>
 </Tabs>
 
-## Context-Aware Validation
+## // Context-Aware Validation
 
 Access other options for cross-validation:
 
@@ -186,7 +186,7 @@ ARGUS_OPTIONS(
 )
 ```
 
-## Advanced Examples
+## // Advanced Examples
 
 <Tabs>
 <TabItem value="domain-validator" label="Domain-Specific" default>
@@ -311,7 +311,7 @@ OPTION_STRING('o', "output", HELP("Output file"), VALIDATOR(V_FILE_NOT_EXISTS())
 </TabItem>
 </Tabs>
 
-## Collection Validation
+## // Collection Validation
 
 Validate array and map contents:
 
@@ -342,7 +342,7 @@ OPTION_ARRAY_INT('p', "ports", HELP("Port numbers"),
                 VALIDATOR(V_COUNT(1, 10), V_ALL_POSITIVE()))
 ```
 
-## Custom Formatters
+## // Custom Formatters
 
 Add custom formatting to display validator constraints in help output:
 
@@ -519,7 +519,7 @@ char *format_my_validator(validator_data_t data)
 
 The formatter automatically integrates with the help system and appears in option descriptions or hints depending on the output format.
 
-## Combining Validators
+## // Combining Validators
 
 Multiple validators execute in order:
 
@@ -544,7 +544,7 @@ ARGUS_OPTIONS(
 3. Post-validators (`ORDER_POST`)
 4. Built-in validation (choices, etc.)
 
-## Best Practices
+## // Best Practices
 
 ```c
 // ✅ Good validator design
@@ -571,7 +571,7 @@ int bad_validator(argus_t *argus, void *option_ptr, validator_data_t data)
 }
 ```
 
-## What's Next?
+## // What's Next?
 
 - **[Custom Handlers](custom-handlers)** - Parse complex input formats
 - **[Validation](../features/validation)** - Built-in validation options

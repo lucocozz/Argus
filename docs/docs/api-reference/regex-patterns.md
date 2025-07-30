@@ -1,4 +1,4 @@
-# Regex Patterns
+# > Regex Patterns_
 
 Predefined regex patterns for common validation scenarios.
 
@@ -6,7 +6,7 @@ Predefined regex patterns for common validation scenarios.
 Regex validation requires PCRE2. If compiled without regex support (`-Dregex=false`), these patterns return stub implementations that report "Regex support disabled".
 :::
 
-## Usage
+## // Usage
 
 ```c
 #include "argus/regex.h"
@@ -15,7 +15,7 @@ OPTION_STRING('e', "email", HELP("Email address"),
               VALIDATOR(V_REGEX(ARGUS_RE_EMAIL)))
 ```
 
-## Network Patterns
+## // Network Patterns
 
 ### IP Addresses
 
@@ -65,7 +65,7 @@ OPTION_STRING('a', "api", HELP("API endpoint"),
               VALIDATOR(V_REGEX(ARGUS_RE_HTTP)))
 ```
 
-## Communication Patterns
+## // Communication Patterns
 
 ### Email
 
@@ -95,7 +95,7 @@ OPTION_STRING('p', "phone", HELP("Phone number"),
               VALIDATOR(V_REGEX(ARGUS_RE_PHONE_US)))
 ```
 
-## Date and Time Patterns
+## // Date and Time Patterns
 
 | Pattern | Validates | Example |
 |---------|-----------|---------|
@@ -113,7 +113,7 @@ OPTION_STRING('t', "time", HELP("Time (HH:MM:SS)"),
               VALIDATOR(V_REGEX(ARGUS_RE_TIME24)))
 ```
 
-## Geographic Patterns
+## // Geographic Patterns
 
 | Pattern | Validates | Example |
 |---------|-----------|---------|
@@ -131,7 +131,7 @@ OPTION_STRING('l', "lat", HELP("Latitude"),
               VALIDATOR(V_REGEX(ARGUS_RE_LATITUDE)))
 ```
 
-## Security Patterns
+## // Security Patterns
 
 | Pattern | Validates | Example |
 |---------|-----------|---------|
@@ -148,7 +148,7 @@ OPTION_STRING('p', "password", HELP("Strong password"),
               VALIDATOR(V_REGEX(ARGUS_RE_PASSWD_STRONG)))
 ```
 
-## File System Patterns
+## // File System Patterns
 
 | Pattern | Validates | Example |
 |---------|-----------|---------|
@@ -164,7 +164,7 @@ OPTION_STRING('n', "name", HELP("Filename"),
               VALIDATOR(V_REGEX(ARGUS_RE_FILENAME)))
 ```
 
-## Visual and Data Patterns
+## // Visual and Data Patterns
 
 ### Colors
 
@@ -196,7 +196,7 @@ OPTION_STRING('h', "hex", HELP("Hex number"),
               VALIDATOR(V_REGEX(ARGUS_RE_HEX)))
 ```
 
-## Custom Patterns
+## // Custom Patterns
 
 Define your own patterns using `MAKE_REGEX`:
 
@@ -214,7 +214,7 @@ ARGUS_OPTIONS(options,
 )
 ```
 
-## Pattern Testing
+## // Pattern Testing
 
 Test patterns before use:
 
@@ -230,7 +230,7 @@ Test patterns before use:
 ./app --date 03-15-2024                  # ❌ Error: Invalid value '03-15-2024': Enter date: YYYY-MM-DD
 ```
 
-## Error Messages
+## // Error Messages
 
 Each pattern includes helpful error hints:
 
@@ -245,13 +245,13 @@ Custom patterns should include similar hints:
 #define RE_CUSTOM MAKE_REGEX("pattern", "Clear format description")
 ```
 
-## Performance Notes
+## // Performance Notes
 
 - Patterns are compiled once at first use
 - Complex patterns (like IPv6) may impact startup time
 - Use simpler validation when regex isn't needed
 
-## What's Next?
+## // What's Next?
 
 - **[Custom Validators](../../advanced/custom-validators)** - Create domain-specific validation
 - **[Validation](../../features/validation)** - Combine regex with other validators

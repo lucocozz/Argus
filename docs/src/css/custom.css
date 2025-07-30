@@ -593,3 +593,64 @@ td {
   text-shadow: none;
   animation: none;
 }
+
+/* Footer customization for better integration with dark theme */
+.footer.footer--dark {
+  background-color: #1a1a1a !important;
+  border-top: 1px solid var(--terminal-gray) !important;
+}
+
+/* Ensure footer text is visible and follows terminal theme */
+.footer.footer--dark .footer__title {
+  color: var(--terminal-green-bright) !important;
+  font-family: var(--ifm-font-family-monospace) !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.8rem;
+}
+
+.footer.footer--dark .footer__item,
+.footer.footer--dark .footer__copyright {
+  color: var(--terminal-text-dim) !important;
+  font-family: var(--ifm-font-family-monospace) !important;
+  font-size: 0.85rem;
+}
+
+/* Footer links hover effect - terminal style */
+.footer.footer--dark .footer__link-item {
+  color: var(--terminal-text-dim) !important;
+  transition: all 0.2s ease;
+  border-radius: 3px;
+  padding: 0.25rem 0.5rem;
+}
+
+.footer.footer--dark .footer__link-item:hover {
+  color: var(--terminal-green-bright) !important;
+  background-color: rgba(0, 255, 65, 0.1) !important;
+  text-decoration: none;
+}
+
+/* Light theme footer */
+[data-theme='light'] .footer.footer--dark {
+  background-color: var(--light-bg-secondary) !important;
+  border-top: 1px solid var(--light-border) !important;
+}
+
+[data-theme='light'] .footer.footer--dark .footer__title {
+  color: var(--light-primary) !important;
+}
+
+[data-theme='light'] .footer.footer--dark .footer__item,
+[data-theme='light'] .footer.footer--dark .footer__copyright {
+  color: var(--light-text-secondary) !important;
+}
+
+[data-theme='light'] .footer.footer--dark .footer__link-item {
+  color: var(--light-text-secondary) !important;
+}
+
+[data-theme='light'] .footer.footer--dark .footer__link-item:hover {
+  color: var(--light-primary) !important;
+  background-color: var(--light-bg-tertiary) !important;
+}

@@ -1,15 +1,15 @@
-# Error Codes
+# > Error Codes_
 
 Complete reference for Argus error codes and their meanings.
 
-## Success Codes
+## // Success Codes
 
 | Code | Value | Description |
 |------|-------|-------------|
 | `ARGUS_SUCCESS` | 0 | Operation completed successfully |
 | `ARGUS_SOULD_EXIT` | 1 | Program should exit (help/version shown) |
 
-## Structure Errors
+## // Structure Errors
 
 Errors detected during option definition validation:
 
@@ -40,7 +40,7 @@ POSITIONAL_STRING("input", HELP("Input"), FLAGS(FLAG_OPTIONAL)),
 POSITIONAL_STRING("output", HELP("Output"))  // Required after optional
 ```
 
-## Parsing Errors
+## // Parsing Errors
 
 Errors during command-line argument parsing:
 
@@ -71,7 +71,7 @@ $ ./app --count 150
 app: Value 150 is out of range [1, 100]
 ```
 
-## Execution Errors
+## // Execution Errors
 
 Errors during subcommand execution:
 
@@ -79,7 +79,7 @@ Errors during subcommand execution:
 |------|----------------|-----|
 | `ARGUS_ERROR_NO_COMMAND` | `argus_exec()` with no command | Check `argus_has_command()` first |
 
-## Internal Errors
+## // Internal Errors
 
 System-level errors:
 
@@ -91,7 +91,7 @@ System-level errors:
 | `ARGUS_ERROR_INVALID_VALUE` | Generic value error | Various validation failures |
 | `ARGUS_ERROR_STACK_OVERFLOW` | Too many errors/subcommands | Reduce nesting |
 
-## Error Handling
+## // Error Handling
 
 ### Automatic Handling
 
@@ -110,7 +110,7 @@ ARGUS_PARSING_ERROR(argus, "Invalid endpoint format '%s'", value);
 return ARGUS_ERROR_INVALID_VALUE;
 ```
 
-## Validation Errors
+## // Validation Errors
 
 Specific validation error patterns:
 
@@ -144,7 +144,7 @@ OPTION_STRING('f', "format", VALIDATOR(V_CHOICE_STR("json", "xml")))
 // Error: "Cannot be set to 'pdf'. Choose from ["json", "xml"]"
 ```
 
-## Error Prevention
+## // Error Prevention
 
 ### Good Practices
 
@@ -175,7 +175,7 @@ OPTION_INT('p', "port", DEFAULT("8080"))  // String default for int
 OPTION_INT('p', "port")  // No range check
 ```
 
-## Error Code Constants
+## // Error Code Constants
 
 ```c
 typedef enum argus_error_type_e {

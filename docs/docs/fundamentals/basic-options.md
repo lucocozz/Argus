@@ -1,8 +1,8 @@
-# Basic Options
+# > Basic Options_
 
 Learn how to define different types of command-line options in Argus using declarative macros.
 
-## Option Types Overview
+## // Option Types Overview
 
 Argus supports several fundamental types of command-line elements:
 
@@ -15,7 +15,7 @@ Argus supports several fundamental types of command-line elements:
 | **Boolean** | Explicit true/false | `OPTION_BOOL()` | `--debug=true` |
 | **Positional** | Ordered arguments | `POSITIONAL_*()` | `input.txt output.txt` |
 
-## Flag Options
+## // Flag Options
 
 **Flags** are boolean options activated by their presence - no value required.
 
@@ -60,7 +60,7 @@ OPTION_BOOL('v', "verbose", DEFAULT(true))  // Allows --verbose=false
 ```
 :::
 
-## String Options
+## // String Options
 
 **String options** accept text values for file paths, names, formats, etc.
 
@@ -83,7 +83,7 @@ ARGUS_OPTIONS(
 )
 ```
 
-## Integer Options
+## // Integer Options
 
 **Integer options** handle numeric values with automatic validation.
 
@@ -106,7 +106,7 @@ ARGUS_OPTIONS(
 )
 ```
 
-## Float Options
+## // Float Options
 
 **Float options** handle decimal numbers for rates, percentages, etc.
 
@@ -125,7 +125,7 @@ ARGUS_OPTIONS(
 )
 ```
 
-## Boolean Options
+## // Boolean Options
 
 **Boolean options** require explicit true/false values (unlike flags).
 
@@ -157,7 +157,7 @@ ARGUS_OPTIONS(
 - **Boolean**: When you need explicit control or defaults of true (`--auto-save=false`)
 :::
 
-## Positional Arguments
+## // Positional Arguments
 
 **Positional arguments** are provided without option names, processed in order.
 
@@ -231,7 +231,7 @@ POSITIONAL_STRING("input", HELP("Required input")),           // Required after
 ```
 :::
 
-## Option Modifiers
+## // Option Modifiers
 
 Enhance your options with these common modifiers:
 
@@ -284,7 +284,7 @@ ARGUS_OPTIONS(
 )
 ```
 
-## Option Naming Strategies
+## // Option Naming Strategies
 
 ### Both Short and Long Names
 
@@ -316,7 +316,7 @@ OPTION_INT('p', NULL, HELP("Port number"))
 - **Avoid conflicts**: Don't reuse common short names (`-h` = help, `-v` = verbose/version)
 :::
 
-## Complete Definition Example
+## // Complete Definition Example
 
 Here's a comprehensive example showing all option types together:
 
@@ -400,7 +400,7 @@ Options:
   -b, --backup <BOOL>         - Create backup before processing (default: false)
 ```
 
-## What's Next?
+## // What's Next?
 
 Now that you know how to define options, learn about:
 

@@ -1,8 +1,8 @@
-# Contributing to Argus
+# > Contributing to Argus_
 
 Thank you for your interest in contributing to Argus! This guide covers how to build, test, and contribute to the project.
 
-## Quick Start
+## // Quick Start
 
 ```bash
 # Clone and build
@@ -15,7 +15,7 @@ meson compile -C build
 meson test -C build
 ```
 
-## Development Setup
+## // Development Setup
 
 ### Prerequisites
 
@@ -40,7 +40,7 @@ meson compile -C build
 meson setup build --buildtype=debug -Db_coverage=true
 ```
 
-## Project Structure
+## // Project Structure
 
 ```
 argus/
@@ -59,7 +59,7 @@ argus/
 └── docs/              # Documentation
 ```
 
-## Making Changes
+## // Making Changes
 
 ### Coding Standards
 
@@ -91,7 +91,7 @@ meson test -C build -Db_coverage=true
 ninja -C build coverage
 ```
 
-## Contribution Types
+## // Contribution Types
 
 ### Bug Fixes
 
@@ -117,7 +117,7 @@ ninja -C build coverage
 - Test examples compile and run
 - Keep language clear and concise
 
-## Pull Request Process
+## // Pull Request Process
 
 1. **Fork** the repository
 2. **Create branch** from `main`
@@ -135,7 +135,7 @@ ninja -C build coverage
 - [ ] Examples work correctly
 - [ ] No memory leaks (check with valgrind)
 
-## Development Workflow
+## // Development Workflow
 
 ### Using Justfile
 
@@ -168,7 +168,7 @@ meson test -C build -v
 meson install -C build --destdir /tmp/argus-install
 ```
 
-## Adding New Features
+## // Adding New Features
 
 ### New Option Types
 
@@ -192,7 +192,7 @@ meson install -C build --destdir /tmp/argus-install
 - Document breaking changes clearly
 - Provide migration examples
 
-## Testing Guidelines
+## // Testing Guidelines
 
 ### Unit Tests
 
@@ -223,13 +223,13 @@ void test_option_parsing(void)
 - Check help output formatting
 - Test environment variable integration
 
-## Performance Considerations
+## // Performance Considerations
 
 - Minimize memory allocations
 - Use efficient string operations
 - Profile with representative workloads
 
-## Common Issues
+## // Common Issues
 
 ### Build Failures
 
@@ -262,13 +262,13 @@ valgrind --leak-check=full build/tests/test_binary
 clang-static-analyzer source/*.c
 ```
 
-## Getting Help
+## // Getting Help
 
 - **GitHub Issues**: Bug reports and feature requests
 - **GitHub Discussions**: Questions and general discussion
 - **Documentation**: Check existing docs first
 
-## License
+## // License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
 

@@ -1,8 +1,8 @@
-# Installation
+# > Installation_
 
 Get Argus up and running on your system quickly with multiple installation options.
 
-## Quick Install
+## // Quick Install
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -11,7 +11,7 @@ import TabItem from '@theme/TabItem';
 <TabItem value="linux" label="Linux" default>
 
 :::info System Requirements
-**Compiler**: GCC 13.0+ or Clang 16+
+**Compiler**: GCC 13.0+ or Clang 14+
 :::
 
 ### Package Managers
@@ -77,7 +77,7 @@ sudo meson install -C builddir
 <TabItem value="macos" label="macOS">
 
 :::info System Requirements
-**Compiler**: GCC 13.0+ or Clang 16+
+**Compiler**: GCC 13.0+ or Clang 14+
 :::
 
 ### Package Managers
@@ -149,7 +149,7 @@ sudo meson install -C builddir
 <TabItem value="windows" label="Windows">
 
 :::info System Requirements
-**Compiler**: GCC 13.0+ (MSYS2/MinGW) or Clang 16+  
+**Compiler**: GCC 13.0+ (MSYS2/MinGW) or Clang 14+  
 **Note**: MSVC is not compatible due to non-standard extensions used
 :::
 
@@ -218,7 +218,7 @@ meson install -C builddir
 ```
 
 :::warning MSVC Compatibility
-Argus is **not compatible with MSVC** due to non-standard language extensions. Use **GCC 13.0+** or **Clang 16+** with MSYS2/MinGW.
+Argus is **not compatible with MSVC** due to non-standard language extensions. Use **GCC 13.0+** or **Clang 14+** with MSYS2/MinGW.
 :::
 
 </TabItem>
@@ -228,7 +228,7 @@ Argus is **not compatible with MSVC** due to non-standard language extensions. U
 System packages are not currently available. Use package managers or build from source.
 :::
 
-## Dependencies
+## // Dependencies
 
 Argus has minimal dependencies:
 
@@ -242,7 +242,7 @@ Argus has minimal dependencies:
 PCRE2 is automatically downloaded and built when regex support is enabled. No manual installation required!
 :::
 
-## Configuration Options
+## // Configuration Options
 
 When building from source, customize your installation:
 
@@ -274,7 +274,7 @@ meson setup builddir --buildtype=debug -Db_coverage=true
 </TabItem>
 </Tabs>
 
-## Verification
+## // Verification
 
 Test your installation:
 
@@ -305,7 +305,7 @@ gcc test.c -o test -largus
 ./test --help
 ```
 
-## Integration
+## // Integration
 
 <Tabs>
 <TabItem value="cmake" label="CMake" default>
@@ -364,7 +364,7 @@ gcc main.c $(pkg-config --cflags --libs argus) -o myapp
 </TabItem>
 </Tabs>
 
-## Troubleshooting
+## // Troubleshooting
 
 ### Common Issues
 
@@ -403,7 +403,7 @@ find /usr -name "argus.h" 2>/dev/null
 gcc --version
 clang --version
 
-# Required: GCC 13.0+ or Clang 16+
+# Required: GCC 13.0+ or Clang 14+
 # Update if needed or use MSYS2 on Windows
 ```
 
@@ -411,8 +411,8 @@ clang --version
 
 ### Platform-Specific Notes
 
-**Linux**: Use package managers or build from source. Ensure GCC 13+ or Clang 16+.
+**Linux**: Use package managers or build from source. Ensure GCC 13+ or Clang 14+.
 
-**macOS**: Package managers provide the best experience. Ensure GCC 13+ or Clang 16+.
+**macOS**: Package managers provide the best experience. Ensure GCC 13+ or Clang 14+.
 
-**Windows**: vcpkg recommended. **MSVC not supported** - use GCC 13+ via MSYS2/MinGW or Clang 16+.
+**Windows**: vcpkg recommended. **MSVC not supported** - use GCC 13+ via MSYS2/MinGW or Clang 14+.

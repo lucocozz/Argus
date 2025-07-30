@@ -1,6 +1,6 @@
 const config = {
   title: 'Argus',
-  tagline: 'Modern C library for command-line argument parsing',
+  tagline: 'Modern C library for command-line argument parsing with a powerful, declarative API',
   favicon: 'img/argus-logo.webp',
 
   url: 'https://argus-lib.com',
@@ -111,7 +111,7 @@ const config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} lucocozz. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} lucocozz.`,
     },
     prism: {
       theme: require('prism-react-renderer').themes.github,

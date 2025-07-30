@@ -1,8 +1,8 @@
-# Configuration Tool
+# > Configuration Tool_
 
 Advanced example demonstrating collections, environment variables, and complex validation.
 
-## Complete Example
+## // Complete Example
 
 ```c title="config_tool.c"
 #include <argus.h>
@@ -197,7 +197,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## Usage Examples
+## // Usage Examples
 
 ### Command Line
 
@@ -238,7 +238,7 @@ export CONFIG_CONFIG_ENV=DEPLOY_ENV=prod,VERSION=2.1.0
 ./config_tool --name dev-service  # Uses CONFIG_SERVICE_NAME instead
 ```
 
-## Generated Help
+## // Generated Help
 
 ```
 config_tool v2.0.0
@@ -267,7 +267,7 @@ Options:
   -c, --contact <STR>    - Contact email
 ```
 
-## Advanced Features
+## // Advanced Features
 
 ### Collection Processing
 
@@ -310,7 +310,7 @@ export CONFIG_CONFIG_ENV="DB_HOST=localhost,DB_PORT=5432,DEBUG=true"
 # Error: Value 99999 is out of range [1, 65535]
 ```
 
-## Generated Config
+## // Generated Config
 
 ```json
 {
@@ -331,7 +331,7 @@ export CONFIG_CONFIG_ENV="DB_HOST=localhost,DB_PORT=5432,DEBUG=true"
 }
 ```
 
-## Key Features Demonstrated
+## // Key Features Demonstrated
 
 - **String arrays** with unique/sorted flags
 - **Integer arrays** with range expansion (8000-8003)
