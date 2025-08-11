@@ -96,7 +96,7 @@ export default function FinalCTA() {
                 color: 'var(--terminal-text-dim)',
                 fontFamily: 'var(--ifm-font-family-monospace)'
               }}>
-                vcpkg, conan, meson, xmake
+                vcpkg, meson-wrap, xmake-repo
               </div>
             </div>
 

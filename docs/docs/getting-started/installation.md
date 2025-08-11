@@ -27,7 +27,7 @@ vcpkg install argus
 ```
 
 </TabItem>
-<TabItem value="conan" label="Conan">
+<!-- <TabItem value="conan" label="Conan">
 
 ```bash
 # With Regex support (requires PCRE2)
@@ -36,7 +36,7 @@ conan install argus/0.1.0 -o argus:regex=True
 conan install argus/0.1.0
 ```
 
-</TabItem>
+</TabItem> -->
 <TabItem value="meson" label="Meson">
 
 ```bash
@@ -93,7 +93,7 @@ vcpkg install argus
 ```
 
 </TabItem>
-<TabItem value="conan" label="Conan">
+<!-- <TabItem value="conan" label="Conan">
 
 ```bash
 # With Regex support (requires PCRE2)
@@ -102,7 +102,7 @@ conan install argus/0.1.0 -o argus:regex=True
 conan install argus/0.1.0
 ```
 
-</TabItem>
+</TabItem> -->
 <TabItem value="meson" label="Meson">
 
 ```bash
@@ -166,7 +166,7 @@ vcpkg install argus
 ```
 
 </TabItem>
-<TabItem value="conan" label="Conan">
+<!-- <TabItem value="conan" label="Conan">
 
 ```bash
 # With Regex support (requires PCRE2)
@@ -175,7 +175,7 @@ conan install argus/0.1.0 -o argus:regex=True
 conan install argus/0.1.0
 ```
 
-</TabItem>
+</TabItem> -->
 <TabItem value="meson" label="Meson">
 
 ```bash
