@@ -8,6 +8,7 @@
  */
 
 #include "argus/errors.h"
+#include "argus/internal/display.h"
 #include "argus/types.h"
 #include <stddef.h>
 
@@ -23,12 +24,11 @@ int argus_exec(argus_t *argus, void *data)
         command = argus->subcommand_stack[argus->subcommand_depth - 1];
 
     if (command == NULL) {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_NO_COMMAND, "Internal error: No command to execute");
+        display_all_commands(argus);
         return ARGUS_ERROR_NO_COMMAND;
     }
     if (command->action == NULL) {
-        ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_INVALID_HANDLER,
-                            "The %s command cannot be executed by itself", command->name);
+        display_available_subcommands(argus, command);
         return ARGUS_ERROR_INVALID_HANDLER;
     }
     return (command->action(argus, data));
