@@ -16,28 +16,28 @@ ARGUS_OPTIONS(
     POSITIONAL_STRING("input"),
 )
 
-#ifndef ARGUS_RELEASE
+#ifdef ARGUS_DEBUG
 
-Test(release_mode, perform_validation, .exit_code = 1, .init = cr_redirect_stderr)
+Test(debug_mode, perform_validation, .exit_code = 1, .init = cr_redirect_stderr)
 {
     argus_t argus = argus_init(invalid_options, "test_program", "1.0.0");
 
-    // In release mode, the library should not validate options
+    // In debug mode, the library should validate options
     cr_assert_gt(argus.error_code, 0,
-                 "Errors should be reported in release mode");
+                 "Errors should be reported in debug mode");
 
     argus_free(&argus);
 }
 
 #else
 
-Test(release_mode, skip_validation)
+Test(debug_mode, skip_validation)
 {
     argus_t argus = argus_init(invalid_options, "test_program", "1.0.0");
 
-    // In debug mode, the library should validate options
-    cr_assert_eq(argus.error_code, 0, 
-                 "Errors should be reported in debug mode");
+    // In standard mode, the library should not validate options
+    cr_assert_eq(argus.error_code, 0,
+                 "Errors should not be reported in standard mode");
 
     argus_free(&argus);
 }

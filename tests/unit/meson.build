@@ -26,36 +26,36 @@ foreach test : unit_tests
   )
 endforeach
 
-release_mode_test_sources = files('test_core/test_release_mode.c')
+debug_mode_test_sources = files('test_core/test_debug_mode.c')
 
-# Build and run the test in normal mode (validation enabled)
-test_release_mode_do_validation = executable(
-  'test_release_mode_do_validation',
-  release_mode_test_sources,
+# Build and run the test in debug mode (validation enabled)
+test_debug_mode_do_validation = executable(
+  'test_debug_mode_do_validation',
+  debug_mode_test_sources,
   dependencies: [criterion_dep, argus_dep],
   include_directories: test_includes,
   c_args: test_args
 )
 
 test(
-  'unit_release_mode_do_validation',
-  test_release_mode_do_validation,
+  'unit_debug_mode_do_validation',
+  test_debug_mode_do_validation,
   env: test_env,
   timeout: 30
 )
 
-# Build and run the test in release mode (validation disabled)
-test_release_skip_validation = executable(
-  'test_release_mode_skip_validation',
-  release_mode_test_sources,
+# Build and run the test in standard mode (validation disabled)
+test_debug_skip_validation = executable(
+  'test_debug_mode_skip_validation',
+  debug_mode_test_sources,
   dependencies: [criterion_dep, argus_dep],
   include_directories: test_includes,
-  c_args: test_args + ['-DARGUS_RELEASE'],
+  c_args: test_args + ['-DARGUS_DEBUG'],
 )
 
 test(
-  'unit_release_mode_skip_validation',
-  test_release_skip_validation,
+  'unit_debug_mode_skip_validation',
+  test_debug_skip_validation,
   env: test_env,
   timeout: 30
 )
