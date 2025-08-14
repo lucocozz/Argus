@@ -66,16 +66,13 @@ int main(int argc, char **argv)
 
 ```bash
 # Development build (recommended during development)
-gcc my_tool.c -o my_tool -largus
+gcc -DARGUS_DEBUG my_tool.c -o my_tool -largus
 ./my_tool --help    # See auto-generated help
 ./my_tool input.txt # Run your tool
-
-# Production build (skip validation for better performance)
-gcc -DARGUS_RELEASE my_tool.c -o my_tool-prod -largus
 ```
 
-:::tip Production Note
-Use `ARGUS_RELEASE` only in production after thorough testing. It disables option structure validation for faster startup time.
+:::tip Development Note
+Use `ARGUS_DEBUG` to enable option structure validation and catch configuration errors early.
 :::
 
 ## // What You Get For Free

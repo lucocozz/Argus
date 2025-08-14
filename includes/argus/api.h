@@ -27,21 +27,18 @@ ARGUS_API argus_t _argus_init_validate(argus_option_t *options, const char *prog
  * @return Initialized argus_t context
  *
  * @note
- * Define `ARGUS_RELEASE` when compiling your application to skip
- * options structure validation and improve performance.
+ * Define `ARGUS_DEBUG` when compiling your application to enable
+ * options structure validation.
  *
- * Example: `gcc -DARGUS_RELEASE my_program.c -o my_program -largus`
- *
- * Note: Only use this in production. During development, leave validation
- * enabled to catch configuration errors early.
+ * Example: `gcc -DARGUS_DEBUG my_program.c -o my_program -largus`
  */
 static inline argus_t argus_init(argus_option_t *options, const char *program_name,
                                  const char *version)
 {
-#ifdef ARGUS_RELEASE
-    return _argus_init_validate(options, program_name, version, false);
-#else
+#ifdef ARGUS_DEBUG
     return _argus_init_validate(options, program_name, version, true);
+#else
+    return _argus_init_validate(options, program_name, version, false);
 #endif
 }
 

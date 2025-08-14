@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Printing subcommand list on command execution that cannot be executed directly.
 
+### Changed
+- Change `ARGUS_RELEASE` into `ARGUS_DEBUG`
+
 ### Fixed
 - Defining `argus_init()` as a `static inline` function.
 
