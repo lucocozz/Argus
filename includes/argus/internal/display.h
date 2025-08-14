@@ -49,6 +49,22 @@ void display_usage(argus_t *argus, const argus_option_t *command);
 void display_version(argus_t *argus);
 
 /**
+ * display_available_subcommands - Display available subcommands for a command that cannot be
+ * executed by itself
+ *
+ * @param argus    Argus context
+ * @param command  Command that triggered the error (must have suboptions)
+ */
+void display_available_subcommands(argus_t *argus, const argus_option_t *command);
+
+/**
+ * display_all_commands - Display all available commands when no command is specified
+ *
+ * @param argus  Argus context
+ */
+void display_all_commands(argus_t *argus);
+
+/**
  * get_default_helper_config - Get default helper configuration
  *
  * @return  Default helper configuration
