@@ -54,8 +54,14 @@ OPTION_MAP_BOOL('f', "features", HELP("Feature flags"))
 ## // Positional Arguments
 
 ```c
+// Single positionals
 POSITIONAL_STRING("input", HELP("Input file"))
 POSITIONAL_INT("count", HELP("Count"), FLAGS(FLAG_OPTIONAL))
+
+// Variadic positionals (accept multiple values)
+POSITIONAL_MANY_STRING("files", HELP("Files to process"))
+POSITIONAL_MANY_INT("numbers", HELP("Numbers to calculate"))
+POSITIONAL_MANY_FLOAT("values", HELP("Decimal values"))
 ```
 
 ## // Option Modifiers
@@ -207,6 +213,9 @@ int main(int argc, char **argv)
 
 # Positional
 program input.txt output.txt
+
+# Variadic positionals
+program file1.c file2.c file3.c ...
 
 # Stop parsing
 program --option -- --not-an-option

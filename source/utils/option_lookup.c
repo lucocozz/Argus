@@ -40,7 +40,7 @@ argus_option_t *find_positional(argus_option_t *options, int position)
 
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         if (options[i].type == TYPE_POSITIONAL) {
-            if (pos_index == position)
+            if ((options[i].value_type & VALUE_TYPE_VARIADIC) || pos_index == position)
                 return (&options[i]);
             pos_index++;
         }

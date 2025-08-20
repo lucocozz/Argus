@@ -52,6 +52,8 @@ const char *get_base_type_name(argus_valtype_t type)
 
 const char *get_collection_format(argus_valtype_t type)
 {
+    if (type & VALUE_TYPE_VARIADIC)
+        return "%s...";
     if (type & VALUE_TYPE_ARRAY)
         return "%s,...";
     if (type & VALUE_TYPE_MAP)

@@ -138,6 +138,13 @@ int validate_positional(argus_t *argus, argus_option_t *option)
         status = ARGUS_ERROR_MALFORMED_OPTION;
     }
 
+    if (option->value_type & VALUE_TYPE_VARIADIC) {
+        if (option->flags & ~POSITIONAL_MANY_FLAG_MASK) {
+            ARGUS_STRUCT_ERROR(option, "Invalid flags for POSITIONAL_MANY argument");
+            status = ARGUS_ERROR_INVALID_FLAG;
+        }
+    }
+
     if (option->flags & ~POSITIONAL_FLAG_MASK) {
         ARGUS_STRUCT_ERROR(option, "Invalid flags for positional");
         status = ARGUS_ERROR_INVALID_FLAG;

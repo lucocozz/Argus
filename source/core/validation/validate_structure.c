@@ -21,6 +21,7 @@ int validate_placement(argus_option_t *options)
 {
     bool has_positional          = false;
     bool has_optional_positional = false;
+    bool has_positional_many     = false;
     bool has_subcommands         = false;
     bool has_helper              = false;
     int  status                  = ARGUS_SUCCESS;
@@ -30,13 +31,30 @@ int validate_placement(argus_option_t *options)
 
         if (option->type == TYPE_SUBCOMMAND)
             has_subcommands = true;
-        if (option->type == TYPE_POSITIONAL && (option->flags & FLAG_OPTIONAL))
+        if (option->type == TYPE_POSITIONAL && !(option->flags & FLAG_REQUIRED))
             has_optional_positional = true;
-        else if (option->type == TYPE_POSITIONAL)
+        else if (option->type == TYPE_POSITIONAL && (option->value_type & VALUE_TYPE_VARIADIC)) {
+            if (has_positional_many == true) {
+                ARGUS_STRUCT_ERROR(option, "Only one POSITIONAL_MANY argument is allowed");
+                status = ARGUS_ERROR_MALFORMED_OPTION;
+            }
+            has_positional_many = true;
+        } else if (option->type == TYPE_POSITIONAL) {
+            if (has_positional_many == true) {
+                ARGUS_STRUCT_ERROR(
+                    option, "POSITIONAL argument must be placed before POSITIONAL_MANY argument");
+                status = ARGUS_ERROR_MALFORMED_OPTION;
+            }
             has_positional = true;
+        }
         if (option->type == TYPE_OPTION && option->name && strcmp(option->name, "help") == 0)
             has_helper = true;
 
+        if (has_optional_positional && has_positional_many) {
+            ARGUS_STRUCT_ERROR(option,
+                               "Cannot mix optional positional and POSITIONAL_MANY arguments");
+            status = ARGUS_ERROR_MALFORMED_OPTION;
+        }
         if (option->type == TYPE_OPTION && has_subcommands) {
             ARGUS_STRUCT_ERROR(option,
                                "Options should be placed at the top level, before any subcommands");

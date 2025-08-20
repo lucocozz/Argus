@@ -178,6 +178,75 @@ ARGUS_OPTIONS(
 </TabItem>
 </Tabs>
 
+## // Variadic Positional
+
+Accept multiple values for positional arguments, similar to array options but for positional parameters:
+
+<Tabs>
+<TabItem value="variadic-types" label="Variadic Types" default>
+
+```c
+ARGUS_OPTIONS(
+    options,
+    HELP_OPTION(),
+    
+    // Multiple string values
+    POSITIONAL_MANY_STRING("files", HELP("Input files to process"), 
+                           HINT("FILE..."),
+                           FLAGS(FLAG_UNIQUE | FLAG_SORTED)),
+    
+    // Multiple integer values
+    POSITIONAL_MANY_INT("numbers", HELP("Numbers to process"),
+                        HINT("NUM..."),
+                        VALIDATOR(V_COUNT(1, 10))),
+    
+    // Multiple float values
+    POSITIONAL_MANY_FLOAT("values", HELP("Float values"),
+                          HINT("VAL...")),
+)
+```
+
+**Supported types:**
+- `POSITIONAL_MANY_STRING` - Multiple text values
+- `POSITIONAL_MANY_INT` - Multiple integer values  
+- `POSITIONAL_MANY_FLOAT` - Multiple decimal values
+
+**Important restrictions:**
+- Only one `POSITIONAL_MANY` argument allowed per command
+- Must be placed after all regular positional arguments
+- Cannot mix with optional positional arguments
+- Cannot be used with subcommands at the same level
+
+</TabItem>
+<TabItem value="variadic-usage" label="Usage Examples">
+
+```bash
+# Process multiple files
+./program file1.c file2.c file3.c
+
+# Process numbers
+./program 1 2 3 4 5
+
+# No arguments (if optional)
+./program
+
+# With other options
+./program --verbose file1.txt file2.txt
+```
+
+**Key characteristics:**
+- Accepts zero or more values
+- Values are collected into an array
+- Supports same flags as array options (`FLAG_SORTED`, `FLAG_UNIQUE`)
+- Can use validation like `V_COUNT()` to enforce limits
+
+**Access methods:**
+- Same as array collections: `argus_get().as_array`, `argus_count()`, `argus_array_it()`
+- See [Accessing Values](../fundamentals/accessing-values#variadic-positional) for detailed examples
+
+</TabItem>
+</Tabs>
+
 ## // Accessing Collection Values
 
 <Tabs>

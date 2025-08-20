@@ -38,6 +38,10 @@ EXPORTS
     free_map_int_handler
     free_map_float_handler
     free_map_bool_handler
+    variadic_string_handler
+    variadic_int_handler
+    variadic_float_handler
+    free_variadic_string_handler
     range_validator
     length_validator
     count_validator
