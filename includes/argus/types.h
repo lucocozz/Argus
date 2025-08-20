@@ -45,7 +45,11 @@ typedef enum argus_valtype_e
     VALUE_TYPE_MAP_FLOAT  = 1 << 10,
     VALUE_TYPE_MAP_BOOL   = 1 << 11,
 
-    VALUE_TYPE_CUSTOM = 1 << 12,
+    VALUE_TYPE_VARIADIC_STRING = 1 << 12,
+    VALUE_TYPE_VARIADIC_INT    = 1 << 13,
+    VALUE_TYPE_VARIADIC_FLOAT  = 1 << 14,
+
+    VALUE_TYPE_CUSTOM = 1 << 15,
 } argus_valtype_t;
 
 #define VALUE_TYPE_ANY_NUMERIC (VALUE_TYPE_INT | VALUE_TYPE_FLOAT)
@@ -55,6 +59,8 @@ typedef enum argus_valtype_e
 #define VALUE_TYPE_ARRAY (VALUE_TYPE_ARRAY_STRING | VALUE_TYPE_ARRAY_INT | VALUE_TYPE_ARRAY_FLOAT)
 #define VALUE_TYPE_MAP                                                                             \
     (VALUE_TYPE_MAP_STRING | VALUE_TYPE_MAP_INT | VALUE_TYPE_MAP_FLOAT | VALUE_TYPE_MAP_BOOL)
+#define VALUE_TYPE_VARIADIC                                                                        \
+    (VALUE_TYPE_VARIADIC_STRING | VALUE_TYPE_VARIADIC_INT | VALUE_TYPE_VARIADIC_FLOAT)
 
 /**
  * argus_optype_t - Types of command line elements
@@ -105,9 +111,10 @@ typedef enum argus_optflags_e
 #define OPTION_ARRAY_FLAG_MASK (FLAG_SORTED | FLAG_UNIQUE | VERSIONING_FLAG_MASK)
 #define OPTION_MAP_FLAG_MASK                                                                       \
     (FLAG_SORTED_VALUE | FLAG_SORTED_KEY | FLAG_UNIQUE_VALUE | VERSIONING_FLAG_MASK)
-#define GROUP_FLAG_MASK      (FLAG_EXCLUSIVE)
-#define POSITIONAL_FLAG_MASK (FLAG_REQUIRED)
-#define SUBCOMMAND_FLAG_MASK (FLAG_HIDDEN | FLAG_ADVANCED | VERSIONING_FLAG_MASK)
+#define GROUP_FLAG_MASK           (FLAG_EXCLUSIVE)
+#define POSITIONAL_FLAG_MASK      (FLAG_REQUIRED)
+#define POSITIONAL_MANY_FLAG_MASK (OPTION_ARRAY_FLAG_MASK | FLAG_REQUIRED | FLAG_OPTIONAL)
+#define SUBCOMMAND_FLAG_MASK      (FLAG_HIDDEN | FLAG_ADVANCED | VERSIONING_FLAG_MASK)
 
 /**
  * argus_value_u - Union to hold option values of different types

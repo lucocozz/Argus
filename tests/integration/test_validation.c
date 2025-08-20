@@ -2,6 +2,7 @@
 #include "argus/types.h"
 #include "argus/errors.h"
 #include "argus/internal/utils.h"
+#include "argus/options.h"
 #include "argus.h"
 
 // External functions to test
@@ -38,6 +39,38 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
     SUBCOMMAND("cmd", valid_options, HELP("Test subcommand")),
     POSITIONAL_STRING("input", HELP("Input file")),
+)
+
+// Test options with valid POSITIONAL_MANY
+ARGUS_OPTIONS(
+    valid_variadic_options,
+    HELP_OPTION(),
+    POSITIONAL_STRING("cmd", HELP("Command")),
+    POSITIONAL_MANY_STRING("files", HELP("Files to process")),
+)
+
+// Test options with multiple POSITIONAL_MANY (invalid)
+ARGUS_OPTIONS(
+    multiple_variadic_options,
+    HELP_OPTION(),
+    POSITIONAL_MANY_STRING("files1", HELP("First set of files")),
+    POSITIONAL_MANY_STRING("files2", HELP("Second set of files")), // Invalid: multiple POSITIONAL_MANY
+)
+
+// Test options with POSITIONAL_MANY not in last position (invalid)
+ARGUS_OPTIONS(
+    variadic_not_last_options,
+    HELP_OPTION(),
+    POSITIONAL_MANY_STRING("files", HELP("Files to process")),
+    POSITIONAL_STRING("output", HELP("Output file")), // Invalid: positional after POSITIONAL_MANY
+)
+
+// Test options with optional positional mixed with POSITIONAL_MANY (invalid)
+ARGUS_OPTIONS(
+    optional_mixed_variadic_options,
+    HELP_OPTION(),
+    POSITIONAL_STRING("input", HELP("Input file"), FLAGS(FLAG_OPTIONAL)), // Invalid: optional mixed with POSITIONAL_MANY
+    POSITIONAL_MANY_STRING("files", HELP("Files to process")),
 )
 
 // Contexte argus pour les tests
@@ -237,4 +270,50 @@ Test(validation, validate_option_without_help, .init = setup_validation)
     result = validate_subcommand(&sub_option);
     cr_assert_neq(result, ARGUS_SUCCESS, "Subcommand without help should fail validation");
     // cr_assert_gt(test_argus.error_code, 0, "Errors should be reported");
+}
+
+// Test for validating valid POSITIONAL_MANY structure
+Test(validation, validate_valid_variadic_structure, .init = setup_validation)
+{
+    int result = validate_structure(&test_argus, valid_variadic_options);
+    cr_assert_eq(result, ARGUS_SUCCESS, "Valid POSITIONAL_MANY structure should pass validation");
+    cr_assert_eq(test_argus.error_code, 0, "No errors should be reported");
+}
+
+// Test for validating multiple POSITIONAL_MANY (should fail)
+Test(validation, validate_multiple_variadic, .init = setup_validation)
+{
+    int result = validate_structure(&test_argus, multiple_variadic_options);
+    cr_assert_neq(result, ARGUS_SUCCESS, "Structure with multiple POSITIONAL_MANY should fail validation");
+}
+
+// Test for validating POSITIONAL_MANY not in last position (should fail)
+Test(validation, validate_variadic_not_last, .init = setup_validation)
+{
+    int result = validate_structure(&test_argus, variadic_not_last_options);
+    cr_assert_neq(result, ARGUS_SUCCESS, "Structure with POSITIONAL_MANY not in last position should fail validation");
+}
+
+// Test for validating optional positional mixed with POSITIONAL_MANY (should fail)
+Test(validation, validate_optional_mixed_variadic, .init = setup_validation)
+{
+    int result = validate_structure(&test_argus, optional_mixed_variadic_options);
+    cr_assert_neq(result, ARGUS_SUCCESS, "Structure with optional positional mixed with POSITIONAL_MANY should fail validation");
+}
+
+// Test for validating a valid variadic positional option
+Test(validation, validate_valid_variadic_positional, .init = setup_validation)
+{
+    argus_option_t option = {
+        .type = TYPE_POSITIONAL,
+        .name = "files",
+        .help = "Files to process",
+        .value_type = VALUE_TYPE_VARIADIC_STRING,
+        .handler = variadic_string_handler,
+        .flags = FLAG_REQUIRED
+    };
+    
+    int result = validate_positional(&test_argus, &option);
+    cr_assert_eq(result, ARGUS_SUCCESS, "Valid variadic positional should pass validation");
+    cr_assert_eq(test_argus.error_code, 0, "No errors should be reported");
 }

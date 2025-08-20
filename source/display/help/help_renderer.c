@@ -35,11 +35,23 @@ void print_positional(argus_t *argus, const argus_option_t *option, size_t inden
 {
     size_t name_len = putnchar(' ', indent);
 
-    if (option->flags & FLAG_REQUIRED)
-        printf("<%s>", option->name);
-    else
-        printf("[%s]", option->name);
-    name_len += strlen(option->name) + 2;
+    if (option->flags & FLAG_REQUIRED) {
+        if (option->value_type & VALUE_TYPE_VARIADIC) {
+            printf("<%s...>", option->name);
+            name_len += strlen(option->name) + 5;  // <...>
+        } else {
+            printf("<%s>", option->name);
+            name_len += strlen(option->name) + 2;  // <>
+        }
+    } else {
+        if (option->value_type & VALUE_TYPE_VARIADIC) {
+            printf("[%s...]", option->name);
+            name_len += strlen(option->name) + 5;  // [...]
+        } else {
+            printf("[%s]", option->name);
+            name_len += strlen(option->name) + 2;  // []
+        }
+    }
 
     size_t padding = 0;
     if (argus->helper.config.description_column > name_len)

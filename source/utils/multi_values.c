@@ -352,14 +352,17 @@ void apply_array_flags(argus_option_t *option)
     if (option->flags & FLAG_SORTED) {
         switch (option->value_type) {
             case VALUE_TYPE_ARRAY_INT:
+            case VALUE_TYPE_VARIADIC_INT:
                 sort_int_array(option->value.as_array, option->value_count);
                 break;
 
             case VALUE_TYPE_ARRAY_STRING:
+            case VALUE_TYPE_VARIADIC_STRING:
                 sort_string_array(option->value.as_array, option->value_count);
                 break;
 
             case VALUE_TYPE_ARRAY_FLOAT:
+            case VALUE_TYPE_VARIADIC_FLOAT:
                 sort_float_array(option->value.as_array, option->value_count);
                 break;
 
@@ -374,14 +377,17 @@ void apply_array_flags(argus_option_t *option)
 
         switch (option->value_type) {
             case VALUE_TYPE_ARRAY_INT:
+            case VALUE_TYPE_VARIADIC_INT:
                 new_count = make_int_array_unique(option->value.as_array, option->value_count);
                 break;
 
             case VALUE_TYPE_ARRAY_STRING:
+            case VALUE_TYPE_VARIADIC_STRING:
                 new_count = make_string_array_unique(option->value.as_array, option->value_count);
                 break;
 
             case VALUE_TYPE_ARRAY_FLOAT:
+            case VALUE_TYPE_VARIADIC_FLOAT:
                 new_count = make_float_array_unique(option->value.as_array, option->value_count);
                 break;
 

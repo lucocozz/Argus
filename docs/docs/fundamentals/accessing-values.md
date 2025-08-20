@@ -361,6 +361,114 @@ int main(int argc, char **argv)
 </TabItem>
 </Tabs>
 
+## // Variadic Positional
+
+Access variadic positional arguments the same way as array collections:
+
+<Tabs>
+<TabItem value="variadic-direct" label="Direct Access" default>
+
+```c
+ARGUS_OPTIONS(
+    options,
+    HELP_OPTION(),
+    POSITIONAL_MANY_STRING("files", HELP("Input files to process"), 
+                           HINT("FILE..."),
+                           FLAGS(FLAG_UNIQUE | FLAG_SORTED)),
+)
+
+int main(int argc, char **argv)
+{
+    argus_t argus = argus_init(options, "myapp", "1.0.0");
+    argus_parse(&argus, argc, argv);
+    
+    // Check if files were provided
+    if (argus_is_set(&argus, "files")) {
+        size_t count = argus_count(&argus, "files");
+        argus_value_t *files = argus_get(&argus, "files").as_array;
+        
+        printf("Processing %zu files:\n", count);
+        for (size_t i = 0; i < count; i++) {
+            printf("  %zu: %s\n", i + 1, files[i].as_string);
+        }
+    } else {
+        printf("No files specified\n");
+    }
+    
+    argus_free(&argus);
+    return 0;
+}
+```
+
+</TabItem>
+<TabItem value="variadic-iterator" label="Iterator Access">
+
+```c
+ARGUS_OPTIONS(
+    options,
+    HELP_OPTION(),
+    POSITIONAL_MANY_STRING("files", HELP("Input files"), HINT("FILE...")),
+)
+
+int main(int argc, char **argv)
+{
+    argus_t argus = argus_init(options, "myapp", "1.0.0");
+    argus_parse(&argus, argc, argv);
+    
+    // Use iterator for clean traversal
+    argus_array_it_t it = argus_array_it(&argus, "files");
+    
+    printf("Files to process:\n");
+    while (argus_array_next(&it)) {
+        printf("  - %s\n", it.value.as_string);
+        process_file(it.value.as_string);
+    }
+    
+    argus_free(&argus);
+    return 0;
+}
+```
+
+</TabItem>
+<TabItem value="variadic-helper" label="Helper Functions">
+
+```c
+ARGUS_OPTIONS(
+    options,
+    HELP_OPTION(),
+    POSITIONAL_MANY_INT("numbers", HELP("Numbers to process"), HINT("NUM...")),
+)
+
+int main(int argc, char **argv)
+{
+    argus_t argus = argus_init(options, "myapp", "1.0.0");
+    argus_parse(&argus, argc, argv);
+    
+    // Access specific elements by index
+    int first = argus_array_get(&argus, "numbers", 0).as_int;
+    int second = argus_array_get(&argus, "numbers", 1).as_int;
+    
+    if (first) printf("First number: %d\n", first);
+    if (second) printf("Second number: %d\n", second);
+    
+    // Get total count
+    size_t total = argus_count(&argus, "numbers");
+    printf("Total numbers: %zu\n", total);
+    
+    argus_free(&argus);
+    return 0;
+}
+```
+
+</TabItem>
+</Tabs>
+
+**Important notes:**
+- Variadic positionals use the same access functions as array options
+- Always check `argus_is_set()` before accessing since they accept zero values
+- Use `argus_count()` to get the number of values provided
+- Iterator pattern is most efficient for processing all values
+
 ## // Subcommand Access
 
 In subcommand context, access values using path notation or relative names:
@@ -576,6 +684,8 @@ FILE *f = fopen(output, "w"); // output might be NULL!
 | **Check if set** | `argus_is_set()` | `if (argus_is_set(&argus, "output"))` |
 | **Array elements** | `argus_array_get()` | `argus_array_get(&argus, "tags", 0)` |
 | **Array iteration** | `argus_array_it()` | `while (argus_array_next(&it))` |
+| **Variadic positional** | `argus_get().as_array` | `argus_get(&argus, "files").as_array` |
+| **Variadic iteration** | `argus_array_it()` | `while (argus_array_next(&it))` |
 | **Map lookup** | `argus_map_get()` | `argus_map_get(&argus, "env", "USER")` |
 | **Map iteration** | `argus_map_it()` | `while (argus_map_next(&it))` |
 | **Subcommand relative** | `argus_get()` | `argus_get(argus, "file").as_string` |

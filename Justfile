@@ -165,6 +165,7 @@ examples:
             basic_usage)          desc="Basic flags, string, and integer options" ;; \
             subcommands)          desc="Git-like subcommands implementation" ;; \
             positional_args)      desc="Handling positional arguments" ;; \
+            variadic_positional)  desc="Handling variadic positional arguments" ;; \
             custom_handlers)      desc="Creating custom option handlers" ;; \
             advanced_options)     desc="Dependencies, conflicts, and exclusive groups" ;; \
             nested_commands)      desc="Complex nested subcommands (like git or docker)" ;; \

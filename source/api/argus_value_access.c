@@ -50,8 +50,8 @@ argus_value_t argus_array_get(argus_t *argus, const char *option_path, size_t in
         return ((argus_value_t){.raw = 0});
     }
 
-    // Check if the option is an array type
-    if (!(option->value_type & VALUE_TYPE_ARRAY)) {
+    // Check if the option is an array type or variadic type
+    if (!(option->value_type & (VALUE_TYPE_ARRAY | VALUE_TYPE_VARIADIC))) {
         argus->error_code = ARGUS_ERROR_INVALID_TYPE;
         return ((argus_value_t){.raw = 0});
     }
@@ -99,7 +99,7 @@ argus_array_it_t argus_array_it(argus_t *argus, const char *option_path)
     argus_array_it_t it     = {0};
     argus_option_t  *option = find_option_by_active_path(*argus, option_path);
 
-    if (option == NULL || !(option->value_type & VALUE_TYPE_ARRAY))
+    if (option == NULL || !(option->value_type & (VALUE_TYPE_ARRAY | VALUE_TYPE_VARIADIC)))
         return it;  // Return empty iterator
 
     it._array    = option->value.as_array;

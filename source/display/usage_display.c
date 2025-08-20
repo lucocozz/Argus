@@ -38,9 +38,15 @@ void display_usage(argus_t *argus, const argus_option_t *command)
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         if (options[i].type == TYPE_POSITIONAL) {
             if (options[i].flags & FLAG_REQUIRED) {
-                printf(" <%s>", options[i].name);
+                if (options[i].value_type & VALUE_TYPE_VARIADIC)
+                    printf(" <%s...>", options[i].name);
+                else
+                    printf(" <%s>", options[i].name);
             } else {
-                printf(" [%s]", options[i].name);
+                if (options[i].value_type & VALUE_TYPE_VARIADIC)
+                    printf(" [%s...]", options[i].name);
+                else
+                    printf(" [%s]", options[i].name);
             }
         }
     }

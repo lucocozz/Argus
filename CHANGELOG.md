@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Printing subcommand list on command execution that cannot be executed directly.
+- Support for variadic positional arguments, allowing multiple values for a single positional argument.
 
 ### Changed
 - Change `ARGUS_RELEASE` into `ARGUS_DEBUG`

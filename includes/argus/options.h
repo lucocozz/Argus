@@ -37,6 +37,11 @@ ARGUS_API int free_map_int_handler(argus_option_t *option);
 ARGUS_API int free_map_float_handler(argus_option_t *option);
 ARGUS_API int free_map_bool_handler(argus_option_t *option);
 
+ARGUS_API int variadic_string_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int variadic_int_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int variadic_float_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int free_variadic_string_handler(argus_option_t *option);
+
 ARGUS_API int range_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 ARGUS_API int length_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 ARGUS_API int count_validator(argus_t *argus, void *option_ptr, validator_data_t data);
@@ -62,9 +67,9 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
  * Optional option fields macros
  */
 #ifdef ARGUS_DEBUG
-# define ARGUS_DEBUG_INFO()            .line = 0, .file = NULL
-#else
 # define ARGUS_DEBUG_INFO()            .line = __LINE__, .file = __FILE__
+#else
+# define ARGUS_DEBUG_INFO()            .line = 0, .file = NULL
 #endif /* ARGUS_DEBUG */
 #define DEFINE_NAME(lname, sname) ((lname) ? (lname) : CHAR_TO_STRING(sname))
 #define DEFAULT(val)            .value = (argus_value_t){ .raw = (uintptr_t)(val) },         \
@@ -228,6 +233,17 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
     POSITIONAL_BASE(name, VALUE_TYPE_BOOL, HANDLER(bool_handler), __VA_ARGS__)
 #define POSITIONAL_FLOAT(name, ...)                                                                \
     POSITIONAL_BASE(name, VALUE_TYPE_FLOAT, HANDLER(float_handler), __VA_ARGS__)
+
+/*
+ * Multi-value positional argument macros
+ */
+#define POSITIONAL_MANY_STRING(name, ...)                                                          \
+    POSITIONAL_BASE(name, VALUE_TYPE_VARIADIC_STRING, HANDLER(variadic_string_handler),            \
+                    FREE_HANDLER(free_variadic_string_handler), __VA_ARGS__)
+#define POSITIONAL_MANY_INT(name, ...)                                                             \
+    POSITIONAL_BASE(name, VALUE_TYPE_VARIADIC_INT, HANDLER(variadic_int_handler), __VA_ARGS__)
+#define POSITIONAL_MANY_FLOAT(name, ...)                                                           \
+    POSITIONAL_BASE(name, VALUE_TYPE_VARIADIC_FLOAT, HANDLER(variadic_float_handler), __VA_ARGS__)
 
 /*
  * Subcommand macro
