@@ -116,7 +116,7 @@ void print_help_sections(argus_t *argus, help_data_t *data)
         group_info_t *group = data->groups;
         while (group != NULL) {
             if (group->options != NULL) {
-                printf("\n%s:\n", group->description ? group->description : group->name);
+                printf("\n%s:\n", group->name);
                 print_option_list(argus, group->options, argus->helper.config.option_indent);
             }
             group = group->next;

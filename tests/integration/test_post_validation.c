@@ -20,7 +20,7 @@ ARGUS_OPTIONS(
 ARGUS_OPTIONS(
     group_options,
     HELP_OPTION(),
-    GROUP_START("Compression", GROUP_DESC("Compression options"), FLAGS(FLAG_EXCLUSIVE)),
+    GROUP_START("Compression", FLAGS(FLAG_EXCLUSIVE)),
         OPTION_FLAG('z', "gzip", HELP("Use gzip compression")),
         OPTION_FLAG('j', "bzip2", HELP("Use bzip2 compression")),
     GROUP_END(),

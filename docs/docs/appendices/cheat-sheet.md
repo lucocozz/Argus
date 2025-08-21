@@ -260,12 +260,12 @@ endpoint_t *ep = (endpoint_t*)argus_get(&argus, "endpoint").as_ptr;
 ## // Groups
 
 ```c
-GROUP_START("Connection", GROUP_DESC("Network options")),
+GROUP_START("Connection"),
     OPTION_STRING('h', "host", HELP("Hostname")),
     OPTION_INT('p', "port", HELP("Port")),
 GROUP_END(),
 
-GROUP_START("Output", GROUP_DESC("Output options")),
+GROUP_START("Output"),
     OPTION_STRING('o', "output", HELP("Output file")),
     OPTION_STRING('f', "format", HELP("Format")),
 GROUP_END(),
