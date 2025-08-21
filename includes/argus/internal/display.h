@@ -16,7 +16,7 @@
  * Default configuration constants for display formatting
  */
 #define DEFAULT_DESCRIPTION_COLUMN 32  // Column where descriptions start
-#define DEFAULT_MAX_LINE_WIDTH     80  // Maximum width of a line
+#define DEFAULT_MAX_LINE_WIDTH     120  // Maximum width of a line
 #define DEFAULT_OPTION_INDENT      2   // Indentation for options
 
 /*

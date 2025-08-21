@@ -17,6 +17,10 @@ if cc.get_id() == 'clang'
     add_project_arguments('-Wno-gnu-zero-variadic-macro-arguments', language: 'c')
 elif cc.get_id() == 'gcc'
     add_project_arguments('-Wno-variadic-macros', language: 'c')
+    # Disable specific pedantic warnings for macro usage
+    add_project_arguments('-Wno-pedantic', language: 'c')
+    # Alternative approach: use more relaxed standard
+    add_project_arguments('-std=gnu11', language: 'c')
 endif
 
 is_windows = host_machine.system() == 'windows'
@@ -57,10 +61,19 @@ argus_lib = both_libraries(
     vs_module_defs: 'argus.def',
 )
 
+# Suppression of warnings for library users based on compiler
+_user_compile_args = []
+if cc.get_id() == 'gcc'
+    _user_compile_args = ['-Wno-pedantic']
+elif cc.get_id() == 'clang'
+    _user_compile_args = ['-Wno-gnu-zero-variadic-macro-arguments']
+endif
+
 argus_dep = declare_dependency(
     link_with: argus_lib,
     include_directories: inc_dirs,
     dependencies: regex ? [pcre2_dep] : [],
+    compile_args: _user_compile_args,
 )
 
 install_headers('includes/argus.h')
