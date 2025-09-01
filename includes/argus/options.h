@@ -67,9 +67,9 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
  * Optional option fields macros
  */
 #ifdef ARGUS_DEBUG
-# define ARGUS_DEBUG_INFO        .line = __LINE__, .file = __FILE__
+# define ARGUS_DEBUG_INFO            .line = __LINE__, .file = __FILE__
 #else
-# define ARGUS_DEBUG_INFO        .line = 0, .file = NULL
+# define ARGUS_DEBUG_INFO            .line = 0, .file = NULL
 #endif /* ARGUS_DEBUG */
 #define DEFINE_NAME(lname, sname) ((lname) ? (lname) : CHAR_TO_STRING(sname))
 #define DEFAULT(val)            .value = (argus_value_t){ .raw = (uintptr_t)(val) },         \
@@ -149,7 +149,7 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
     (argus_option_t) {                                                                        \
         .type = TYPE_OPTION, .name = DEFINE_NAME(_long, _short),                              \
         .sname = _short, .lname = _long, .value_type = _value_type,                           \
-        .free_handler = default_free, ARGUS_DEBUG_INFO, ##__VA_ARGS__                       \
+        .free_handler = default_free, ARGUS_DEBUG_INFO, ##__VA_ARGS__                         \
     }
 
 #define POSITIONAL_BASE(_name, _value_type, ...)                                               \

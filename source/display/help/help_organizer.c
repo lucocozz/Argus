@@ -56,9 +56,9 @@ group_info_t *find_or_create_group(help_data_t *data, const char *name)
     if (!group)
         return NULL;
 
-    group->name        = name;
-    group->options     = NULL;
-    group->next        = NULL;
+    group->name    = name;
+    group->options = NULL;
+    group->next    = NULL;
 
     if (data->groups == NULL)
         data->groups = group;
@@ -74,16 +74,16 @@ group_info_t *find_or_create_group(help_data_t *data, const char *name)
 
 void organize_options(const argus_option_t *options, help_data_t *data)
 {
-    const char   *current_group      = NULL;
-    group_info_t *group              = NULL;
+    const char   *current_group = NULL;
+    group_info_t *group         = NULL;
 
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         const argus_option_t *option = &options[i];
 
         switch (option->type) {
             case TYPE_GROUP:
-                current_group      = option->name;
-                group              = NULL;
+                current_group = option->name;
+                group         = NULL;
                 break;
 
             case TYPE_OPTION:

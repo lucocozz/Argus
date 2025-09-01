@@ -12,10 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for variadic positional arguments, allowing multiple values for a single positional argument.
 
 ### Changed
-- Change `ARGUS_RELEASE` into `ARGUS_DEBUG`
+- Changed help output DEFAULT_MAX_LINE_WIDTH from 80 to 100.
+- Changed `ARGUS_RELEASE` into `ARGUS_DEBUG`
 
 ### Fixed
+- Disabled pedantic option on library compilation.
 - Defining `argus_init()` as a `static inline` function.
+
+### Removed
+- Group description option.
+
 
 ## [0.1.0] - 2025-07-02
 
