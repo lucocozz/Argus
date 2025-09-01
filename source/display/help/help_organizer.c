@@ -43,7 +43,7 @@ void add_option_to_list(option_entry_t **list, const argus_option_t *option)
     }
 }
 
-group_info_t *find_or_create_group(help_data_t *data, const char *name, const char *description)
+group_info_t *find_or_create_group(help_data_t *data, const char *name)
 {
     group_info_t *group = data->groups;
     while (group != NULL) {
@@ -56,10 +56,9 @@ group_info_t *find_or_create_group(help_data_t *data, const char *name, const ch
     if (!group)
         return NULL;
 
-    group->name        = name;
-    group->description = description;
-    group->options     = NULL;
-    group->next        = NULL;
+    group->name    = name;
+    group->options = NULL;
+    group->next    = NULL;
 
     if (data->groups == NULL)
         data->groups = group;
@@ -75,18 +74,16 @@ group_info_t *find_or_create_group(help_data_t *data, const char *name, const ch
 
 void organize_options(const argus_option_t *options, help_data_t *data)
 {
-    const char   *current_group      = NULL;
-    const char   *current_group_desc = NULL;
-    group_info_t *group              = NULL;
+    const char   *current_group = NULL;
+    group_info_t *group         = NULL;
 
     for (int i = 0; options[i].type != TYPE_NONE; ++i) {
         const argus_option_t *option = &options[i];
 
         switch (option->type) {
             case TYPE_GROUP:
-                current_group      = option->name;
-                current_group_desc = option->help;
-                group              = NULL;
+                current_group = option->name;
+                group         = NULL;
                 break;
 
             case TYPE_OPTION:
@@ -95,7 +92,7 @@ void organize_options(const argus_option_t *options, help_data_t *data)
 
                 if (current_group != NULL) {
                     if (group == NULL)
-                        group = find_or_create_group(data, current_group, current_group_desc);
+                        group = find_or_create_group(data, current_group);
                     add_option_to_list(&group->options, option);
                 } else
                     add_option_to_list(&data->ungrouped, option);

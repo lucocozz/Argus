@@ -207,13 +207,13 @@ ARGUS_OPTIONS(
     options,
     HELP_OPTION(),
     
-    GROUP_START("Connection", GROUP_DESC("Network connection options")),
+    GROUP_START("Connection"),
         OPTION_STRING('H', "host", HELP("Server hostname"), DEFAULT("localhost")),
         OPTION_INT('p', "port", HELP("Server port"), DEFAULT(8080)),
         OPTION_FLAG('s', "secure", HELP("Use HTTPS")),
     GROUP_END(),
     
-    GROUP_START("Output", GROUP_DESC("Output formatting options")),
+    GROUP_START("Output"),
         OPTION_STRING('f', "format", HELP("Output format"), DEFAULT("json")),
         OPTION_FLAG('v', "verbose", HELP("Verbose output")),
     GROUP_END(),
@@ -538,14 +538,14 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
     
     // Input/Output options
-    GROUP_START("Input/Output", GROUP_DESC("File and data handling options")),
+    GROUP_START("Input/Output"),
         OPTION_STRING('i', "input", HELP("Input file or directory")),
         OPTION_STRING('o', "output", HELP("Output destination")),
         OPTION_STRING('f', "format", HELP("Output format")),
     GROUP_END(),
     
     // Processing options  
-    GROUP_START("Processing", GROUP_DESC("Algorithm and performance options")),
+    GROUP_START("Processing"),
         OPTION_INT('t', "threads", HELP("Worker threads")),
         OPTION_FLOAT('q', "quality", HELP("Processing quality")),
         OPTION_FLAG('F', "fast", HELP("Use fast mode (lower quality)")),

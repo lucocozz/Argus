@@ -12,20 +12,20 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
     VERSION_OPTION(),
     
-    GROUP_START("Input Options", GROUP_DESC("Options related to input")),
+    GROUP_START("Input Options"),
         OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
         OPTION_STRING('i', "input", HELP("Input file"), DEFAULT("input.txt")),
         OPTION_ARRAY_STRING('I', "include", HELP("Include files"), FLAGS(FLAG_SORTED | FLAG_UNIQUE)),
     GROUP_END(),
     
-    GROUP_START("Output Options", GROUP_DESC("Options related to output")),
+    GROUP_START("Output Options"),
         OPTION_STRING('o', "output", HELP("Output file"), DEFAULT("output.txt")),
         OPTION_STRING('f', "format", HELP("Output format"),
             VALIDATOR(V_CHOICE_STR("text", "json", "xml", "binary"))),
         OPTION_FLAG('s', "silent", HELP("Suppress output"), CONFLICT("verbose")),
     GROUP_END(),
     
-    GROUP_START("Processing Options", GROUP_DESC("Options controlling processing")),
+    GROUP_START("Processing Options"),
         OPTION_INT('l', "level", HELP("Processing level"),
             VALIDATOR(V_RANGE(1, 10)), DEFAULT(5)),
         OPTION_INT('j', "jobs", HELP("Number of parallel jobs"),
@@ -35,7 +35,7 @@ ARGUS_OPTIONS(
         OPTION_MAP_STRING('D', "define", HELP("Define variables"), FLAGS(FLAG_SORTED_KEY)),
     GROUP_END(),
     
-    GROUP_START("Advanced Options", GROUP_DESC("Advanced configuration")),
+    GROUP_START("Advanced Options"),
         OPTION_FLAG('d', "debug", HELP("Enable debug mode")),
         OPTION_STRING('c', "config", HELP("Configuration file")),
         OPTION_ARRAY_INT('p', "ports", HELP("Port numbers"), FLAGS(FLAG_SORTED | FLAG_UNIQUE)),

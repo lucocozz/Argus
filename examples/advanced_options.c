@@ -18,8 +18,7 @@ ARGUS_OPTIONS(
     OPTION_STRING('i', "input", HELP("Input file"), FLAGS(FLAG_REQUIRED)),
     
     // Compression options in an exclusive group (only one can be selected)
-    GROUP_START("Compression", GROUP_DESC("Compression options"), 
-                FLAGS(FLAG_EXCLUSIVE)),
+    GROUP_START("Compression", FLAGS(FLAG_EXCLUSIVE)),
         OPTION_FLAG('z', "gzip", HELP("Use gzip compression")),
         OPTION_FLAG('j', "bzip2", HELP("Use bzip2 compression")),
         OPTION_FLAG('Z', "lzma", HELP("Use lzma compression")),
