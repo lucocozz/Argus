@@ -96,7 +96,6 @@ ARGUS_RE_EMAIL          // user@example.com
 ARGUS_RE_IPV4           // 192.168.1.1
 ARGUS_RE_URL            // https://example.com
 ARGUS_RE_ISO_DATE       // 2024-03-15
-ARGUS_RE_PHONE_US       // 123-456-7890
 ARGUS_RE_UUID           // 550e8400-e29b-41d4-a716-446655440000
 ```
 
