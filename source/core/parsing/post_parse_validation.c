@@ -47,9 +47,8 @@ static int validate_conflicts(argus_t *argus, argus_option_t *options, argus_opt
 
 static int call_validators(argus_t *argus, argus_option_t *option)
 {
-    if (!option->validators) {
+    if (!option->validators)
         return ARGUS_SUCCESS;
-    }
 
     for (size_t i = 0; option->validators[i] != NULL; ++i) {
         validator_entry_t *validator = option->validators[i];
@@ -121,6 +120,13 @@ int post_parse_validation(argus_t *argus)
     status = validate_options_set(argus, argus->options);
     if (status != ARGUS_SUCCESS)
         return status;
+
+    for (size_t i = 0; i < argus->subcommand_depth; ++i) {
+        const argus_option_t *subcommand = argus->subcommand_stack[i];
+        status = validate_options_set(argus, (argus_option_t *)subcommand->sub_options);
+        if (status != ARGUS_SUCCESS)
+            return (status);
+    }
 
     return status;
 }
