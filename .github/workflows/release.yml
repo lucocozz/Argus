@@ -129,25 +129,6 @@ jobs:
           path: argus-${{ needs.prepare.outputs.version }}-bin-${{ matrix.name }}.${{ matrix.archive_ext }}
           retention-days: 90
 
-  source-archive:
-    needs: prepare
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup build environment
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y meson ninja-build
-
-      - name: Generate source checksums
-        run: |
-          sha256sum argus-${{ needs.prepare.outputs.version }}-source.tar.gz > argus-${{ needs.prepare.outputs.version }}-source.tar.gz.sha256
-          sha512sum argus-${{ needs.prepare.outputs.version }}-source.tar.gz > argus-${{ needs.prepare.outputs.version }}-source.tar.gz.sha512
-          sha256sum argus-${{ needs.prepare.outputs.version }}-source.zip > argus-${{ needs.prepare.outputs.version }}-source.zip.sha256
-          sha512sum argus-${{ needs.prepare.outputs.version }}-source.zip > argus-${{ needs.prepare.outputs.version }}-source.zip.sha512
-
   create-draft-release:
     needs: [prepare, build, source-archive]
     runs-on: ubuntu-latest
