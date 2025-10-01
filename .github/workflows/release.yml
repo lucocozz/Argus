@@ -130,7 +130,7 @@ jobs:
           retention-days: 90
 
   create-draft-release:
-    needs: [prepare, build, source-archive]
+    needs: [prepare, build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -148,20 +148,6 @@ jobs:
           echo "Files to release:"
           ls -la final-artifacts/
 
-      - name: Create consolidated checksums
-        run: |
-          echo "# Argus Release ${{ needs.prepare.outputs.version }} - Checksums" > final-artifacts/CHECKSUMS.txt
-          echo "Generated on: $(date -u)" >> final-artifacts/CHECKSUMS.txt
-          echo "" >> final-artifacts/CHECKSUMS.txt
-          echo "## SHA256" >> final-artifacts/CHECKSUMS.txt
-          find release-artifacts/ -name "*.sha256" -exec cat {} \; >> final-artifacts/CHECKSUMS.txt
-          echo "" >> final-artifacts/CHECKSUMS.txt
-          echo "## SHA512" >> final-artifacts/CHECKSUMS.txt
-          find release-artifacts/ -name "*.sha512" -exec cat {} \; >> final-artifacts/CHECKSUMS.txt
-          echo "" >> final-artifacts/CHECKSUMS.txt
-          echo "Verify SHA256: sha256sum -c <(grep -A999 '## SHA256' CHECKSUMS.txt | tail -n +2 | grep -v '^## ')" >> final-artifacts/CHECKSUMS.txt
-          echo "Verify SHA512: sha512sum -c <(grep -A999 '## SHA512' CHECKSUMS.txt | tail -n +2 | grep -v '^## ')" >> final-artifacts/CHECKSUMS.txt
-
       - name: Generate release notes
         id: release_notes
         run: |
@@ -172,7 +158,6 @@ jobs:
           echo "<!-- Please edit this draft to add release notes -->" >> release_notes.md
           echo "- Add your changes here" >> release_notes.md
           echo "" >> release_notes.md
-          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/v${{ needs.prepare.outputs.version }}...HEAD" >> release_notes.md
 
       - name: Create Draft Release
         uses: softprops/action-gh-release@v2
