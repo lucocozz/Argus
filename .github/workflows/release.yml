@@ -141,30 +141,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y meson ninja-build
 
-      - name: Create source archive
-        run: |
-          meson setup builddir
-          meson dist -C builddir --no-tests --formats=gztar
-          cp builddir/meson-dist/*.tar.gz argus-${{ needs.prepare.outputs.version }}-source.tar.gz
-          # Create zip version from tar.gz
-          tar -xzf argus-${{ needs.prepare.outputs.version }}-source.tar.gz
-          zip -r argus-${{ needs.prepare.outputs.version }}-source.zip argus-${{ needs.prepare.outputs.version }}/
-
       - name: Generate source checksums
         run: |
           sha256sum argus-${{ needs.prepare.outputs.version }}-source.tar.gz > argus-${{ needs.prepare.outputs.version }}-source.tar.gz.sha256
           sha512sum argus-${{ needs.prepare.outputs.version }}-source.tar.gz > argus-${{ needs.prepare.outputs.version }}-source.tar.gz.sha512
           sha256sum argus-${{ needs.prepare.outputs.version }}-source.zip > argus-${{ needs.prepare.outputs.version }}-source.zip.sha256
           sha512sum argus-${{ needs.prepare.outputs.version }}-source.zip > argus-${{ needs.prepare.outputs.version }}-source.zip.sha512
-
-      - name: Upload source artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: argus-source
-          path: |
-            argus-${{ needs.prepare.outputs.version }}-source.tar.gz
-            argus-${{ needs.prepare.outputs.version }}-source.zip
-          retention-days: 90
 
   create-draft-release:
     needs: [prepare, build, source-archive]
@@ -208,12 +190,6 @@ jobs:
           echo "" >> release_notes.md
           echo "<!-- Please edit this draft to add release notes -->" >> release_notes.md
           echo "- Add your changes here" >> release_notes.md
-          echo "" >> release_notes.md
-          echo "### 📦 Which archive to download?" >> release_notes.md
-          echo "" >> release_notes.md
-          echo "- **argus-${{ needs.prepare.outputs.version }}-bin-\***: Ready-to-use compiled libraries (Linux/macOS/Windows)" >> release_notes.md
-          echo "- **argus-${{ needs.prepare.outputs.version }}-source.\***: Clean source distribution for compilation (use these for building from source)" >> release_notes.md
-          echo "- **Source code** links: Raw repository snapshot (contains development files)" >> release_notes.md
           echo "" >> release_notes.md
           echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/v${{ needs.prepare.outputs.version }}...HEAD" >> release_notes.md
 
