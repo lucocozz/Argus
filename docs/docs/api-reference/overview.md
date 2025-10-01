@@ -76,6 +76,11 @@ POSITIONAL_STRING(name, ...)         // String positional
 POSITIONAL_INT(name, ...)            // Integer positional
 POSITIONAL_BOOL(name, ...)           // Boolean positional
 POSITIONAL_FLOAT(name, ...)          // Float positional
+
+// Variadic positionals (accept multiple values)
+POSITIONAL_MANY_STRING(name, ...)    // Variadic string positional
+POSITIONAL_MANY_INT(name, ...)       // Variadic integer positional
+POSITIONAL_MANY_FLOAT(name, ...)     // Variadic float positional
 ```
 
 ### Structure Macros

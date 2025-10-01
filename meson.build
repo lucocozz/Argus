@@ -56,11 +56,18 @@ argus_lib = both_libraries(
     install: true,
     vs_module_defs: 'argus.def',
 )
+dep_compile_args = []
+if cc.get_id() == 'gcc'
+    dep_compile_args = ['-Wno-pedantic']
+elif cc.get_id() == 'clang'
+    dep_compile_args = ['-Wno-gnu-zero-variadic-macro-arguments']
+endif
 
 argus_dep = declare_dependency(
     link_with: argus_lib,
     include_directories: inc_dirs,
     dependencies: regex ? [pcre2_dep] : [],
+    compile_args: dep_compile_args,
 )
 
 install_headers('includes/argus.h')

@@ -31,7 +31,6 @@ typedef struct option_entry_s
 typedef struct group_info_s
 {
     const char          *name;
-    const char          *description;
     option_entry_t      *options;
     struct group_info_s *next;
 } group_info_t;
@@ -68,10 +67,9 @@ void add_option_to_list(option_entry_t **list, const argus_option_t *option);
  *
  * @param data         Help data structure
  * @param name         Group name
- * @param description  Group description
  * @return             Group info structure or NULL on failure
  */
-group_info_t *find_or_create_group(help_data_t *data, const char *name, const char *description);
+group_info_t *find_or_create_group(help_data_t *data, const char *name);
 
 /**
  * Organize options into categories for display

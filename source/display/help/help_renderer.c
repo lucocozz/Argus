@@ -35,11 +35,23 @@ void print_positional(argus_t *argus, const argus_option_t *option, size_t inden
 {
     size_t name_len = putnchar(' ', indent);
 
-    if (option->flags & FLAG_REQUIRED)
-        printf("<%s>", option->name);
-    else
-        printf("[%s]", option->name);
-    name_len += strlen(option->name) + 2;
+    if (option->flags & FLAG_REQUIRED) {
+        if (option->value_type & VALUE_TYPE_VARIADIC) {
+            printf("<%s...>", option->name);
+            name_len += strlen(option->name) + 5;  // <...>
+        } else {
+            printf("<%s>", option->name);
+            name_len += strlen(option->name) + 2;  // <>
+        }
+    } else {
+        if (option->value_type & VALUE_TYPE_VARIADIC) {
+            printf("[%s...]", option->name);
+            name_len += strlen(option->name) + 5;  // [...]
+        } else {
+            printf("[%s]", option->name);
+            name_len += strlen(option->name) + 2;  // []
+        }
+    }
 
     size_t padding = 0;
     if (argus->helper.config.description_column > name_len)
@@ -104,7 +116,7 @@ void print_help_sections(argus_t *argus, help_data_t *data)
         group_info_t *group = data->groups;
         while (group != NULL) {
             if (group->options != NULL) {
-                printf("\n%s:\n", group->description ? group->description : group->name);
+                printf("\n%s:\n", group->name);
                 print_option_list(argus, group->options, argus->helper.config.option_indent);
             }
             group = group->next;

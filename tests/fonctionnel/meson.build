@@ -4,6 +4,7 @@ functional_tests = [
   ['basic_usage', 'test_basic_usage.c'],
   ['multi_values', 'test_multi_values.c'],
   ['environments', 'test_env.c'],
+  ['variadic_usage', 'test_variadic_usage.c'],
 ]
 
 foreach test : functional_tests

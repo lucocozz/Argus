@@ -19,7 +19,7 @@ ARGUS_OPTIONS(
     foo_options,
     HELP_OPTION(),
     OPTION_FLAG('v', "verbose", HELP("Enable verbose output")),
-    POSITIONAL_INT("value", HELP("A numerical value")),
+    POSITIONAL_INT("value", HELP("A numerical value"), VALIDATOR(V_RANGE(-50, 50))),
 )
 
 ARGUS_OPTIONS(
@@ -235,6 +235,21 @@ Test(subcommand_edge, subcommand_negative_number, .init = setup_subcommand)
     cr_assert_eq(argus_get(&argus, "nested.foo.value").as_int, -42, 
                 "Negative number should parse correctly");
     
+    argus_free(&argus);
+}
+
+// Test Validator invalid value in subcommands
+Test(subcommand_edge, subcommand_invalid_value, .init = setup_subcommand)
+{
+    char *argv[] = {"test", "nested", "foo", "100"};
+    int argc = sizeof(argv) / sizeof(char *);
+    
+    argus_t argus = argus_init(cmd_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
+    
+    cr_assert_neq(status, ARGUS_SUCCESS, "Subcommand with invalid number should fail");
+    cr_assert(argus_has_command(&argus), "argus_has_command should return true");
+
     argus_free(&argus);
 }
 

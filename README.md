@@ -244,7 +244,7 @@ Consider traditional approaches for embedded systems with strict constraints, le
 
 📚 **[Complete Documentation](https://argus-lib.com)** - Comprehensive guides and tutorials  
 🚀 **[Quick Start Guide](https://argus-lib.com/getting-started/quickstart)** - Get running in minutes  
-💡 **[Examples](https://argus-lib.com/examples/simple-cli)** - Real-world usage patterns  
+💡 **[Example](https://github.com/lucocozz/argus-git-demo)** - Git clone demonstration  
 🔧 **[API Reference](https://argus-lib.com/api-reference/overview)** - Complete function documentation
 
 ## Requirements

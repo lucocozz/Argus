@@ -54,8 +54,14 @@ OPTION_MAP_BOOL('f', "features", HELP("Feature flags"))
 ## // Positional Arguments
 
 ```c
+// Single positionals
 POSITIONAL_STRING("input", HELP("Input file"))
 POSITIONAL_INT("count", HELP("Count"), FLAGS(FLAG_OPTIONAL))
+
+// Variadic positionals (accept multiple values)
+POSITIONAL_MANY_STRING("files", HELP("Files to process"))
+POSITIONAL_MANY_INT("numbers", HELP("Numbers to calculate"))
+POSITIONAL_MANY_FLOAT("values", HELP("Decimal values"))
 ```
 
 ## // Option Modifiers
@@ -90,7 +96,6 @@ ARGUS_RE_EMAIL          // user@example.com
 ARGUS_RE_IPV4           // 192.168.1.1
 ARGUS_RE_URL            // https://example.com
 ARGUS_RE_ISO_DATE       // 2024-03-15
-ARGUS_RE_PHONE_US       // 123-456-7890
 ARGUS_RE_UUID           // 550e8400-e29b-41d4-a716-446655440000
 ```
 
@@ -208,6 +213,9 @@ int main(int argc, char **argv)
 # Positional
 program input.txt output.txt
 
+# Variadic positionals
+program file1.c file2.c file3.c ...
+
 # Stop parsing
 program --option -- --not-an-option
 ```
@@ -251,12 +259,12 @@ endpoint_t *ep = (endpoint_t*)argus_get(&argus, "endpoint").as_ptr;
 ## // Groups
 
 ```c
-GROUP_START("Connection", GROUP_DESC("Network options")),
+GROUP_START("Connection"),
     OPTION_STRING('h', "host", HELP("Hostname")),
     OPTION_INT('p', "port", HELP("Port")),
 GROUP_END(),
 
-GROUP_START("Output", GROUP_DESC("Output options")),
+GROUP_START("Output"),
     OPTION_STRING('o', "output", HELP("Output file")),
     OPTION_STRING('f', "format", HELP("Format")),
 GROUP_END(),

@@ -3,6 +3,7 @@ example_programs = [
   'basic_usage',
   'subcommands',
   'positional_args',
+  'variadic_positional',
   'custom_handlers',
   'advanced_options',
   'nested_commands',

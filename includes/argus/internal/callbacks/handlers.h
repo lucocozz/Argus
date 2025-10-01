@@ -35,8 +35,7 @@ int map_bool_handler(argus_t *argus, argus_option_t *options, char *arg);
  */
 int default_free(argus_option_t *option);
 int free_array_string_handler(argus_option_t *option);
-// int free_array_int_handler(argus_option_t *option);
-// int free_array_float_handler(argus_option_t *option);
+int free_variadic_string_handler(argus_option_t *option);
 
 int free_map_string_handler(argus_option_t *option);
 int free_map_int_handler(argus_option_t *option);

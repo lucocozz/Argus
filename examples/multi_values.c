@@ -26,17 +26,36 @@ ARGUS_OPTIONS(
     HELP_OPTION(),
     VERSION_OPTION(),
 
-    OPTION_ARRAY_STRING('n', "names", HELP("Array of names (e.g., john,alice,bob)")),
-    OPTION_ARRAY_STRING('w', "words", HELP("Sorted array of words"),
-                       FLAGS(FLAG_SORTED)),
-    OPTION_ARRAY_INT('i', "ids", HELP("Array of ID numbers or ranges (e.g., 1,2,3-5)"),
-                    FLAGS(FLAG_UNIQUE | FLAG_SORTED)),
-    OPTION_MAP_STRING('\0', "env", HELP("Environment variables (key=value pairs)"),
-                    FLAGS(FLAG_SORTED_KEY)),
-    OPTION_MAP_INT('\0', "ports", HELP("Port numbers for services"),
-                    FLAGS(FLAG_UNIQUE_VALUE)),
-    OPTION_MAP_FLOAT('\0', "scales", HELP("Scaling factors for dimensions"),
-                    FLAGS(FLAG_SORTED_VALUE)),
+    OPTION_ARRAY_STRING(
+        'n', "names",
+        HELP("Array of names (e.g., john,alice,bob)"),
+        VALIDATOR(V_COUNT(0, 3))
+    ),
+    OPTION_ARRAY_STRING(
+        'w', "words",
+        HELP("Sorted array of words"),
+        FLAGS(FLAG_SORTED)
+    ),
+    OPTION_ARRAY_INT(
+        'i', "ids",
+        HELP("Array of ID numbers or ranges (e.g., 1,2,3-5)"),
+        FLAGS(FLAG_UNIQUE | FLAG_SORTED)
+    ),
+    OPTION_MAP_STRING(
+        '\0', "env",
+        HELP("Environment variables (key=value pairs)"),
+        FLAGS(FLAG_SORTED_KEY)
+    ),
+    OPTION_MAP_INT(
+        '\0', "ports",
+        HELP("Port numbers for services"),
+        FLAGS(FLAG_UNIQUE_VALUE)
+    ),
+    OPTION_MAP_FLOAT(
+        '\0', "scales",
+        HELP("Scaling factors for dimensions"),
+        FLAGS(FLAG_SORTED_VALUE)
+    ),
 )
 
 int main(int argc, char **argv)

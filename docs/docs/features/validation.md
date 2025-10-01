@@ -297,7 +297,6 @@ ARGUS_OPTIONS(
 - `ARGUS_RE_IPV6` - IPv6 addresses
 - `ARGUS_RE_URL` - URLs (any protocol)
 - `ARGUS_RE_ISO_DATE` - ISO dates (YYYY-MM-DD)
-- `ARGUS_RE_PHONE_US` - US phone numbers
 - `ARGUS_RE_UUID` - UUID v4 format
 
 </TabItem>

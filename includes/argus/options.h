@@ -37,6 +37,11 @@ ARGUS_API int free_map_int_handler(argus_option_t *option);
 ARGUS_API int free_map_float_handler(argus_option_t *option);
 ARGUS_API int free_map_bool_handler(argus_option_t *option);
 
+ARGUS_API int variadic_string_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int variadic_int_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int variadic_float_handler(argus_t *argus, argus_option_t *option, char *value);
+ARGUS_API int free_variadic_string_handler(argus_option_t *option);
+
 ARGUS_API int range_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 ARGUS_API int length_validator(argus_t *argus, void *option_ptr, validator_data_t data);
 ARGUS_API int count_validator(argus_t *argus, void *option_ptr, validator_data_t data);
@@ -61,7 +66,11 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
 /*
  * Optional option fields macros
  */
-#define DEBUG_INFO()            .line = __LINE__, .file = __FILE__
+#ifdef ARGUS_DEBUG
+# define ARGUS_DEBUG_INFO            .line = __LINE__, .file = __FILE__
+#else
+# define ARGUS_DEBUG_INFO            .line = 0, .file = NULL
+#endif /* ARGUS_DEBUG */
 #define DEFINE_NAME(lname, sname) ((lname) ? (lname) : CHAR_TO_STRING(sname))
 #define DEFAULT(val)            .value = (argus_value_t){ .raw = (uintptr_t)(val) },         \
                                 .default_value = (argus_value_t){ .raw = (uintptr_t)(val) }, \
@@ -73,7 +82,6 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
 #define HINT(_hint)             .hint = _hint
 #define REQUIRE(...)            .require = (const char*[]){__VA_ARGS__, NULL}
 #define CONFLICT(...)           .conflict = (const char*[]){__VA_ARGS__, NULL}
-#define GROUP_DESC(desc)        .help = desc
 #define HELP(desc)              .help = desc
 #define FLAGS(_flags)           .flags = _flags
 #define ENV_VAR(name)           .env_name = name
@@ -134,30 +142,30 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
     .type = TYPE_NONE, \
     .name = NULL, \
     .value_type = VALUE_TYPE_NONE, \
-    DEBUG_INFO() \
+    ARGUS_DEBUG_INFO \
 }
 
 #define OPTION_BASE(_short, _long, _value_type, ...)                                          \
     (argus_option_t) {                                                                        \
         .type = TYPE_OPTION, .name = DEFINE_NAME(_long, _short),                              \
         .sname = _short, .lname = _long, .value_type = _value_type,                           \
-        .free_handler = default_free, DEBUG_INFO(), ##__VA_ARGS__                             \
+        .free_handler = default_free, ARGUS_DEBUG_INFO, ##__VA_ARGS__                         \
     }
 
 #define POSITIONAL_BASE(_name, _value_type, ...)                                               \
     (argus_option_t) {                                                                         \
         .type = TYPE_POSITIONAL, .name = _name, .value_type = _value_type,                     \
-        .free_handler = default_free, .flags = FLAG_REQUIRED, DEBUG_INFO(), ##__VA_ARGS__     \
+        .free_handler = default_free, .flags = FLAG_REQUIRED, ARGUS_DEBUG_INFO, ##__VA_ARGS__     \
     }
 
 #define GROUP_BASE(_name, ...)                                                                 \
     (argus_option_t) {                                                                         \
-        .type = TYPE_GROUP, .name = _name, DEBUG_INFO(), ##__VA_ARGS__                        \
+        .type = TYPE_GROUP, .name = _name, ARGUS_DEBUG_INFO, ##__VA_ARGS__                        \
     }
 
 #define SUBCOMMAND_BASE(_name, sub_opts, ...)                                                  \
     (argus_option_t) {                                                                         \
-        .type = TYPE_SUBCOMMAND, .name = _name, .sub_options = sub_opts, DEBUG_INFO(), ##__VA_ARGS__  \
+        .type = TYPE_SUBCOMMAND, .name = _name, .sub_options = sub_opts, ARGUS_DEBUG_INFO, ##__VA_ARGS__  \
     }
 
 // clang-format on
@@ -224,6 +232,17 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
     POSITIONAL_BASE(name, VALUE_TYPE_BOOL, HANDLER(bool_handler), __VA_ARGS__)
 #define POSITIONAL_FLOAT(name, ...)                                                                \
     POSITIONAL_BASE(name, VALUE_TYPE_FLOAT, HANDLER(float_handler), __VA_ARGS__)
+
+/*
+ * Multi-value positional argument macros
+ */
+#define POSITIONAL_MANY_STRING(name, ...)                                                          \
+    POSITIONAL_BASE(name, VALUE_TYPE_VARIADIC_STRING, HANDLER(variadic_string_handler),            \
+                    FREE_HANDLER(free_variadic_string_handler), __VA_ARGS__)
+#define POSITIONAL_MANY_INT(name, ...)                                                             \
+    POSITIONAL_BASE(name, VALUE_TYPE_VARIADIC_INT, HANDLER(variadic_int_handler), __VA_ARGS__)
+#define POSITIONAL_MANY_FLOAT(name, ...)                                                           \
+    POSITIONAL_BASE(name, VALUE_TYPE_VARIADIC_FLOAT, HANDLER(variadic_float_handler), __VA_ARGS__)
 
 /*
  * Subcommand macro

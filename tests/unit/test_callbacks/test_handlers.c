@@ -5,6 +5,7 @@
 #include "argus/errors.h"
 #include "argus/internal/utils.h"
 #include "argus/internal/callbacks/handlers.h"
+#include "argus/options.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -158,7 +159,7 @@ Test(handlers, float_handler, .init = setup_handler)
     
     // Verify handler succeeded
     cr_assert_eq(result, ARGUS_SUCCESS, "Float handler should return success");
-    
+
     // Verify value was set correctly (approximately)
     cr_assert_float_eq(test_option.value.as_float, 3.14159, 0.00001, "Float value should be set correctly");
     
@@ -218,4 +219,154 @@ Test(handlers, array_string_handler, .init = setup_handler)
         free(test_option.value.as_array[i].as_string);
     }
     free(test_option.value.as_array);
+}
+
+// Test for variadic_string_handler
+Test(handlers, variadic_string_handler, .init = setup_handler)
+{
+    // Configure option as variadic string
+    test_option.value_type = VALUE_TYPE_VARIADIC_STRING;
+    test_option.value.as_array = NULL;
+    test_option.value_count = 0;
+    test_option.value_capacity = 0;
+    
+    // Test with first value
+    char first_value[] = "file1.txt";
+    int result = variadic_string_handler(&test_argus, &test_option, first_value);
+    
+    cr_assert_eq(result, ARGUS_SUCCESS, "Variadic string handler should return success");
+    cr_assert_not_null(test_option.value.as_array, "Array should be allocated");
+    cr_assert_eq(test_option.value_count, 1, "Array should have 1 element");
+    cr_assert_str_eq(test_option.value.as_array[0].as_string, "file1.txt", "First element should be 'file1.txt'");
+    
+    // Test with second value
+    char second_value[] = "file2.txt";
+    result = variadic_string_handler(&test_argus, &test_option, second_value);
+    
+    cr_assert_eq(result, ARGUS_SUCCESS, "Variadic string handler should return success for second value");
+    cr_assert_eq(test_option.value_count, 2, "Array should have 2 elements");
+    cr_assert_str_eq(test_option.value.as_array[1].as_string, "file2.txt", "Second element should be 'file2.txt'");
+    
+    // Test with third value
+    char third_value[] = "file3.txt";
+    result = variadic_string_handler(&test_argus, &test_option, third_value);
+    
+    cr_assert_eq(result, ARGUS_SUCCESS, "Variadic string handler should return success for third value");
+    cr_assert_eq(test_option.value_count, 3, "Array should have 3 elements");
+    cr_assert_str_eq(test_option.value.as_array[2].as_string, "file3.txt", "Third element should be 'file3.txt'");
+    
+    // Free allocated memory
+    for (size_t i = 0; i < test_option.value_count; i++) {
+        free(test_option.value.as_array[i].as_string);
+    }
+    free(test_option.value.as_array);
+}
+
+// Test for variadic_int_handler
+Test(handlers, variadic_int_handler, .init = setup_handler)
+{
+    // Configure option as variadic int
+    test_option.value_type = VALUE_TYPE_VARIADIC_INT;
+    test_option.value.as_array = NULL;
+    test_option.value_count = 0;
+    test_option.value_capacity = 0;
+    
+    // Test with first value
+    char first_value[] = "10";
+    int result = variadic_int_handler(&test_argus, &test_option, first_value);
+    
+    cr_assert_eq(result, ARGUS_SUCCESS, "Variadic int handler should return success");
+    cr_assert_not_null(test_option.value.as_array, "Array should be allocated");
+    cr_assert_eq(test_option.value_count, 1, "Array should have 1 element");
+    cr_assert_eq(test_option.value.as_array[0].as_int, 10, "First element should be 10");
+    
+    // Test with second value
+    char second_value[] = "20";
+    result = variadic_int_handler(&test_argus, &test_option, second_value);
+    
+    cr_assert_eq(result, ARGUS_SUCCESS, "Variadic int handler should return success for second value");
+    cr_assert_eq(test_option.value_count, 2, "Array should have 2 elements");
+    cr_assert_eq(test_option.value.as_array[1].as_int, 20, "Second element should be 20");
+    
+    // Test with negative value
+    char negative_value[] = "-30";
+    result = variadic_int_handler(&test_argus, &test_option, negative_value);
+    
+    cr_assert_eq(result, ARGUS_SUCCESS, "Variadic int handler should handle negative values");
+    cr_assert_eq(test_option.value_count, 3, "Array should have 3 elements");
+    cr_assert_eq(test_option.value.as_array[2].as_int, -30, "Third element should be -30");
+    
+    // Test with invalid value
+    char invalid_value[] = "not_a_number";
+    result = variadic_int_handler(&test_argus, &test_option, invalid_value);
+    
+    cr_assert_neq(result, ARGUS_SUCCESS, "Variadic int handler should fail with invalid input");
+    cr_assert_eq(test_option.value_count, 3, "Array count should remain unchanged on error");
+    
+    // Free allocated memory
+    free(test_option.value.as_array);
+}
+
+// Test for variadic_float_handler
+Test(handlers, variadic_float_handler, .init = setup_handler)
+{
+    // Configure option as variadic float
+    test_option.value_type = VALUE_TYPE_VARIADIC_FLOAT;
+    test_option.value.as_array = NULL;
+    test_option.value_count = 0;
+    test_option.value_capacity = 0;
+    
+    // Test with first value
+    char first_value[] = "3.14";
+    int result = variadic_float_handler(&test_argus, &test_option, first_value);
+    
+    cr_assert_eq(result, ARGUS_SUCCESS, "Variadic float handler should return success");
+    cr_assert_not_null(test_option.value.as_array, "Array should be allocated");
+    cr_assert_eq(test_option.value_count, 1, "Array should have 1 element");
+    cr_assert_float_eq(test_option.value.as_array[0].as_float, 3.14, 0.001, "First element should be 3.14");
+    
+    // Test with second value
+    char second_value[] = "2.71";
+    result = variadic_float_handler(&test_argus, &test_option, second_value);
+    
+    cr_assert_eq(result, ARGUS_SUCCESS, "Variadic float handler should return success for second value");
+    cr_assert_eq(test_option.value_count, 2, "Array should have 2 elements");
+    cr_assert_float_eq(test_option.value.as_array[1].as_float, 2.71, 0.001, "Second element should be 2.71");
+    
+    // Test with negative value
+    char negative_value[] = "-1.41";
+    result = variadic_float_handler(&test_argus, &test_option, negative_value);
+    
+    cr_assert_eq(result, ARGUS_SUCCESS, "Variadic float handler should handle negative values");
+    cr_assert_eq(test_option.value_count, 3, "Array should have 3 elements");
+    cr_assert_float_eq(test_option.value.as_array[2].as_float, -1.41, 0.001, "Third element should be -1.41");
+    
+    // Test with invalid value
+    char invalid_value[] = "not_a_float";
+    result = variadic_float_handler(&test_argus, &test_option, invalid_value);
+    
+    cr_assert_neq(result, ARGUS_SUCCESS, "Variadic float handler should fail with invalid input");
+    cr_assert_eq(test_option.value_count, 3, "Array count should remain unchanged on error");
+    
+    // Free allocated memory
+    free(test_option.value.as_array);
+}
+
+// Test for free_variadic_string_handler
+Test(handlers, free_variadic_string_handler, .init = setup_handler)
+{
+    // Set up a variadic string option with allocated data
+    test_option.value_type = VALUE_TYPE_VARIADIC_STRING;
+    test_option.value_count = 2;
+    test_option.value.as_array = malloc(2 * sizeof(argus_value_t));
+    test_option.value.as_array[0].as_string = strdup("test1.txt");
+    test_option.value.as_array[1].as_string = strdup("test2.txt");
+    
+    // Call free handler
+    int result = free_variadic_string_handler(&test_option);
+    
+    cr_assert_eq(result, ARGUS_SUCCESS, "Free variadic string handler should return success");
+    
+    // Note: We cannot verify that memory was freed properly without causing
+    // undefined behavior, but we can verify the function completes successfully
 }

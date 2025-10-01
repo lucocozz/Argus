@@ -15,9 +15,9 @@
 /*
  * Default configuration constants for display formatting
  */
-#define DEFAULT_DESCRIPTION_COLUMN 32  // Column where descriptions start
-#define DEFAULT_MAX_LINE_WIDTH     80  // Maximum width of a line
-#define DEFAULT_OPTION_INDENT      2   // Indentation for options
+#define DEFAULT_DESCRIPTION_COLUMN 32   // Column where descriptions start
+#define DEFAULT_MAX_LINE_WIDTH     100  // Maximum width of a line
+#define DEFAULT_OPTION_INDENT      2    // Indentation for options
 
 /*
  * Default Smart Hint configuration
@@ -47,6 +47,22 @@ void display_usage(argus_t *argus, const argus_option_t *command);
  * @param argus  Argus context
  */
 void display_version(argus_t *argus);
+
+/**
+ * display_available_subcommands - Display available subcommands for a command that cannot be
+ * executed by itself
+ *
+ * @param argus    Argus context
+ * @param command  Command that triggered the error (must have suboptions)
+ */
+void display_available_subcommands(argus_t *argus, const argus_option_t *command);
+
+/**
+ * display_all_commands - Display all available commands when no command is specified
+ *
+ * @param argus  Argus context
+ */
+void display_all_commands(argus_t *argus);
 
 /**
  * get_default_helper_config - Get default helper configuration

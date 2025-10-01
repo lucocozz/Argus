@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Printing subcommand list on command execution that cannot be executed directly.
+- Support for variadic positional arguments, allowing multiple values for a single positional argument.
+
+### Changed
+- Changed help output DEFAULT_MAX_LINE_WIDTH from 80 to 100.
+- Changed `ARGUS_RELEASE` into `ARGUS_DEBUG`
+
+### Fixed
+- Disabled pedantic option on library compilation.
+- Defining `argus_init()` as a `static inline` function.
+- Fixed unexecuted validators in subcommand.
+
+### Removed
+- Group description option.
+- Cleanup non essential regex patterns.
+
+
 ## [0.1.0] - 2025-07-02
 
 ### Added
