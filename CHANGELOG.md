@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.2.1] - 2026-05-13
+
+### Fixed
+- `FLAG_REQUIRED` is now enforced on options (not just positional arguments), at both root and subcommand levels (#54).
+- Bumped `ARGUS_VERSION` and packaging metadata to match the actual released version (previously stuck at `0.1.0`).
+
+
 ## [0.2.0] - 2025-10-01
 
 ### Added
@@ -137,4 +144,6 @@ This marks the first stable release of Argus, a modern C library for command-lin
 The library is production-ready and includes comprehensive documentation, examples, and automated testing across multiple platforms.
 
 [0.1.0]: https://github.com/lucocozz/argus/releases/tag/v0.1.0
-[Unreleased]: https://github.com/lucocozz/argus/compare/v0.1.0...HEAD
+[0.2.0]: https://github.com/lucocozz/argus/releases/tag/v0.2.0
+[0.2.1]: https://github.com/lucocozz/argus/releases/tag/v0.2.1
+[Unreleased]: https://github.com/lucocozz/argus/compare/v0.2.1...HEAD

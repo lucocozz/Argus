@@ -31,9 +31,9 @@ vcpkg install argus
 
 ```bash
 # With Regex support (requires PCRE2)
-conan install argus/0.1.0 -o argus:regex=True
+conan install argus/0.2.1 -o argus:regex=True
 # Without Regex support (default)
-conan install argus/0.1.0
+conan install argus/0.2.1
 ```
 
 </TabItem> -->
@@ -97,9 +97,9 @@ vcpkg install argus
 
 ```bash
 # With Regex support (requires PCRE2)
-conan install argus/0.1.0 -o argus:regex=True
+conan install argus/0.2.1 -o argus:regex=True
 # Without Regex support (default)
-conan install argus/0.1.0
+conan install argus/0.2.1
 ```
 
 </TabItem> -->
@@ -170,9 +170,9 @@ vcpkg install argus
 
 ```bash
 # With Regex support (requires PCRE2)
-conan install argus/0.1.0 -o argus:regex=True
+conan install argus/0.2.1 -o argus:regex=True
 # Without Regex support (default)
-conan install argus/0.1.0
+conan install argus/0.2.1
 ```
 
 </TabItem> -->
