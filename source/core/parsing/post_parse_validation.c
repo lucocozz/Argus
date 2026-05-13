@@ -83,6 +83,12 @@ static int validate_options_set(argus_t *argus, argus_option_t *options)
             return (ARGUS_ERROR_MISSING_REQUIRED);
         }
 
+        if (option->type == TYPE_OPTION && (option->flags & FLAG_REQUIRED) && !option->is_set) {
+            ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MISSING_REQUIRED,
+                                "Required option is missing: '--%s'", option->name);
+            return (ARGUS_ERROR_MISSING_REQUIRED);
+        }
+
         if (option->is_set) {
             int status;
 
