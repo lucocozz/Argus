@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - `FLAG_REQUIRED` is now enforced on options (not just positional arguments), at both root and subcommand levels (#54).
-- Bumped `ARGUS_VERSION` and packaging metadata to match the actual released version (previously stuck at `0.1.0`).
+- Bumped `ARGUS_VERSION` to match the actual released version (previously stuck at `0.1.0`).
 
 
 ## [0.2.0] - 2025-10-01
