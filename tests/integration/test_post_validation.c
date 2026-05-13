@@ -27,6 +27,14 @@ ARGUS_OPTIONS(
     POSITIONAL_STRING("input", HELP("Input file")),
 )
 
+// Regression test for #54: FLAG_REQUIRED on a non-positional option.
+ARGUS_OPTIONS(
+    required_option_options,
+    HELP_OPTION(),
+    OPTION_STRING('a', "algo", HELP("Algorithm"), FLAGS(FLAG_REQUIRED)),
+    OPTION_STRING('o', "output", HELP("Output path")),
+)
+
 // Test post_parse_validation with required positionals
 Test(post_validation, required_positional)
 {
@@ -123,6 +131,42 @@ Test(post_validation, exclusive_groups)
     cr_assert_neq(status, ARGUS_SUCCESS, "Validation should fail due to exclusive group violation");
     
     // Clean up
+    argus_free(&argus);
+}
+
+// Regression for #54: a missing FLAG_REQUIRED option must fail validation.
+Test(post_validation, required_option_missing)
+{
+    char *argv[] = {"test_program", "-o", "out.bin"};
+    int argc = sizeof(argv) / sizeof(char *);
+
+    argus_t argus = argus_init(required_option_options, "test_program", "1.0.0");
+
+    int status = parse_args(&argus, required_option_options, argc - 1, &argv[1]);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Initial parsing should succeed");
+
+    status = post_parse_validation(&argus);
+    cr_assert_eq(status, ARGUS_ERROR_MISSING_REQUIRED,
+                 "Validation should fail when a FLAG_REQUIRED option is missing");
+
+    argus_free(&argus);
+}
+
+// Regression for #54: a present FLAG_REQUIRED option must pass validation.
+Test(post_validation, required_option_present)
+{
+    char *argv[] = {"test_program", "-a", "RSA", "-o", "out.bin"};
+    int argc = sizeof(argv) / sizeof(char *);
+
+    argus_t argus = argus_init(required_option_options, "test_program", "1.0.0");
+
+    int status = parse_args(&argus, required_option_options, argc - 1, &argv[1]);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Initial parsing should succeed");
+
+    status = post_parse_validation(&argus);
+    cr_assert_eq(status, ARGUS_SUCCESS,
+                 "Validation should succeed when FLAG_REQUIRED option is provided");
+
     argus_free(&argus);
 }
 

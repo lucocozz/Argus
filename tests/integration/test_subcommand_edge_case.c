@@ -238,6 +238,49 @@ Test(subcommand_edge, subcommand_negative_number, .init = setup_subcommand)
     argus_free(&argus);
 }
 
+// Regression for #54: FLAG_REQUIRED on a subcommand option must fail validation
+// when the option is missing.
+ARGUS_OPTIONS(
+    keygen_options,
+    HELP_OPTION(),
+    OPTION_STRING('a', "algo", HELP("Algorithm"), FLAGS(FLAG_REQUIRED)),
+    OPTION_STRING('o', "output", HELP("Output path")),
+)
+
+ARGUS_OPTIONS(
+    keygen_cmd_options,
+    HELP_OPTION(),
+    SUBCOMMAND("keygen", keygen_options, HELP("Generate keys")),
+)
+
+Test(subcommand_edge, subcommand_required_option_missing, .init = setup_subcommand)
+{
+    char *argv[] = {"test", "keygen", "-o", "out.bin"};
+    int argc = sizeof(argv) / sizeof(char *);
+
+    argus_t argus = argus_init(keygen_cmd_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
+
+    cr_assert_eq(status, ARGUS_ERROR_MISSING_REQUIRED,
+                 "Subcommand FLAG_REQUIRED option missing should fail validation");
+
+    argus_free(&argus);
+}
+
+Test(subcommand_edge, subcommand_required_option_present, .init = setup_subcommand)
+{
+    char *argv[] = {"test", "keygen", "-a", "RSA", "-o", "out.bin"};
+    int argc = sizeof(argv) / sizeof(char *);
+
+    argus_t argus = argus_init(keygen_cmd_options, "test", "1.0.0");
+    int status = argus_parse(&argus, argc, argv);
+
+    cr_assert_eq(status, ARGUS_SUCCESS,
+                 "Subcommand FLAG_REQUIRED option present should succeed");
+
+    argus_free(&argus);
+}
+
 // Test Validator invalid value in subcommands
 Test(subcommand_edge, subcommand_invalid_value, .init = setup_subcommand)
 {
