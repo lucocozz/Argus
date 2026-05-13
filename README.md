@@ -117,7 +117,7 @@ The result is the same functionality with significantly less code and automatic 
 ```bash
 # Package managers
 vcpkg install argus
-conan install argus/0.1.0
+conan install argus/0.2.1
 
 # From source
 git clone https://github.com/lucocozz/argus.git
