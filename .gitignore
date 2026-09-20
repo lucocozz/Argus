@@ -62,6 +62,7 @@ reports/
 packaging/conan/test_package/build/
 packaging/conan/test_package/CMakeUserPresets.json
 .claude/
+.serena/
 *.pyc
 .mypy_cache
 subprojects/packagecache/
