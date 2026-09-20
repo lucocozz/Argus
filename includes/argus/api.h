@@ -68,12 +68,16 @@ ARGUS_API void argus_print_usage(argus_t *argus);
 ARGUS_API void argus_print_version(argus_t *argus);
 
 /**
- * argus_is_set - Check if an option was set on the command line
+ * argus_is_set - Check if an option was explicitly provided
  *
  * @param argus        Argus context
  * @param option_path  Option path (name or subcommand.name format)
  *
- * @return true if the option was set, false otherwise
+ * @return true if the option was provided on the command line or through an
+ *         environment variable, false otherwise
+ *
+ * @note An option left at its `DEFAULT()` value is not considered set. Use this
+ * to tell a user-provided value apart from a default one.
  */
 ARGUS_API bool argus_is_set(argus_t *argus, const char *option_path);
 

@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [0.3.0] - 2026-09-20
+
+### Fixed
+- `DEFAULT()` no longer marks an option as set, so `argus_is_set()` reports only what the user
+  actually provided on the command line or through the environment (#64). This also repairs three
+  behaviours that depended on the same flag:
+  - environment variables now override default values, restoring the documented precedence
+    (command line > environment > default);
+  - two options carrying a default in the same `FLAG_EXCLUSIVE` group no longer conflict;
+  - `CONFLICT()` no longer fires against an option that merely has a default.
+
+### Changed
+- **Breaking:** `argus_is_set()` returns `false` for an option left at its default value. Code
+  relying on the previous behaviour should test the value itself, or invert the condition.
+
+
 ## [0.2.1] - 2026-05-13
 
 ### Fixed
