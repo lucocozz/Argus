@@ -110,8 +110,8 @@ Test(api, argus_is_set)
     cr_assert_eq(argus_is_set(&argus, "verbose"), true, "Verbose option should be set");
     cr_assert_eq(argus_is_set(&argus, "input"), true, "Input option should be set");
     
-    // Check options that were not set explicitly
-    cr_assert_eq(argus_is_set(&argus, "number"), true, "Number option should be set via default");
+    // Check options that were not set explicitly: a default is not a user-provided value
+    cr_assert_eq(argus_is_set(&argus, "number"), false, "Number option should not be set by its default");
     
     // Check non-existent option
     cr_assert_eq(argus_is_set(&argus, "nonexistent"), false, "Non-existent option should not be set");

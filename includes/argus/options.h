@@ -74,7 +74,6 @@ ARGUS_API char *format_choices_validator(validator_data_t data);
 #define DEFINE_NAME(lname, sname) ((lname) ? (lname) : CHAR_TO_STRING(sname))
 #define DEFAULT(val)            .value = (argus_value_t){ .raw = (uintptr_t)(val) },         \
                                 .default_value = (argus_value_t){ .raw = (uintptr_t)(val) }, \
-                                .is_set = true, \
                                 .have_default = true
 #define HANDLER(fn)             .handler = (argus_handler_t)(fn)
 #define ACTION(fn)              .action = (argus_action_t)(fn)
