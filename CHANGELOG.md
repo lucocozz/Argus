@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [0.3.0] - 2026-09-20
+
 ### Fixed
 - `DEFAULT()` no longer marks an option as set, so `argus_is_set()` reports only what the user
   actually provided on the command line or through the environment (#64). This also repairs three

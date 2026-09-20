@@ -1,6 +1,6 @@
 project(
     'argus', 'c',
-    version: '0.2.1',
+    version: '0.3.0',
     license: 'MIT',
     default_options: [
         'warning_level=3',
