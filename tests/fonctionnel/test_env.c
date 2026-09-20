@@ -17,6 +17,15 @@ ARGUS_OPTIONS(
                 DEFAULT(30), ENV_VAR("FORCE_TIMEOUT"), FLAGS(FLAG_ENV_OVERRIDE)),
 )
 
+// Regression test for #64: an env var must win over a default value.
+// Same option shape as above but without FLAG_ENV_OVERRIDE, so the documented
+// precedence applies: command line > environment > default.
+ARGUS_OPTIONS(
+    precedence_options,
+    HELP_OPTION(),
+    OPTION_STRING('H', "host", HELP("Server hostname"), DEFAULT("localhost"), ENV_VAR("HOST")),
+)
+
 // Helper function to setup and cleanup environment
 void setup_env(void)
 {
@@ -49,7 +58,7 @@ Test(env_vars, load_env_vars, .init = setup_env, .fini = teardown_env)
     cr_assert_eq(host_option->is_set, false, "Host option should not be set initially");
     cr_assert_eq(port_option->is_set, false, "Port option should not be set initially");
     cr_assert_eq(db_option->is_set, false, "Database option should not be set initially");
-    cr_assert_eq(timeout_option->is_set, true, "Timeout option should be set due to default");
+    cr_assert_eq(timeout_option->is_set, false, "Timeout option should not be set by its default");
     cr_assert_eq(timeout_option->value.as_int, 30, "Timeout should have default value initially");
     
     // Load environment variables
@@ -166,5 +175,63 @@ Test(env_vars, no_env_prefix_flag, .init = setup_env, .fini = teardown_env)
     
     // Clean up
     unsetenv("TEST_DATABASE_URL");
+    argus_free(&argus);
+}
+
+// Regression for #64: environment variables must override default values.
+Test(env_vars, env_overrides_default, .init = setup_env, .fini = teardown_env)
+{
+    char *argv[] = {"test_program"};
+    int argc = sizeof(argv) / sizeof(char *);
+
+    argus_t argus = argus_init(precedence_options, "test_program", "1.0.0");
+    argus.env_prefix = "TEST";
+
+    int status = argus_parse(&argus, argc, argv);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed");
+
+    cr_assert_str_eq(argus_get(&argus, "host").as_string, "env-server.example.com",
+                     "Env var should override the default value");
+    cr_assert_eq(argus_is_set(&argus, "host"), true,
+                 "An option fed by an env var counts as set");
+
+    argus_free(&argus);
+}
+
+// Regression for #64: the command line still wins over the environment.
+Test(env_vars, cli_overrides_env_and_default, .init = setup_env, .fini = teardown_env)
+{
+    char *argv[] = {"test_program", "--host=cli-server.example.com"};
+    int argc = sizeof(argv) / sizeof(char *);
+
+    argus_t argus = argus_init(precedence_options, "test_program", "1.0.0");
+    argus.env_prefix = "TEST";
+
+    int status = argus_parse(&argus, argc, argv);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed");
+
+    cr_assert_str_eq(argus_get(&argus, "host").as_string, "cli-server.example.com",
+                     "Command line should override both env var and default");
+
+    argus_free(&argus);
+}
+
+// Regression for #64: with neither CLI nor env, the default applies but is_set stays false.
+Test(env_vars, default_applies_without_being_set)
+{
+    char *argv[] = {"test_program"};
+    int argc = sizeof(argv) / sizeof(char *);
+
+    argus_t argus = argus_init(precedence_options, "test_program", "1.0.0");
+    argus.env_prefix = "TEST";
+
+    int status = argus_parse(&argus, argc, argv);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Parsing should succeed");
+
+    cr_assert_str_eq(argus_get(&argus, "host").as_string, "localhost",
+                     "Default value should apply when nothing else provides one");
+    cr_assert_eq(argus_is_set(&argus, "host"), false,
+                 "A default value must not mark the option as set");
+
     argus_free(&argus);
 }

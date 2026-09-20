@@ -19,7 +19,8 @@ static int validate_required(argus_t *argus, argus_option_t *options, argus_opti
     if (option->require) {
         for (int j = 0; option->require[j] != NULL; ++j) {
             argus_option_t *required = find_option_by_name(options, option->require[j]);
-            if (required && !required->is_set) {
+            /* An option carrying a default always holds a value, so the requirement is met. */
+            if (required && !required->is_set && !required->have_default) {
                 ARGUS_PARSING_ERROR(argus, ARGUS_ERROR_MISSING_REQUIRED,
                                     "Required option is missing: '%s' with option '%s'",
                                     option->require[j], option->name);
@@ -89,6 +90,14 @@ static int validate_options_set(argus_t *argus, argus_option_t *options)
             return (ARGUS_ERROR_MISSING_REQUIRED);
         }
 
+        /* Validators run on any option holding a value, default included. */
+        if (option->is_set || option->have_default) {
+            int status = call_validators(argus, option);
+            if (status != ARGUS_SUCCESS)
+                return (status);
+        }
+
+        /* Group exclusivity and dependencies only concern what the user provided. */
         if (option->is_set) {
             int status;
 
@@ -102,10 +111,6 @@ static int validate_options_set(argus_t *argus, argus_option_t *options)
                     return (ARGUS_ERROR_EXCLUSIVE_GROUP);
                 }
             }
-
-            status = call_validators(argus, option);
-            if (status != ARGUS_SUCCESS)
-                return (status);
 
             status = validate_required(argus, options, option);
             if (status != ARGUS_SUCCESS)

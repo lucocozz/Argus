@@ -35,6 +35,30 @@ ARGUS_OPTIONS(
     OPTION_STRING('o', "output", HELP("Output path")),
 )
 
+// Regression test for #64: a DEFAULT must not count as a user-provided value.
+ARGUS_OPTIONS(
+    default_conflict_options,
+    HELP_OPTION(),
+    OPTION_STRING('a', "alpha", HELP("Alpha"), DEFAULT("x"), CONFLICT("beta")),
+    OPTION_STRING('b', "beta", HELP("Beta")),
+)
+
+ARGUS_OPTIONS(
+    default_exclusive_options,
+    HELP_OPTION(),
+    GROUP_START("Mode", FLAGS(FLAG_EXCLUSIVE)),
+        OPTION_INT('n', "num", HELP("Num"), DEFAULT(1)),
+        OPTION_INT('m', "mum", HELP("Mum"), DEFAULT(2)),
+    GROUP_END(),
+)
+
+ARGUS_OPTIONS(
+    default_require_options,
+    HELP_OPTION(),
+    OPTION_STRING('u', "username", HELP("Username"), REQUIRE("password")),
+    OPTION_STRING('p', "password", HELP("Password"), DEFAULT("secret")),
+)
+
 // Test post_parse_validation with required positionals
 Test(post_validation, required_positional)
 {
@@ -192,5 +216,59 @@ Test(post_validation, valid_inputs)
     cr_assert_eq(status, ARGUS_SUCCESS, "Validation should succeed with valid inputs");
     
     // Clean up
+    argus_free(&argus);
+}
+
+// Regression for #64: an option holding only its default must not trigger a conflict.
+Test(post_validation, default_does_not_conflict)
+{
+    char *argv[] = {"test_program", "-b", "value"};
+    int argc = sizeof(argv) / sizeof(char *);
+
+    argus_t argus = argus_init(default_conflict_options, "test_program", "1.0.0");
+
+    int status = parse_args(&argus, default_conflict_options, argc - 1, &argv[1]);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Initial parsing should succeed");
+
+    status = post_parse_validation(&argus);
+    cr_assert_eq(status, ARGUS_SUCCESS,
+                 "A default value must not conflict with a user-provided option");
+
+    argus_free(&argus);
+}
+
+// Regression for #64: defaults in an exclusive group must not collide with each other.
+Test(post_validation, defaults_in_exclusive_group)
+{
+    char *argv[] = {"test_program"};
+    int argc = sizeof(argv) / sizeof(char *);
+
+    argus_t argus = argus_init(default_exclusive_options, "test_program", "1.0.0");
+
+    int status = parse_args(&argus, default_exclusive_options, argc - 1, &argv[1]);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Initial parsing should succeed");
+
+    status = post_parse_validation(&argus);
+    cr_assert_eq(status, ARGUS_SUCCESS,
+                 "Two defaults in an exclusive group must not be reported as a conflict");
+
+    argus_free(&argus);
+}
+
+// Regression for #64: REQUIRE is satisfied by an option that carries a default.
+Test(post_validation, require_satisfied_by_default)
+{
+    char *argv[] = {"test_program", "-u", "user123"};
+    int argc = sizeof(argv) / sizeof(char *);
+
+    argus_t argus = argus_init(default_require_options, "test_program", "1.0.0");
+
+    int status = parse_args(&argus, default_require_options, argc - 1, &argv[1]);
+    cr_assert_eq(status, ARGUS_SUCCESS, "Initial parsing should succeed");
+
+    status = post_parse_validation(&argus);
+    cr_assert_eq(status, ARGUS_SUCCESS,
+                 "A required option holding a default always has a value");
+
     argus_free(&argus);
 }
